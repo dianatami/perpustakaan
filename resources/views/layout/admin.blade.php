@@ -161,7 +161,7 @@
                 <a class="nav-link" href="#">
                     <i class="bi bi-book"></i> Buku
                 </a>
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{route('admin.kategori.index')}}">
                     <i class="bi bi-tag"></i> Kategori
                 </a>
                 <a class="nav-link" href="#">
