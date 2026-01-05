@@ -32,6 +32,7 @@ Route::post('tampilan/logout', [LoginController::class, 'logout'])->name('tampil
 Route::get('tampilan/register', [RegisterController::class, 'register'])->name('tampilan.register');
 Route::post('tampilan/register', [RegisterController::class, 'registerProcess'])->name('tampilan.register');
 
+
 // Routes untuk Admin - Manajemen Anggota
 Route::prefix('admin')->group(function () {
     Route::get('anggota', [AnggotaController::class, 'index'])->name('admin.anggota.index');
