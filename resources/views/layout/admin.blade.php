@@ -164,7 +164,7 @@
                 <a class="nav-link" href="#">
                     <i class="bi bi-tag"></i> Kategori
                 </a>
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ route('admin.anggota.index') }}">
                     <i class="bi bi-people"></i> Anggota
                 </a>
                 <a class="nav-link" href="#">
