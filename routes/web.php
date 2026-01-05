@@ -32,6 +32,7 @@ Route::get('tampilan/register', [RegisterController::class, 'register'])->name('
 Route::post('tampilan/register', [RegisterController::class, 'registerProcess'])->name('tampilan.register');
 
 use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\BookController;
 
 Route::get('admin/kategori', [KategoriController::class, 'index'])->name('admin.kategori.index');
 Route::post('admin/kategori', [KategoriController::class, 'store'])->name('admin.kategori.store');
@@ -40,3 +41,11 @@ Route::delete('admin/kategori/{id}', [KategoriController::class, 'destroy'])->na
 Route::get('admin/kategori/{id}/edit', [KategoriController::class, 'edit'])->name('admin.kategori.edit');
 Route::put('admin/kategori/{id}', [KategoriController::class, 'update'])->name('admin.kategori.update');
 Route::post('admin/kategori/{id}/book', [KategoriController::class, 'storeBook'])->name('admin.kategori.book.store');
+
+// Book routes for admin (list, create, edit, delete)
+Route::get('admin/books', [BookController::class, 'index'])->name('books.index');
+Route::get('admin/books/create', [BookController::class, 'create'])->name('books.create');
+Route::post('admin/books', [BookController::class, 'store'])->name('books.store');
+Route::get('admin/books/{id}/edit', [BookController::class, 'edit'])->name('books.edit');
+Route::put('admin/books/{id}', [BookController::class, 'update'])->name('books.update');
+Route::delete('admin/books/{id}', [BookController::class, 'destroy'])->name('books.destroy');
