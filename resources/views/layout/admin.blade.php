@@ -158,7 +158,7 @@
                 <a class="nav-link" href="{{route('admin.beranda')}}">
                     <i class="bi bi-house"></i> Beranda
                 </a>
-                <a class="nav-link" href="{{route('books.index')}}">
+                <a class="nav-link" href="{{route('admin.books.index')}}">
                     <i class="bi bi-book"></i> Buku
                 </a>
                 <a class="nav-link" href="{{route('admin.kategori.index')}}">

@@ -56,7 +56,7 @@ class BookController extends Controller
 
         Book::create($data);
 
-        return redirect()->route('books.index')->with('success','Buku berhasil ditambahkan');
+        return redirect()->route('admin.books.index')->with('success','Buku berhasil ditambahkan');
     }
 
     public function edit($id)
@@ -89,7 +89,7 @@ class BookController extends Controller
 
         $book->update($data);
 
-        return redirect()->route('books.index')->with('success','Buku berhasil diperbarui');
+        return redirect()->route('admin.books.index')->with('success','Buku berhasil diperbarui');
     }
 
     public function destroy($id)
@@ -99,6 +99,6 @@ class BookController extends Controller
             Storage::disk('public')->delete($book->cover);
         }
         $book->delete();
-        return redirect()->route('books.index')->with('success','Buku berhasil dihapus');
+        return redirect()->route('admin.books.index')->with('success','Buku berhasil dihapus');
     }
 }

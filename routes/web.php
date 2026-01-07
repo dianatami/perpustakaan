@@ -5,6 +5,9 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\Admin\KategoriController;
+use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\KategoriBookController;
 
 /*
 |--------------------------------------------------------------------------
@@ -43,3 +46,40 @@ Route::prefix('admin')->group(function () {
     Route::delete('anggota/{id}', [AnggotaController::class, 'destroy'])->name('admin.anggota.destroy');
     Route::put('anggota/{id}/status', [AnggotaController::class, 'toggleStatus'])->name('admin.anggota.toggleStatus');
 });    
+
+// Routes untuk Admin - Manajemen Kategori
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('kategori', KategoriController::class);
+    Route::get('/admin/kategori', [KategoriController::class, 'index'])->name('admin.kategori.index');
+    Route::get('/admin/kategori/create', [KategoriController::class, 'create'])->name('admin.kategori.create');
+    Route::post('/admin/kategori', [KategoriController::class, 'store'])->name('admin.kategori.store');
+    Route::get('/admin/kategori/{id}/edit', [KategoriController::class, 'edit'])->name('admin.kategori.edit');
+    Route::put('/admin/kategori/{id}', [KategoriController::class, 'update'])->name('admin.kategori.update');
+    Route::delete('/admin/kategori/{id}', [KategoriController::class, 'destroy'])->name('admin.kategori.destroy');
+});
+
+// Routes untuk Admin - Manajemen Buku
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::resource('books', BookController::class);
+    Route::get('/admin/books', [BookController::class, 'index'])->name('admin.books.index');
+    Route::get('/admin/books/create', [BookController::class, 'create'])->name('admin.books.create');
+    Route::post('/admin/books', [BookController::class, 'store'])->name('admin.books.store');
+    Route::get('/admin/books/{id}/edit', [BookController::class, 'edit'])->name('admin.books.edit');
+    Route::put('/admin/books/{id}', [BookController::class, 'update'])->name('admin.books.update');
+    Route::delete('/admin/books/{id}', [BookController::class, 'destroy'])->name('admin.books.destroy');
+
+});
+
+//Routes untuk Kategori Buku
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::post(
+        'kategori/{kategori}/book',
+        [KategoriBookController::class, 'store']
+    )->name('kategori.book.store');
+});
+
+//Routes untuk Admin - Kategori Buku
+Route::post(
+    'admin/kategori/{kategori}/book',
+    [KategoriController::class, 'storeBook']
+)->name('admin.kategori.book.store');

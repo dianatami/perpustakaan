@@ -14,7 +14,7 @@
     </div>
 @endif
 
-<form action="{{ route('books.store') }}" method="POST" enctype="multipart/form-data">
+<form action="{{ route('admin.books.store') }}" method="POST" enctype="multipart/form-data">
     @csrf
 
     <div class="form-group">
@@ -70,7 +70,7 @@
     </div>
 
     <button class="btn btn-primary">Simpan</button>
-    <a href="{{ route('books.index') }}" class="btn btn-secondary">Batal</a>
+    <a href="{{ route('admin.books.index') }}" class="btn btn-secondary">Batal</a>
 </form>
 
 @endsection

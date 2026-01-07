@@ -6,9 +6,9 @@
 
     <div class="mb-3 d-flex justify-content-between align-items-center">
         <div>
-            <a href="{{ route('books.create') }}" class="btn btn-primary">Tambah Buku</a>
+            <a href="{{ route('admin.books.create') }}" class="btn btn-primary">Tambah Buku</a>
         </div>
-        <form action="{{ route('books.index') }}" method="GET" class="form-inline">
+        <form action="{{ route('admin.books.index') }}" method="GET" class="form-inline">
             <select name="category" class="form-control mr-2">
                 <option value="">Semua Kategori</option>
                 @isset($categories)
@@ -57,7 +57,7 @@
                         <td>{{ $book->title ?? '-' }}</td>
                         <td>
                             @if($book->category)
-                                <a href="{{ route('books.index', array_merge(request()->query(), ['category' => $book->category->id])) }}">{{ $book->category->name_category }}</a>
+                                <a href="{{ route('admin.books.index', array_merge(request()->query(), ['category' => $book->category->id])) }}">{{ $book->category->name_category }}</a>
                             @else
                                 -
                             @endif
@@ -67,8 +67,8 @@
                         <td>{{ $book->year ?? '-' }}</td>
                         <td>{{ $book->stock ?? 0 }}</td>
                         <td>
-                            <a href="{{ route('books.edit', $book->id) }}" class="btn btn-sm btn-warning">Edit</a>
-                            <form action="{{ route('books.destroy', $book->id) }}" method="POST" style="display:inline-block; margin-left:6px;">
+                            <a href="{{ route('admin.books.edit', $book->id) }}" class="btn btn-sm btn-warning">Edit</a>
+                            <form action="{{ route('admin.books.destroy', $book->id) }}" method="POST" style="display:inline-block; margin-left:6px;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Hapus buku ini?')">Hapus</button>
