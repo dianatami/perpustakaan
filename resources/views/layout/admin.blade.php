@@ -37,11 +37,9 @@
             width: 280px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding-top: 20px;
-            position: fixed;
-            height: calc(100vh - 56px);
-            left: 0;
-            overflow-y: auto;
-            top: 56px;
+            position: relative; /* non-floating: participate in document flow */
+            height: auto;
+            overflow-y: visible;
             box-shadow: 2px 0 4px rgba(0,0,0,0.1);
         }
         .sidebar .nav-link {
@@ -68,10 +66,11 @@
         }
         /* Main Content */
         .main-content {
-            margin-left: 280px;
+            margin-left: 0; /* no fixed offset; sidebar sits beside as a flex child */
             flex: 1;
             padding: 30px;
             background: #f8f9fa;
+            min-height: calc(100vh - 56px);
         }
         /* Toggle Button */
         .sidebar-toggle {
@@ -107,7 +106,7 @@
             }
         }
         footer {
-            margin-left: 280px;
+            margin-left: 0;
         }
         @media (max-width: 768px) {
             footer {
