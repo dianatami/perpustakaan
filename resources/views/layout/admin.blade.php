@@ -167,7 +167,7 @@
                 <a class="nav-link" href="{{ route('admin.anggota.index') }}">
                     <i class="bi bi-people"></i> Anggota
                 </a>
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{{ route('admin.peminjaman.index') }}">
                     <i class="bi bi-arrow-left-right"></i> Peminjaman
                 </a>
             </nav>

@@ -21,5 +21,10 @@ class DatabaseSeeder extends Seeder
             'hp'=>'0812934010540',
             'password' => bcrypt('P@55word')
         ]);
+
+        // Jalankan seeder tambahan
+        $this->call([
+            BookrentSeeder::class,
+        ]);
     }
 }
