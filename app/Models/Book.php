@@ -21,6 +21,8 @@ class Book extends Model
         'cover',
         'description',
         'stock',
+        'damaged',
+        'lost'
     ];
 
     public function category()

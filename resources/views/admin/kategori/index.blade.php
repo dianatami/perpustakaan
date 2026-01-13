@@ -4,7 +4,6 @@
     <div class="container p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h1 class="mb-0">Kategori</h1>
-            <a href="{{ route('admin.beranda') }}" class="btn btn-sm btn-secondary">Kembali ke Beranda</a>
         </div>
 
         @if(session('success'))

@@ -65,6 +65,22 @@ class PeminjamanController extends Controller
 
         $peminjaman = Bookrent::findOrFail($id);
         $peminjaman->update($request->all());
+
+        $book = $peminjaman->book;
+
+        if ($request->condition == 'baik') {
+        $book->stock += 1;
+        }
+
+        if ($request->condition == 'rusak') {
+        $book->damaged += 1;
+        }
+
+        if ($request->condition == 'hilang') {
+        $book->lost += 1;
+        }
+
+        $book->save();
         
         return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil diperbarui');
     }

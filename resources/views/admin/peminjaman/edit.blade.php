@@ -82,6 +82,14 @@
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
+                        <div class="mb-3">
+                        <label>Kondisi Buku</label>
+                        <select name="condition" class="form-control" required>
+                            <option value="baik">Baik</option>
+                            <option value="rusak">Rusak</option>
+                             <option value="hilang">Hilang</option>
+                        </select>
+                        </div>
 
                         <div class="d-flex gap-2">
                             <button type="submit" class="btn btn-info">

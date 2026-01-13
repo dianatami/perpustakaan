@@ -25,9 +25,6 @@ Route::get('/', function () {
     return view('tampilan/login');
 });
 
-Route::get('admin/beranda', [BerandaController::class, 'berandaAdmin'])->name('admin.beranda');
-Route::get('anggota/beranda', [BerandaController::class, 'berandaAnggota'])->name('anggota.beranda');
-
 Route::get('tampilan/login', [LoginController::class, 'login'])->name('tampilan.login');
 Route::post('tampilan/login', [LoginController::class, 'authenticate'])->name('tampilan.login');
 
@@ -36,6 +33,10 @@ Route::post('tampilan/logout', [LoginController::class, 'logout'])->name('tampil
 Route::get('tampilan/register', [RegisterController::class, 'register'])->name('tampilan.register');
 Route::post('tampilan/register', [RegisterController::class, 'registerProcess'])->name('tampilan.register');
 
+
+Route::middleware(['auth'])->group(function () {
+Route::get('admin/beranda', [BerandaController::class, 'berandaAdmin'])->name('admin.beranda');
+Route::get('anggota/beranda', [BerandaController::class, 'berandaAnggota'])->name('anggota.beranda');
 
 // Routes untuk Admin - Manajemen Anggota
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -89,3 +90,5 @@ Route::post(
     'admin/kategori/{kategori}/book',
     [KategoriController::class, 'storeBook']
 )->name('admin.kategori.book.store');
+
+});
