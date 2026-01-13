@@ -5,6 +5,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\ProfileAnggotaController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\KategoriBookController;
@@ -91,4 +92,15 @@ Route::post(
     [KategoriController::class, 'storeBook']
 )->name('admin.kategori.book.store');
 
+// Routes untuk Anggota - Profil dan Edit Profil
+Route::prefix('anggota')->name('anggota.')->group(function () {
+    Route::get('profil', [ProfileAnggotaController::class, 'profil'])->name('profil');
+    Route::get('profil-detail', [ProfileAnggotaController::class, 'profilDetail'])->name('profil.detail');
+    Route::get('edit-profil', [ProfileAnggotaController::class, 'editProfil'])->name('edit.profil')->middleware('auth');
+    Route::put('update-profil', [ProfileAnggotaController::class, 'updateProfil'])->name('update.profil')->middleware('auth');
+    Route::get('edit-infopribadi', [ProfileAnggotaController::class, 'editInfoPribadi'])->name('edit.infopribadi')->middleware('auth');
+    Route::put('update-infopribadi', [ProfileAnggotaController::class, 'updateInfoPribadi'])->name('update.infopribadi')->middleware('auth');
+    Route::get('ubah-password', [ProfileAnggotaController::class, 'ubahPassword'])->name('ubah.password')->middleware('auth');
+    Route::post('store-password', [ProfileAnggotaController::class, 'storePassword'])->name('store.password')->middleware('auth');
+    Route::get('riwayat-peminjaman', [ProfileAnggotaController::class, 'riwayatPeminjaman'])->name('riwayat.peminjaman')->middleware('auth');
 });

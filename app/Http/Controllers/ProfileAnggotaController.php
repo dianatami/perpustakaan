@@ -19,11 +19,32 @@ class ProfileAnggotaController extends Controller
     }
 
     /**
+     * Menampilkan halaman detail profil dengan riwayat peminjaman
+     */
+    public function profilDetail()
+    {
+        $user = Auth::user();
+        
+        // Debug: Cek apakah user login
+        if (!$user) {
+            return redirect()->route('tampilan.login')->with('error', 'Silakan login terlebih dahulu');
+        }
+
+        // Eager load relationship untuk menghindari N+1 query
+        $bookrents = $user->bookrent()->with('book')->get();
+        
+        return view('anggota.Profile.index', [
+            'user' => $user,
+            'bookrents' => $bookrents
+        ]);
+    }
+
+    /**
      * Menampilkan form edit profil
      */
     public function editProfil()
     {
-        return view('anggota.edit-profil');
+        return view('anggota.Profile.edit-profil');
     }
 
     /**
@@ -35,6 +56,7 @@ class ProfileAnggotaController extends Controller
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:user,email,' . Auth::id(),
             'hp' => 'required|string|max:13',
+            'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
@@ -42,6 +64,7 @@ class ProfileAnggotaController extends Controller
         $user->nama = $request->nama;
         $user->email = $request->email;
         $user->hp = $request->hp;
+        $user->jenis_kelamin = $request->jenis_kelamin;
 
         // Handle foto upload
         if ($request->hasFile('foto')) {
@@ -53,7 +76,7 @@ class ProfileAnggotaController extends Controller
 
         $user->save();
 
-        return redirect()->route('anggota.profil')->with('success', 'Profil berhasil diperbarui');
+        return redirect()->route('anggota.profil.detail')->with('success', 'Profil berhasil diperbarui');
     }
 
     /**
@@ -96,6 +119,37 @@ class ProfileAnggotaController extends Controller
     {
         $peminjaman = []; // Placeholder untuk riwayat peminjaman
         return view('anggota.riwayat-peminjaman', compact('peminjaman'));
+    }
+
+    /**
+     * Menampilkan form edit informasi pribadi
+     */
+    public function editInfoPribadi()
+    {
+        return view('anggota.Profile.update-infopribadi');
+    }
+
+    /**
+     * Menyimpan perubahan informasi pribadi
+     */
+    public function updateInfoPribadi(Request $request)
+    {
+        $request->validate([
+            'tempat_lahir' => 'nullable|string|max:255',
+            'tanggal_lahir' => 'nullable|date',
+            'alamat' => 'nullable|string|max:500',
+        ]);
+
+        $user = Auth::user();
+        
+        // Update data pribadi
+        $user->tempat_lahir = $request->tempat_lahir;
+        $user->tanggal_lahir = $request->tanggal_lahir;
+        $user->alamat = $request->alamat;
+
+        $user->save();
+
+        return redirect()->route('anggota.profil.detail')->with('success', 'Informasi pribadi berhasil diperbarui');
     }
 }
  

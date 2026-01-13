@@ -171,12 +171,12 @@
 
             <!-- Logout -->
             <div style="padding: 20px; border-top: 1px solid rgba(255,255,255,0.1); margin-top: 20px;">
+                <a href="{{ route('anggota.profil.detail') }}" class="nav-link" style="padding: 10px 20px; margin: 0 0 10px 0;">
+                    <i class="bi bi-person"></i> User
+                </a>
+
                 <div style="color: rgba(255,255,255,0.8); cursor: pointer; padding: 10px 20px; transition: all 0.3s; display: flex; align-items: center;" onclick="event.preventDefault(); document.getElementById('keluar-app').submit();" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.1)'; this.style.transform='translateX(5px)';" onmouseout="this.style.color='rgba(255,255,255,0.8)'; this.style.background='transparent'; this.style.transform='translateX(0)';">
                     <i class="bi bi-box-arrow-right" style="margin-right: 10px; width: 20px;"></i> Keluar
-                </div>
-
-                <div class="nav-link" href="#">
-                    <i class="bi bi-person"></i> User
                 </div>
             </div>
         </aside>

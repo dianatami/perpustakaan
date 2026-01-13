@@ -23,7 +23,11 @@ class User extends Authenticatable
         'email',
         'password',
         'hp',
-
+        'jenis_kelamin',
+        'tempat_lahir',
+        'tanggal_lahir',
+        'alamat',
+        'foto',
     ];
 
     /**
@@ -48,4 +52,12 @@ class User extends Authenticatable
     protected $attributes = [
         'status' => 1
     ];
+
+    /**
+     * Relationship: User memiliki banyak Bookrent
+     */
+    public function bookrent()
+    {
+        return $this->hasMany(Bookrent::class, 'user_id');
+    }
 }
