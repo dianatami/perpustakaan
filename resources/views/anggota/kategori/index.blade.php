@@ -213,7 +213,7 @@
         <div class="row g-4 kategori-container" id="kategoriGrid">
             @foreach($kategori as $k)
             <div class="col-md-6 col-lg-4 kategori-item" data-kategori="{{ strtolower($k->name_category) }}">
-                <a href="#" class="text-decoration-none">
+                <a href="{{ route('anggota.buku.index', ['kategori' => $k->id]) }}" class="text-decoration-none">
                     <div class="kategori-card">
                         <div class="kategori-header header-gradient-{{ ($loop->index % 8) + 1 }}">
                             <i class="bi {{ $loop->index % 8 == 0 ? 'bi-book-half' : ($loop->index % 8 == 1 ? 'bi-star' : ($loop->index % 8 == 2 ? 'bi-lightbulb' : ($loop->index % 8 == 3 ? 'bi-compass' : ($loop->index % 8 == 4 ? 'bi-pencil' : ($loop->index % 8 == 5 ? 'bi-palette' : ($loop->index % 8 == 6 ? 'bi-heart' : 'bi-rocket')))))) }} icon-map"></i>

@@ -313,7 +313,7 @@
                                         <tr style="border-bottom: 1px solid #f0f0f0;">
                                             <td class="fw-bold text-dark py-3">
                                                 <i class="bi bi-book-half" style="color: #667eea;"></i>
-                                                {{ $rent->book->judul ?? '-' }}
+                                                {{ $rent->book->title ?? '-' }}
                                             </td>
                                             <td class="text-muted py-3">
                                                 {{ $rent->borrow_date ? \Carbon\Carbon::parse($rent->borrow_date)->format('d M Y') : '-' }}

@@ -194,7 +194,7 @@
             <a class="nav-link" href="{{route('anggota.beranda')}}">
                 <i class="bi bi-house"></i> Beranda
             </a>
-            <a class="nav-link" href="#">
+            <a class="nav-link" href="{{ route('anggota.buku.index') }}">
                 <i class="bi bi-book"></i> Buku
             </a>
             <a class="nav-link" href="{{ route('anggota.kategori.index') }}">
