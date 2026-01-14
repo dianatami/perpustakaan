@@ -273,8 +273,8 @@
                         <div class="col-4">
                             <div class="p-4 rounded-4" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%); border-left: 5px solid #ff9800;">
                                 <div class="text-muted small fw-bold mb-2">Sedang Dipinjam</div>
-                                <div class="fw-bold" style="color: #ff9800; font-size: 2rem;">
-                                    {{ $bookrents->where('status', 'borrowed')->count() ?? 0 }}
+                                <div class="fw-bold" style="color: #f79a0e; font-size: 2rem;">
+                                    {{ $bookrents->where('status', 'dipinjam')->count() ?? 0 }}
                                 </div>
                             </div>
                         </div>
@@ -282,7 +282,7 @@
                             <div class="p-4 rounded-4" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%); border-left: 5px solid #4caf50;">
                                 <div class="text-muted small fw-bold mb-2">Selesai Dipinjam</div>
                                 <div class="fw-bold" style="color: #4caf50; font-size: 2rem;">
-                                    {{ $bookrents->where('status', 'returned')->count() ?? 0 }}
+                                    {{ $bookrents->where('status', 'dikembalikan')->count() ?? 0 }}
                                 </div>
                             </div>
                         </div>
@@ -358,66 +358,6 @@
             </div>
         </div>
     </div>
-
-    <!-- Buku Sedang Dipinjam -->
-    @if($bookrents && $bookrents->where('status', 'borrowed')->count() > 0)
-    <div class="row mt-5">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm rounded-4" style="overflow: hidden;">
-                <div class="card-header border-0 pt-4 pb-3" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
-                    <h5 class="card-title fw-bold mb-0 text-white">
-                        <i class="bi bi-bookmark-check"></i> Buku yang Sedang Dipinjam
-                    </h5>
-                </div>
-                <div class="card-body pb-4">
-                    <div class="row g-3">
-                        @foreach($bookrents->where('status', 'borrowed') as $rent)
-                        <div class="col-md-6 col-lg-4">
-                            <div class="card border-0 shadow-sm h-100 rounded-4 overflow-hidden" 
-                                 style="background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%); cursor: pointer;">
-                                <div class="card-body">
-                                    <div class="d-flex align-items-start mb-3">
-                                        <div style="flex: 1;">
-                                            <h6 class="card-title fw-bold mb-1">{{ $rent->book->judul ?? '-' }}</h6>
-                                            <p class="card-text text-muted small mb-0">
-                                                <i class="bi bi-pen"></i> {{ $rent->book->penulis ?? '-' }}
-                                            </p>
-                                        </div>
-                                        <span class="badge" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); padding: 8px 10px; border-radius: 50px;">
-                                            <i class="bi bi-exclamation-circle"></i>
-                                        </span>
-                                    </div>
-
-                                    <div class="p-3 rounded-3 mb-3" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(245, 124, 0, 0.1) 100%); border-left: 4px solid #ff9800;">
-                                        <small class="text-muted d-block mb-1">
-                                            <i class="bi bi-calendar-check"></i> Dipinjam pada
-                                        </small>
-                                        <small class="fw-bold d-block" style="color: #ff9800;">
-                                            {{ $rent->borrow_date ? \Carbon\Carbon::parse($rent->borrow_date)->format('d F Y') : '-' }}
-                                        </small>
-                                    </div>
-
-                                    @if($rent->return_date)
-                                    <div class="p-3 rounded-3" style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-left: 4px solid #667eea;">
-                                        <small class="text-muted d-block mb-1">
-                                            <i class="bi bi-calendar-x"></i> Kembali sebelum
-                                        </small>
-                                        <small class="fw-bold d-block" style="color: #667eea;">
-                                            {{ \Carbon\Carbon::parse($rent->return_date)->format('d F Y') }}
-                                        </small>
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-</div>
 
 <style>
     * {

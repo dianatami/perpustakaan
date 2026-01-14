@@ -200,10 +200,6 @@
             <a class="nav-link" href="{{ route('anggota.kategori.index') }}">
                 <i class="bi bi-tag"></i> Kategori
             </a>
-            <a class="nav-link" href="#">
-                <i class="bi bi-arrow-left-right"></i> Peminjaman
-            </a>
-
             <!-- Profile Section -->
             <div class="sidebar-profile-section">
                 <a href="{{ route('anggota.profil.detail') }}" class="nav-link" style="padding: 15px 15px;">
