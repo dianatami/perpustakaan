@@ -17,6 +17,7 @@ class Bookrent extends Model
         'borrow_date',
         'return_date',
         'status',
+        'denda',
     ];
 
     public function user()

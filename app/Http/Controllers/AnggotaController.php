@@ -12,7 +12,7 @@ class AnggotaController extends Controller
      */
     public function index()
     {
-        $anggota = User::where('role', 1)->paginate(10);
+        $anggota = User::where('role', '0')->paginate(10);
         return view('admin.user.anggota', compact('anggota'));
     }
 

@@ -1,5 +1,5 @@
 @extends('layout.admin')
-
+@section('title','Data Peminjaman')
 @section('content')
 <div class="container mt-5">
     <div class="row mb-4">
@@ -7,6 +7,13 @@
             <h2>📚 Data Peminjaman Buku</h2>
         </div>
     </div>
+
+    @if (session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i> {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    @endif
 
     @if (session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -115,6 +122,7 @@
                         <th>Tanggal Pinjam</th>
                         <th>Tanggal Kembali</th>
                         <th>Status</th>
+                        <th>Denda</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -140,6 +148,13 @@
                                 @else
                                     <span class="badge bg-success">Dikembalikan</span>
                                 @endif
+                            </td>
+                            <td>
+                            @if ($item->denda > 0)
+                                Rp {{ number_format($item->denda, 0, ',', '.') }}
+                            @else
+                                -
+                            @endif
                             </td>
                             <td>
                                 <a href="{{ route('admin.peminjaman.edit', $item->id) }}" class="btn btn-sm btn-primary">

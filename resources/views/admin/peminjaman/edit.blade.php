@@ -1,5 +1,5 @@
 @extends('layout.admin')
-
+@section('title','Data Peminjaman')
 @section('content')
 <div class="container mt-5">
     <div class="row">
