@@ -22,8 +22,8 @@ return new class extends Migration
             $table->string('cover')->nullable();
             $table->string('description');
             $table->integer('stock');
-            $table->integer('damaged');
-            $table->integer('lost');
+            $table->integer('damaged')->nullable();
+            $table->integer('lost')->nullable();
             $table->timestamps();
         });
     }

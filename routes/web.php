@@ -103,4 +103,5 @@ Route::prefix('anggota')->name('anggota.')->group(function () {
     Route::get('ubah-password', [ProfileAnggotaController::class, 'ubahPassword'])->name('ubah.password')->middleware('auth');
     Route::post('store-password', [ProfileAnggotaController::class, 'storePassword'])->name('store.password')->middleware('auth');
     Route::get('riwayat-peminjaman', [ProfileAnggotaController::class, 'riwayatPeminjaman'])->name('riwayat.peminjaman')->middleware('auth');
+    });
 });

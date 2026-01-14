@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('hp',13);
             $table->string('foto')->nullable();
             $table->timestamps();
-            $table-datetime('birthdate')->nullable();
+            $table->datetime('birthdate')->nullable();
         });
     }
 

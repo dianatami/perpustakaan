@@ -26,7 +26,7 @@ class BerandaController extends Controller
 
     $totalRusakHilang = Book::where('damaged', '>', 0)
         ->orWhere('lost', '>', 0)
-        ->count();
+        ->count(); 
 
     return view(
         'admin.dashboard',

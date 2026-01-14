@@ -48,7 +48,7 @@ class BookController extends Controller
             'stock' => 'required|integer|min:0',
         ]);
 
-        $data = $request->only(['category_id','book_code','title','author','publisher','year','description','stock']);
+        $data = $request->only(['category_id','book_code','title','author','publisher','year','cover','description','stock']);
 
         if ($request->hasFile('cover')) {
             $data['cover'] = $request->file('cover')->store('covers', 'public');
