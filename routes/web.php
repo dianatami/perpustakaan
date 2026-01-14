@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\ProfileAnggotaController;
+use App\Http\Controllers\Anggota\AnggotaKategoriController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\KategoriBookController;
@@ -103,5 +104,10 @@ Route::prefix('anggota')->name('anggota.')->group(function () {
     Route::get('ubah-password', [ProfileAnggotaController::class, 'ubahPassword'])->name('ubah.password')->middleware('auth');
     Route::post('store-password', [ProfileAnggotaController::class, 'storePassword'])->name('store.password')->middleware('auth');
     Route::get('riwayat-peminjaman', [ProfileAnggotaController::class, 'riwayatPeminjaman'])->name('riwayat.peminjaman')->middleware('auth');
-    });
+});
+
+    // Routes untuk Anggota - Kategori
+    Route::prefix('anggota')->name('anggota.')->middleware('auth')->group(function () {
+    Route::get('kategori', [AnggotaKategoriController::class, 'index'])->name('kategori.index');
+});
 });
