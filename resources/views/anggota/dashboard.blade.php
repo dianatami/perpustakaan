@@ -29,7 +29,6 @@
                     <div>
                         <div class="text-muted small fw-bold text-uppercase tracking-wider">Sedang Dipinjam</div>
                         <h2 class="fw-bold mb-1">{{ $bookrents ?? 0 }}<span class="fs-5 fw-normal text-muted">Buku</span></h2>
-                       <a href="{{ route('anggota.riwayat.peminjaman') }}" class="text-primary fw-bold text-decoration-none small">Lihat Detail Pinjaman →</a>
                     </div>
                 </div>
             </div>
@@ -45,7 +44,6 @@
                     <div>
                         <div class="text-muted small fw-bold text-uppercase tracking-wider">Total Riwayat</div>
                         <h2 class="fw-bold mb-1">{{$riyawatPinjam ?? 0}} <span class="fs-5 fw-normal text-muted">Buku</span></h2>
-                        <a href="{{ route('anggota.riwayat.peminjaman') }}" class="text-success fw-bold text-decoration-none small">Buka Catatan Riwayat →</a>
                     </div>
                 </div>
             </div>
@@ -57,7 +55,6 @@
         <div class="col-md-7">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h5 class="fw-bold mb-0">Rekomendasi Untuk Anda</h5>
-                <a href="{{ Route::has('anggota.buku') ? route('anggota.buku') : '#' }}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">Lihat Semua</a>
             </div>
 
             <div class="overflow-auto pb-3" style="white-space:nowrap; -webkit-overflow-scrolling: touch;">
@@ -91,41 +88,6 @@
                 @endforelse
             </div>
         </div>
-
-        {{-- BAGIAN KANAN: JADWAL KEMBALI BUKU --}}
-        <div class="col-md-5">
-            <h5 class="fw-bold mb-4">Jadwal Pengembalian</h5>
-            <div class="card border-0 shadow-sm p-3" style="border-radius: 20px;">
-                <div class="table-responsive">
-                    <table class="table table-borderless align-middle mb-0">
-                        <tbody>
-                            @forelse($upcomingReturns ?? [] as $rent)
-                                <tr class="border-bottom">
-                                    <td class="py-3">
-                                        <div class="fw-bold small">{{ $rent->book->title ?? 'Judul Buku' }}</div>
-                                        <div class="text-muted extra-small">Kategori: {{ $rent->book->kategori->nama ?? 'Umum' }}</div>
-                                    </td>
-                                    <td class="text-end py-3">
-                                        <span class="badge rounded-pill bg-soft-warning text-dark extra-small px-3">
-                                            {{ $rent->borrow_date ? \Carbon\Carbon::parse($rent->borrow_date)->addDays(7)->format('d M Y') : 'N/A' }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="2" class="text-center py-5">
-                                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="50" class="opacity-25 mb-3">
-                                        <div class="text-muted small">Semua buku sudah dikembalikan!</div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 
 <style>
     .extra-small { font-size: 0.7rem; }
