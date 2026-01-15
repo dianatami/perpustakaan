@@ -7,6 +7,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AnggotaController;
 use App\Http\Controllers\ProfileAnggotaController;
 use App\Http\Controllers\Anggota\AnggotaKategoriController;
+use App\Http\Controllers\Anggota\BerandaAnggotaController;
 use App\Http\Controllers\Anggota\BukuController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\BookController;
@@ -38,8 +39,14 @@ Route::post('tampilan/register', [RegisterController::class, 'registerProcess'])
 
 
 Route::middleware(['auth'])->group(function () {
+    // Routes untuk Beranda - Admin dan Anggota
 Route::get('admin/beranda', [BerandaController::class, 'berandaAdmin'])->name('admin.beranda');
-Route::get('anggota/beranda', [BerandaController::class, 'berandaAnggota'])->name('anggota.beranda');
+Route::get('anggota/beranda', [BerandaAnggotaController::class, 'berandaAnggota'])->name('anggota.beranda');
+
+ Route::prefix('admin')->name('admin.')->group(function () {
+        Route::resource('peminjaman', PeminjamanController::class);
+    });
+
 
 // Routes untuk Admin - Manajemen Anggota
 Route::prefix('admin')->name('admin.')->group(function () {

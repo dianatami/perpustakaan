@@ -4,73 +4,64 @@
 
 <div class="container-fluid px-4 py-4">
     {{-- HERO SECTION --}}
-    <div class="hero p-4 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(90deg, #f8faff 0%, #ffffff 100%); border: 1px solid #eef2ff;">
+    <div class="hero p-5 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
         <div class="d-flex align-items-center justify-content-between">
-            <div>
-                <h2 class="fw-bold mb-1" style="color: #2d3748;">Selamat Datang, {{ Auth::user()->nama }}! 👋</h2>
-                <p class="mb-0 text-muted small">Anggota Perpustakaan sejak {{ Auth::user()->created_at->format('d F Y') }}</p>
+            <div class="text-white">
+                <h2 class="fw-bold mb-2">Selamat Datang, {{ Auth::user()->nama }}! 👋</h2>
+                <p class="mb-0 opacity-75">Senang melihat Anda kembali. Mari jelajahi koleksi buku terbaru kami hari ini.</p>
+                <div class="mt-3 small opacity-50">Anggota sejak {{ Auth::user()->created_at->format('d F Y') }}</div>
             </div>
             <div class="d-none d-md-block">
-                <img src="https://i.ibb.co/9VhZ0Qw/reading-illustration.png" alt="reading" style="height:100px; object-fit:contain;">
+                <img src="https://i.ibb.co/9VhZ0Qw/reading-illustration.png" alt="reading" style="height:120px; filter: brightness(0) invert(1);">
             </div>
         </div>
     </div>
 
-    {{-- KARTU STATISTIK (4 Kolom Sesuai Gambar Referensi) --}}
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 p-2" style="border-radius: 15px;">
-                <div class="card-body text-center">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3389/3389081.png" width="50" class="mb-2">
-                    <div class="text-muted small fw-bold">Buku Dipinjam</div>
-                    <h4 class="fw-bold mb-2">3 <span class="fs-6 fw-normal">Buku</span></h4>
-                    <a href="#" class="btn btn-sm btn-primary w-100 rounded-pill py-1">Lihat Detail</a>
+    {{-- KARTU STATISTIK (Disederhanakan menjadi 2 kolom utama) --}}
+    <div class="row g-4 mb-5">
+        {{-- Kartu Buku Dipinjam --}}
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden" style="border-radius: 20px; background: #fff;">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="icon-box p-3 rounded-4 me-4" style="background: #eef2ff;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3389/3389081.png" width="60">
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase tracking-wider">Sedang Dipinjam</div>
+                        <h2 class="fw-bold mb-1">{{ $bookrents ?? 0 }}<span class="fs-5 fw-normal text-muted">Buku</span></h2>
+                       <a href="{{ route('anggota.riwayat.peminjaman') }}" class="text-primary fw-bold text-decoration-none small">Lihat Detail Pinjaman →</a>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 p-2" style="border-radius: 15px;">
-                <div class="card-body text-center">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1077/1077035.png" width="50" class="mb-2">
-                    <div class="text-muted small fw-bold">Buku Favorit</div>
-                    <h4 class="fw-bold mb-2">12 <span class="fs-6 fw-normal">Buku</span></h4>
-                    <a href="#" class="btn btn-sm btn-danger w-100 rounded-pill py-1">Lihat Favorit</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 p-2" style="border-radius: 15px;">
-                <div class="card-body text-center">
-                    <img src="https://cdn-icons-png.flaticon.com/512/3208/3208743.png" width="50" class="mb-2">
-                    <div class="text-muted small fw-bold">Riwayat Pinjam</div>
-                    <h4 class="fw-bold mb-2">45 <span class="fs-6 fw-normal">Buku</span></h4>
-                    <a href="#" class="btn btn-sm btn-success w-100 rounded-pill py-1">Lihat Riwayat</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm h-100 p-2" style="border-radius: 15px;">
-                <div class="card-body text-center">
-                    <img src="https://cdn-icons-png.flaticon.com/512/1827/1827347.png" width="50" class="mb-2">
-                    <div class="text-muted small fw-bold">Pemberitahuan</div>
-                    <h4 class="fw-bold mb-2">2 <span class="fs-6 fw-normal">Pesan</span></h4>
-                    <a href="#" class="btn btn-sm btn-warning text-white w-100 rounded-pill py-1">Lihat Info</a>
+
+        {{-- Kartu Riwayat Pinjam --}}
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100 overflow-hidden" style="border-radius: 20px; background: #fff;">
+                <div class="card-body p-4 d-flex align-items-center">
+                    <div class="icon-box p-3 rounded-4 me-4" style="background: #f0fdf4;">
+                        <img src="https://cdn-icons-png.flaticon.com/512/3208/3208743.png" width="60">
+                    </div>
+                    <div>
+                        <div class="text-muted small fw-bold text-uppercase tracking-wider">Total Riwayat</div>
+                        <h2 class="fw-bold mb-1">{{$riyawatPinjam ?? 0}} <span class="fs-5 fw-normal text-muted">Buku</span></h2>
+                        <a href="{{ route('anggota.riwayat.peminjaman') }}" class="text-success fw-bold text-decoration-none small">Buka Catatan Riwayat →</a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="row">
-        {{-- BAGIAN KIRI: BUKU POPULER --}}
+        {{-- BAGIAN KIRI: REKOMENDASI BUKU --}}
         <div class="col-md-7">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <h5 class="fw-bold mb-0">Rekomendasi Buku</h5>
-                <a href="{{ Route::has('anggota.buku') ? route('anggota.buku') : '#' }}" class="text-decoration-none small fw-bold text-primary">Lihat Semua <i class="bi bi-chevron-right"></i></a>
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h5 class="fw-bold mb-0">Rekomendasi Untuk Anda</h5>
+                <a href="{{ Route::has('anggota.buku') ? route('anggota.buku') : '#' }}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold">Lihat Semua</a>
             </div>
 
             <div class="overflow-auto pb-3" style="white-space:nowrap; -webkit-overflow-scrolling: touch;">
                 @php
-                    // Data dummy jika variabel $buku belum dikirim dari controller
                     $dummyBooks = [
                         ['title' => 'Novel Misteri', 'author' => 'Author A', 'img' => 'https://picsum.photos/200/300?random=1'],
                         ['title' => 'Ilmu Pengetahuan', 'author' => 'Author B', 'img' => 'https://picsum.photos/200/300?random=2'],
@@ -79,20 +70,20 @@
                     ];
                 @endphp
 
-                @forelse($buku ?? [] as $b)
-                    <div class="card d-inline-block border-0 shadow-sm me-3" style="width:145px; vertical-align:top; border-radius: 12px;">
-                        <img src="{{ asset('storage/' . $b->cover) }}" class="card-img-top" style="height:190px; object-fit:cover; border-radius: 12px 12px 0 0;" alt="cover">
-                        <div class="card-body p-2 text-center">
-                            <p class="fw-bold mb-0 text-truncate small" style="color: #2d3748;">{{ $b->title }}</p>
+                @forelse($books ?? [] as $b)
+                    <div class="card d-inline-block border-0 shadow-sm me-3 transition-hover" style="width:160px; vertical-align:top; border-radius: 15px;">
+                        <img src="{{ asset('storage/' . $b->cover) }}" class="card-img-top" style="height:210px; object-fit:cover; border-radius: 15px;" alt="cover">
+                        <div class="card-body p-2 mt-1">
+                            <p class="fw-bold mb-0 text-truncate small mb-1">{{ $b->title }}</p>
                             <p class="text-muted extra-small mb-0">{{ $b->author }}</p>
                         </div>
                     </div>
                 @empty
                     @foreach($dummyBooks as $db)
-                        <div class="card d-inline-block border-0 shadow-sm me-3" style="width:145px; vertical-align:top; border-radius: 12px;">
-                            <img src="{{ $db['img'] }}" class="card-img-top" style="height:190px; object-fit:cover; border-radius: 12px 12px 0 0;">
-                            <div class="card-body p-2 text-center">
-                                <p class="fw-bold mb-0 text-truncate small">{{ $db['title'] }}</p>
+                        <div class="card d-inline-block border-0 shadow-sm me-3 transition-hover" style="width:160px; vertical-align:top; border-radius: 15px;">
+                            <img src="{{ $db['img'] }}" class="card-img-top" style="height:210px; object-fit:cover; border-radius: 15px;">
+                            <div class="card-body p-2 mt-1">
+                                <p class="fw-bold mb-0 text-truncate small mb-1">{{ $db['title'] }}</p>
                                 <p class="text-muted extra-small mb-0">{{ $db['author'] }}</p>
                             </div>
                         </div>
@@ -103,36 +94,33 @@
 
         {{-- BAGIAN KANAN: JADWAL KEMBALI BUKU --}}
         <div class="col-md-5">
-            <h5 class="fw-bold mb-3">Jadwal Kembali Buku</h5>
-            <div class="card border-0 shadow-sm p-3" style="border-radius: 15px;">
+            <h5 class="fw-bold mb-4">Jadwal Pengembalian</h5>
+            <div class="card border-0 shadow-sm p-3" style="border-radius: 20px;">
                 <div class="table-responsive">
                     <table class="table table-borderless align-middle mb-0">
                         <tbody>
-                            <tr class="border-bottom">
-                                <td class="py-3">
-                                    <div class="fw-bold small">Seni Fotografi</div>
-                                    <div class="text-muted extra-small">Kategori: Non-Fiksi</div>
-                                </td>
-                                <td class="text-end py-3">
-                                    <div class="extra-small text-muted">Tenggat: <span class="fw-bold text-dark">25 Jan 2026</span></div>
-                                    <i class="bi bi-chevron-right text-primary"></i>
-                                </td>
-                            </tr>
-                            <tr class="border-bottom">
-                                <td class="py-3">
-                                    <div class="fw-bold small">Fiksi Petualangan</div>
-                                    <div class="text-muted extra-small">Kategori: Fiksi</div>
-                                </td>
-                                <td class="text-end py-3">
-                                    <div class="extra-small text-muted">Tenggat: <span class="fw-bold text-dark">28 Jan 2026</span></div>
-                                    <i class="bi bi-chevron-right text-primary"></i>
-                                </td>
-                            </tr>
+                            @forelse($upcomingReturns ?? [] as $rent)
+                                <tr class="border-bottom">
+                                    <td class="py-3">
+                                        <div class="fw-bold small">{{ $rent->book->title ?? 'Judul Buku' }}</div>
+                                        <div class="text-muted extra-small">Kategori: {{ $rent->book->kategori->nama ?? 'Umum' }}</div>
+                                    </td>
+                                    <td class="text-end py-3">
+                                        <span class="badge rounded-pill bg-soft-warning text-dark extra-small px-3">
+                                            {{ $rent->borrow_date ? \Carbon\Carbon::parse($rent->borrow_date)->addDays(7)->format('d M Y') : 'N/A' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="2" class="text-center py-5">
+                                        <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="50" class="opacity-25 mb-3">
+                                        <div class="text-muted small">Semua buku sudah dikembalikan!</div>
+                                    </td>
+                                </tr>
+                            @endforelse
                         </tbody>
                     </table>
-                </div>
-                <div class="text-center mt-3">
-                    <a href="#" class="btn btn-outline-primary btn-sm rounded-pill px-4">Lihat Semua Pinjaman</a>
                 </div>
             </div>
         </div>
@@ -140,11 +128,16 @@
 </div>
 
 <style>
-    .extra-small { font-size: 0.75rem; }
-    /* Memperhalus scrollbar horizontal */
-    ::-webkit-scrollbar { height: 6px; }
-    ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-    ::-webkit-scrollbar-thumb:hover { background: #cbd5e0; }
+    .extra-small { font-size: 0.7rem; }
+    .bg-soft-warning { background-color: #fff3cd; }
+    .transition-hover:hover {
+        transform: translateY(-5px);
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+    /* Smooth Scrollbar */
+    ::-webkit-scrollbar { height: 5px; }
+    ::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 10px; }
 </style>
 
 @endsection
