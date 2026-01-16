@@ -74,6 +74,7 @@ class AnggotaController extends Controller
             'nama' => $request->nama,
             'email' => $request->email,
             'hp' => $request->hp,
+            'status' => $request->status,
         ]);
 
         if ($request->filled('password')) {

@@ -23,6 +23,7 @@ class User extends Authenticatable
         'email',
         'password',
         'hp',
+        'status',
         'jenis_kelamin',
         'tempat_lahir',
         'tanggal_lahir',

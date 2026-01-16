@@ -65,11 +65,14 @@
 
                 <div class="form-group">
                     <label for="status">Status</label>
-                    <select class="form-control" id="status" disabled>
-                        <option value="1" {{ $anggota->status ? 'selected' : '' }}>Aktif</option>
-                        <option value="0" {{ !$anggota->status ? 'selected' : '' }}>Nonaktif</option>
+                    <select 
+                        class="form-control status-select"
+                        id="status"
+                        name="status"
+                    >
+                        <option value="1" {{ $anggota->status == 1 ? 'selected' : '' }}> Aktif </option>
+                    <option value="0" {{ $anggota->status == 0 ? 'selected' : '' }}> Nonaktif</option>
                     </select>
-                    <small class="form-text text-muted">Gunakan tombol toggle di halaman list untuk mengubah status</small>
                 </div>
 
                 <div class="form-group">

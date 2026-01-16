@@ -11,8 +11,11 @@
                 <p class="mb-0 opacity-75">Senang melihat Anda kembali. Mari jelajahi koleksi buku terbaru kami hari ini.</p>
                 <div class="mt-3 small opacity-50">Anggota sejak {{ Auth::user()->created_at->format('d F Y') }}</div>
             </div>
-            <div class="d-none d-md-block">
-                <img src="https://i.ibb.co/9VhZ0Qw/reading-illustration.png" alt="reading" style="height:120px; filter: brightness(0) invert(1);">
+            <div class="reading">
+                <span class="d-inline-flex align-items-center justify-content-center"
+                 style="width:65px;height:65px;border-radius:50%;background: linear-gradient(135deg, #6f42c1, #4a148c);">
+                  <i class="bi bi-book-fill text-white fs-2"></i>
+                </span>
             </div>
         </div>
     </div>
@@ -52,7 +55,7 @@
 
     <div class="row">
         {{-- BAGIAN KIRI: REKOMENDASI BUKU --}}
-        <div class="col-md-7">
+        <div class="col-md-12">
             <div class="d-flex align-items-center justify-content-between mb-4">
                 <h5 class="fw-bold mb-0">Rekomendasi Untuk Anda</h5>
             </div>

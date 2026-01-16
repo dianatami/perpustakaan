@@ -322,18 +322,22 @@
                                                 {{ $rent->return_date ? \Carbon\Carbon::parse($rent->return_date)->format('d M Y') : '-' }}
                                             </td>
                                             <td class="py-3">
-                                                @if($rent->status == 'borrowed')
-                                                    <span class="badge" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); padding: 8px 12px; border-radius: 50px;">
-                                                        <i class="bi bi-hourglass-split"></i> Sedang Dipinjam
-                                                    </span>
-                                                @elseif($rent->status == 'returned')
-                                                    <span class="badge" style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); padding: 8px 12px; border-radius: 50px;">
-                                                        <i class="bi bi-check-circle"></i> Dikembalikan
-                                                    </span>
+                                                @if(in_array($rent->status, ['borrowed', 'dipinjam', 0]))
+                                                <span class="badge" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); padding: 8px 12px; border-radius: 50px;">
+                                                    <i class="bi bi-hourglass-split"></i> Sedang Dipinjam
+                                                </span>
+                                                @elseif(in_array($rent->status, ['returned', 'dikembalikan', 1]))
+                                                <span class="badge" style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); padding: 8px 12px; border-radius: 50px;">
+                                                     <i class="bi bi-check-circle"></i> Dikembalikan
+                                                </span>
                                                 @else
-                                                    <span class="badge bg-secondary" style="padding: 8px 12px; border-radius: 50px;">{{ $rent->status }}</span>
+                                                
+                                                <span class="badge bg-secondary" style="padding: 8px 12px; border-radius: 50px;">
+                                                    {{ $rent->status }}
+                                                </span>
                                                 @endif
                                             </td>
+
                                         </tr>
                                     @endforeach
                                 </tbody>

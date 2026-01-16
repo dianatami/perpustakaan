@@ -48,13 +48,9 @@
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->hp }}</td>
                                     <td>
-                                        <form action="{{ route('admin.anggota.toggleStatus', $item->id) }}" method="POST" style="display: inline;">
-                                            @csrf
-                                            @method('PUT')
-                                            <button type="submit" class="badge" style="border: none; cursor: pointer; padding: 6px 12px; font-size: 0.875rem;" title="Klik untuk mengubah status" @if($item->status) style="background-color: #28a745; color: white; border: none; cursor: pointer; padding: 6px 12px; font-size: 0.875rem;" @else style="background-color: #dc3545; color: white; border: none; cursor: pointer; padding: 6px 12px; font-size: 0.875rem;" @endif>
-                                                {{ $item->status ? 'Aktif' : 'Nonaktif' }}
-                                            </button>
-                                        </form>
+                                        <span class="badge {{ $item->status == 1 ? 'bg-success' : 'bg-danger' }}">
+                                            {{ $item->status == 1 ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
                                     </td>
                                     <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
                                     <td>
