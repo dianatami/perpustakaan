@@ -42,7 +42,7 @@
                     <p class="mb-1">
                         <strong>Kategori:</strong>
                         <span class="badge bg-info">
-                            {{ $book->kategori->name_category ?? 'Tanpa Kategori' }}
+                            {{ $book->category->name_category ?? 'Tanpa Kategori' }}
                         </span>
                     </p>
 

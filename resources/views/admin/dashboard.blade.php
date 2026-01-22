@@ -211,7 +211,7 @@
     <h4><i class="fas fa-rocket"></i> Aksi Cepat</h4>
     <a href="{{ route('admin.books.create') }}" class="quick-action" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin-right: 10px; margin-bottom: 10px; transition: all 0.3s ease;"><i class="fas fa-plus"></i> Tambah Buku</a>
     <a href="{{ route('admin.anggota.create') }}" class="quick-action" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin-right: 10px; margin-bottom: 10px; transition: all 0.3s ease;"><i class="fas fa-plus"></i> Tambah Anggota</a>
-    <a href="{{ route('admin.peminjaman.create') }}" class="quick-action" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin-right: 10px; margin-bottom: 10px; transition: all 0.3s ease;"><i class="fas fa-plus"></i> Proses Peminjaman</a>
+    <a href="{{ route('admin.peminjaman.index') }}" class="quick-action" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin-right: 10px; margin-bottom: 10px; transition: all 0.3s ease;"><i class="fas fa-plus"></i> Proses Peminjaman</a>
 </div>
 
 <!-- Info Perpustakaan -->
