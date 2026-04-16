@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\session;
+use Illuminate\Support\Facades\Session;
 use App\Models\User;
 
 class RegisterController extends Controller
@@ -15,21 +15,25 @@ class RegisterController extends Controller
 
     public function registerProcess(Request $request)
     {
-        $request->validate=([
-            'nama' => 'required', 
-            'email' => 'required',
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:user,email',
             'password' => 'required|min:6',
-            'hp' => 'required|numeric|max:13']);
+            'hp' => 'required|digits_between:10,13',
+        ]);
 
-        $user = User::create([
+        User::create([
             'nama' => $request->nama,
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'hp' => $request->hp,
+            'status' => 1,
+            'role' => User::ROLE_ANGGOTA,
         ]);
         
-        session::flash('status','success');
-        session::flash('message','Register berhasil, silakan login');
-        return redirect('tampilan/register');
+        Session::flash('status', 'success');
+        Session::flash('message', 'Register berhasil, silakan login');
+
+        return redirect()->route('tampilan.register');
     }
 }

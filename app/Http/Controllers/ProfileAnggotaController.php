@@ -9,19 +9,28 @@ use Illuminate\Support\Facades\Hash;
 
 class ProfileAnggotaController extends Controller
 {
+    private function portalPrefix(Request $request): string
+    {
+        return $request->routeIs('guru.*') ? 'guru' : 'anggota';
+    }
+
+    private function portalRouteName(Request $request, string $routeSuffix): string
+    {
+        return $this->portalPrefix($request) . '.' . $routeSuffix;
+    }
+
     /**
      * Menampilkan halaman profil anggota
      */
-    public function profil()
+    public function profil(Request $request)
     {
-        $anggota = Auth::user();
-        return view('anggota.profil', compact('anggota'));
+        return redirect()->route($this->portalRouteName($request, 'profil.detail'));
     }
 
     /**
      * Menampilkan halaman detail profil dengan riwayat peminjaman
      */
-    public function profilDetail()
+    public function profilDetail(Request $request)
     {
         $user = Auth::user();
         
@@ -35,16 +44,19 @@ class ProfileAnggotaController extends Controller
         
         return view('anggota.Profile.index', [
             'user' => $user,
-            'bookrents' => $bookrents
+            'bookrents' => $bookrents,
+            'portalPrefix' => $this->portalPrefix($request),
         ]);
     }
 
     /**
      * Menampilkan form edit profil
      */
-    public function editProfil()
+    public function editProfil(Request $request)
     {
-        return view('anggota.Profile.edit-profil');
+        return view('anggota.Profile.edit-profil', [
+            'portalPrefix' => $this->portalPrefix($request),
+        ]);
     }
 
     /**
@@ -76,15 +88,19 @@ class ProfileAnggotaController extends Controller
 
         $user->save();
 
-        return redirect()->route('anggota.profil.detail')->with('success', 'Profil berhasil diperbarui');
+        return redirect()
+            ->route($this->portalRouteName($request, 'profil.detail'))
+            ->with('success', 'Profil berhasil diperbarui');
     }
 
     /**
      * Menampilkan form ubah password
      */
-    public function ubahPassword()
+    public function ubahPassword(Request $request)
     {
-        return view('anggota.ubah-password');
+        return view('anggota.ubah-password', [
+            'portalPrefix' => $this->portalPrefix($request),
+        ]);
     }
 
     /**
@@ -109,7 +125,9 @@ class ProfileAnggotaController extends Controller
         $user->password = Hash::make($request->password_baru);
         $user->save();
 
-        return redirect()->route('anggota.profil')->with('success', 'Password berhasil diubah');
+        return redirect()
+            ->route($this->portalRouteName($request, 'profil.detail'))
+            ->with('success', 'Password berhasil diubah');
     }
 
     /**
@@ -117,16 +135,23 @@ class ProfileAnggotaController extends Controller
      */
     public function riwayatPeminjaman()
     {
-        $peminjaman = []; // Placeholder untuk riwayat peminjaman
+        $peminjaman = Auth::user()
+            ->bookrent()
+            ->with('book')
+            ->latest('borrow_date')
+            ->get();
+
         return view('anggota.riwayat-peminjaman', compact('peminjaman'));
     }
 
     /**
      * Menampilkan form edit informasi pribadi
      */
-    public function editInfoPribadi()
+    public function editInfoPribadi(Request $request)
     {
-        return view('anggota.Profile.update-infopribadi');
+        return view('anggota.Profile.update-infopribadi', [
+            'portalPrefix' => $this->portalPrefix($request),
+        ]);
     }
 
     /**
@@ -149,7 +174,9 @@ class ProfileAnggotaController extends Controller
 
         $user->save();
 
-        return redirect()->route('anggota.profil.detail')->with('success', 'Informasi pribadi berhasil diperbarui');
+        return redirect()
+            ->route($this->portalRouteName($request, 'profil.detail'))
+            ->with('success', 'Informasi pribadi berhasil diperbarui');
     }
 }
  

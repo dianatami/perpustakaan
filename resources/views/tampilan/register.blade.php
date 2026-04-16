@@ -288,7 +288,7 @@
                 @endif
 
                 <!-- Register Form -->
-                <form action="{{route('tampilan.register')}}" method="POST">
+                <form action="{{ route('tampilan.register.process') }}" method="POST">
                     @csrf
 
                     <!-- Nama Field -->

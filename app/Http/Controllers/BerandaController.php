@@ -15,10 +15,11 @@ class BerandaController extends Controller
 {
     $totalBuku     = Book::count();
     $totalKategori = Kategori::count();
-    $totalAnggota  = User::where('role', '0')->count();
+    $totalAnggota  = User::where('role', User::ROLE_ANGGOTA)->count();
+    $totalGuru     = User::where('role', User::ROLE_GURU)->count();
     $totalPinjam   = Bookrent::count();
     $stokTersedia  = Book::where('stock', '>', 0)->count();
-    $dipinjam     = Bookrent::whereNull('return_date')->count();
+    $dipinjam      = Bookrent::whereNull('return_date')->count();
 
     $totalRusakHilang = Book::where('damaged', '>', 0)
         ->orWhere('lost', '>', 0)
@@ -31,6 +32,7 @@ class BerandaController extends Controller
             'totalBuku',
             'totalKategori',
             'totalAnggota',
+            'totalGuru',
             'totalPinjam',
             'stokTersedia',
             'dipinjam',

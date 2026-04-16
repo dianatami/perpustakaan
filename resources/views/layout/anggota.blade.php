@@ -1,255 +1,351 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Perpustakaan | @yield('title')</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    @php
+        $loggedInUser = Auth::user();
+        $portalPrefix = request()->routeIs('guru.*') ? 'guru' : 'anggota';
+        $isGuru = (int) ($loggedInUser->role ?? 0) === \App\Models\User::ROLE_GURU;
+        $portalTitle = $isGuru ? 'Portal Guru' : 'Portal Murid';
+        $portalSubtitle = $isGuru ? 'Ruang literasi untuk pengajar' : 'Ruang belajar dan eksplorasi buku';
+
+        $theme = $isGuru
+            ? [
+                'primary' => '#1f7a46',
+                'primaryDark' => '#145d34',
+                'secondary' => '#f3a530',
+                'surface' => '#f2f8f3',
+                'ink' => '#163824',
+                'muted' => '#5f7868',
+            ]
+            : [
+                'primary' => '#0b7ca6',
+                'primaryDark' => '#0d5f80',
+                'secondary' => '#ff6b6b',
+                'surface' => '#f1f8fc',
+                'ink' => '#123340',
+                'muted' => '#617886',
+            ];
+
+        $portalMenus = [
+            ['route' => $portalPrefix . '.beranda', 'active' => $portalPrefix . '.beranda', 'icon' => 'bi-house-door-fill', 'label' => 'Beranda'],
+            ['route' => $portalPrefix . '.buku.index', 'active' => $portalPrefix . '.buku.*', 'icon' => 'bi-journal-text', 'label' => 'Buku'],
+            ['route' => $portalPrefix . '.kategori.index', 'active' => $portalPrefix . '.kategori.*', 'icon' => 'bi-collection-fill', 'label' => 'Kategori'],
+            ['route' => $portalPrefix . '.profil.detail', 'active' => $portalPrefix . '.profil*', 'icon' => 'bi-person-vcard-fill', 'label' => 'Profil'],
+        ];
+    @endphp
+
     <style>
+        :root {
+            --portal-primary: {{ $theme['primary'] }};
+            --portal-primary-dark: {{ $theme['primaryDark'] }};
+            --portal-secondary: {{ $theme['secondary'] }};
+            --portal-surface: {{ $theme['surface'] }};
+            --portal-ink: {{ $theme['ink'] }};
+            --portal-muted: {{ $theme['muted'] }};
+            --portal-border: rgba(16, 72, 70, 0.12);
+            --portal-shadow: 0 20px 40px rgba(17, 56, 55, 0.12);
+        }
+
         * {
-            margin: 0;
-            padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            display: flex;
-            min-height: 100vh;
-            flex-direction: column;
-        }
-        .wrapper {
-            display: flex;
-            flex: 1;
-            flex-direction: column;
-        }
-        /* Navbar */
-        .navbar {
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            background: white !important;
-        }
-        .navbar-brand {
-            font-weight: bold;
-            font-size: 1.3rem;
-            color: #2c3e50 !important;
-        }
-        /* Sidebar */
-        .sidebar {
-            width: 100%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 0;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        .sidebar .nav {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            align-items: center;
             margin: 0;
+            min-height: 100vh;
+            font-family: 'Outfit', sans-serif;
+            color: var(--portal-ink);
+            background:
+                radial-gradient(circle at 8% -5%, color-mix(in srgb, var(--portal-primary) 26%, transparent), transparent 30%),
+                radial-gradient(circle at 98% 8%, color-mix(in srgb, var(--portal-secondary) 18%, transparent), transparent 28%),
+                var(--portal-surface);
         }
-        .sidebar .nav-link {
-            color: rgba(255,255,255,0.8) !important;
-            padding: 15px 20px;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-            font-size: 0.95rem;
-            white-space: nowrap;
-            flex-shrink: 0;
+
+        .portal-shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
-        .sidebar .nav-link:hover {
-            color: white !important;
-            background: rgba(255,255,255,0.1);
-            border-bottom-color: white;
+
+        .portal-header {
+            position: sticky;
+            top: 0;
+            z-index: 30;
+            background: rgba(255, 255, 255, 0.78);
+            border-bottom: 1px solid var(--portal-border);
+            backdrop-filter: blur(8px);
+            padding: 14px 22px;
+        }
+
+        .portal-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .portal-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            color: var(--portal-ink);
+        }
+
+        .portal-brand-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 13px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(150deg, var(--portal-primary), var(--portal-primary-dark));
+            color: #fff;
+            box-shadow: var(--portal-shadow);
+            font-size: 1.2rem;
+        }
+
+        .portal-brand-title {
+            margin: 0;
+            font-family: 'Libre Baskerville', serif;
+            font-size: 1.03rem;
+            line-height: 1.15;
+            letter-spacing: 0.1px;
+        }
+
+        .portal-brand-subtitle {
+            margin: 2px 0 0;
+            color: var(--portal-muted);
+            font-size: 0.81rem;
+        }
+
+        .portal-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .portal-user-chip {
+            border-radius: 99px;
+            border: 1px solid var(--portal-border);
+            padding: 7px 12px;
+            font-weight: 700;
+            color: var(--portal-primary-dark);
+            background: #fff;
+            font-size: 0.92rem;
+        }
+
+        .portal-logout {
+            border: 0;
+            border-radius: 12px;
+            padding: 8px 13px;
+            font-weight: 700;
+            color: #fff;
+            background: linear-gradient(135deg, var(--portal-secondary), color-mix(in srgb, var(--portal-secondary) 72%, #ffffff));
+            transition: transform 0.2s ease;
+        }
+
+        .portal-logout:hover {
             transform: translateY(-2px);
         }
-        .sidebar .nav-link.active {
-            color: white !important;
-            background: rgba(255,255,255,0.2);
-            border-bottom-color: white;
-        }
-        .sidebar .nav-link i {
-            margin-right: 8px;
-            width: 20px;
-        }
-        /* Profile Section in Sidebar */
-        .sidebar-profile-section {
+
+        .portal-nav-toggle {
+            display: none;
+            border: 0;
             padding: 0;
-            border-top: none;
-            margin-top: 0;
+            background: transparent;
+            font-size: 1.4rem;
+            color: var(--portal-primary);
+        }
+
+        .portal-nav-wrap {
+            margin-top: 14px;
+        }
+
+        .portal-nav {
             display: flex;
             align-items: center;
-            margin-left: auto;
-            padding-right: 20px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
-        .sidebar-profile-section .nav-link {
-            padding: 15px 15px;
+
+        .portal-nav-link {
+            text-decoration: none;
+            color: var(--portal-muted);
+            font-weight: 700;
+            border-radius: 999px;
+            padding: 8px 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
         }
-        /* Main Content */
-        .main-content {
-            margin-left: 0;
+
+        .portal-nav-link:hover {
+            color: var(--portal-primary-dark);
+            background: #fff;
+            border-color: var(--portal-border);
+        }
+
+        .portal-nav-link.active {
+            color: #fff;
+            background: linear-gradient(135deg, var(--portal-primary), var(--portal-primary-dark));
+            box-shadow: 0 10px 20px rgba(19, 72, 72, 0.16);
+        }
+
+        .portal-main {
             flex: 1;
-            padding: 30px;
-            background: #f8f9fa;
+            width: min(1220px, calc(100% - 28px));
+            margin: 18px auto 24px;
         }
-        /* Toggle Button */
-        .sidebar-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: #667eea;
-            font-size: 1.5rem;
-            cursor: pointer;
+
+        .portal-main > * {
+            animation: showUp 0.36s ease both;
         }
-        /* Mobile Responsive */
+
+        .portal-footer {
+            text-align: center;
+            color: var(--portal-muted);
+            font-size: 0.86rem;
+            padding: 12px;
+            border-top: 1px solid var(--portal-border);
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes showUp {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .portal-user-chip {
+                display: none;
+            }
+        }
+
         @media (max-width: 768px) {
-            .sidebar {
-                flex-wrap: wrap;
-                max-height: 60px;
-                overflow: hidden;
-                transition: max-height 0.3s;
+            .portal-header {
+                padding: 12px 14px;
             }
-            .sidebar.show {
-                max-height: 500px;
-                flex-direction: column;
-                align-items: flex-start;
+
+            .portal-nav-toggle {
+                display: inline-block;
             }
-            .sidebar.show .nav {
-                flex-direction: column;
-                width: 100%;
+
+            .portal-nav-wrap {
+                display: none;
             }
-            .sidebar-profile-section {
-                width: 100%;
-                margin-left: 0;
-                padding-right: 0;
-                border-top: 1px solid rgba(255,255,255,0.1);
-                display: flex;
-                flex-direction: column;
-            }
-            .sidebar .nav-link {
-                border-bottom: none;
-                border-left: 4px solid transparent;
-                padding: 12px 20px;
-            }
-            .sidebar .nav-link:hover {
-                border-left-color: white;
-                border-bottom: none;
-                transform: translateX(5px);
-            }
-            .sidebar .nav-link.active {
-                border-left-color: white;
-            }
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-            .sidebar-toggle {
+
+            .portal-nav-wrap.show {
                 display: block;
             }
-        }
-        footer {
-            margin-left: 0;
-        }
-        .profile-section {
-            padding: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            margin-top: 20px;
-        }
-        .profile-item {
-            color: rgba(255,255,255,0.8);
-            cursor: pointer;
-            padding: 10px 20px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-        }
-        .profile-item:hover {
-            color: white;
-            background: rgba(255,255,255,0.1);
-            transform: translateX(5px);
-        }
-        .profile-item i {
-            margin-right: 10px;
-            width: 20px;
+
+            .portal-nav {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .portal-nav-link {
+                border-radius: 12px;
+            }
+
+            .portal-main {
+                width: calc(100% - 14px);
+                margin-top: 14px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-light bg-white">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{route('anggota.beranda')}}">
-                <i class="bi bi-book"></i> Perpustakaan | Anggota
-            </a>
-            <button class="sidebar-toggle" id="sidebarToggle">
-                <i class="bi bi-list"></i>
-            </button>
-        </div>
-    </nav>
-
-    <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
-        <nav class="nav">
-            <a class="nav-link" href="{{route('anggota.beranda')}}">
-                <i class="bi bi-house"></i> Beranda
-            </a>
-            <a class="nav-link" href="{{ route('anggota.buku.index') }}">
-                <i class="bi bi-book"></i> Buku
-            </a>
-            <a class="nav-link" href="{{ route('anggota.kategori.index') }}">
-                <i class="bi bi-tag"></i> Kategori
-            </a>
-            <!-- Profile Section -->
-            <div class="sidebar-profile-section">
-                <a href="{{ route('anggota.profil.detail') }}" class="nav-link" style="padding: 15px 15px;">
-                    <i class="bi bi-person"></i> User
+    <div class="portal-shell">
+        <header class="portal-header">
+            <div class="portal-header-top">
+                <a href="{{ route($portalPrefix . '.beranda') }}" class="portal-brand">
+                    <span class="portal-brand-icon">
+                        <i class="bi {{ $isGuru ? 'bi-mortarboard-fill' : 'bi-stars' }}"></i>
+                    </span>
+                    <span>
+                        <h1 class="portal-brand-title">{{ $portalTitle }}</h1>
+                        <p class="portal-brand-subtitle">{{ $portalSubtitle }}</p>
+                    </span>
                 </a>
 
-                <div style="color: rgba(255,255,255,0.8); cursor: pointer; padding: 15px 15px; transition: all 0.3s; display: flex; align-items: center; border-bottom: 3px solid transparent;" onclick="event.preventDefault(); document.getElementById('keluar-app').submit();" onmouseover="this.style.color='white'; this.style.background='rgba(255,255,255,0.1)'; this.style.borderBottomColor='white'; this.style.transform='translateY(-2px)';" onmouseout="this.style.color='rgba(255,255,255,0.8)'; this.style.background='transparent'; this.style.borderBottomColor='transparent'; this.style.transform='translateY(0)';">
-                    <i class="bi bi-box-arrow-right" style="margin-right: 8px; width: 20px;"></i> Keluar
+                <div class="portal-actions">
+                    <button type="button" class="portal-nav-toggle" id="portalNavToggle" aria-label="Buka menu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <span class="portal-user-chip">
+                        <i class="bi bi-person-circle"></i> {{ $loggedInUser->nama }}
+                    </span>
+                    <button type="button" class="portal-logout" onclick="event.preventDefault(); document.getElementById('keluar-app').submit();">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </button>
                 </div>
             </div>
-        </nav>
-    </aside>
 
-    <div class="wrapper">
-        <!-- Main Content -->
-        <main class="main-content">
-            <!--yieldawal-->
+            <div class="portal-nav-wrap" id="portalNavWrap">
+                <nav class="portal-nav">
+                    @foreach ($portalMenus as $menu)
+                        <a
+                            href="{{ route($menu['route']) }}"
+                            class="portal-nav-link {{ request()->routeIs($menu['active']) ? 'active' : '' }}"
+                        >
+                            <i class="{{ $menu['icon'] }}"></i>
+                            <span>{{ $menu['label'] }}</span>
+                        </a>
+                    @endforeach
+                </nav>
+            </div>
+        </header>
+
+        <main class="portal-main">
             @yield('content')
-            <!--yieldakhir-->
         </main>
+
+        <footer class="portal-footer">
+            &copy; {{ date('Y') }} Perpustakaan Sekolah. {{ $portalTitle }}.
+        </footer>
     </div>
 
-    <!-- Footer -->
-    <footer class="bg-light py-3 mt-5">
-        <div class="text-center">
-            <p class="text-muted mb-0">&copy; 2025 Perpustakaan. All rights reserved.</p>
-        </div>
-    </footer>
-
-    <!--keluar-->
-    <form id="keluar-app" action="{{ route('tampilan.logout')}}" method="POST" class="d-none">
+    <form id="keluar-app" action="{{ route('tampilan.logout') }}" method="POST" class="d-none">
         @csrf
     </form>
-    <!--keluarend-->
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Toggle Sidebar on Mobile
-        document.getElementById('sidebarToggle').addEventListener('click', function() {
-            document.getElementById('sidebar').classList.toggle('show');
-        });
+        const portalNavToggle = document.getElementById('portalNavToggle');
+        const portalNavWrap = document.getElementById('portalNavWrap');
 
-        // Close sidebar when link is clicked on mobile
-        document.querySelectorAll('.sidebar .nav-link').forEach(link => {
-            link.addEventListener('click', function() {
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebar').classList.remove('show');
-                }
+        if (portalNavToggle && portalNavWrap) {
+            portalNavToggle.addEventListener('click', () => {
+                portalNavWrap.classList.toggle('show');
             });
-        });
+
+            document.querySelectorAll('.portal-nav-link').forEach((link) => {
+                link.addEventListener('click', () => {
+                    if (window.innerWidth <= 768) {
+                        portalNavWrap.classList.remove('show');
+                    }
+                });
+            });
+        }
     </script>
 </body>
 </html>

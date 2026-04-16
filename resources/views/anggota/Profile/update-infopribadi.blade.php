@@ -2,6 +2,7 @@
 @section('title', 'Edit Informasi Pribadi')
 
 @section('content')
+@php($portalPrefix = $portalPrefix ?? (request()->routeIs('guru.*') ? 'guru' : 'anggota'))
 <style>
     .form-section {
         background: white;
@@ -192,7 +193,7 @@
     <!-- Breadcrumb -->
     <nav aria-label="breadcrumb" class="breadcrumb-custom">
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('anggota.profil.detail') }}">Profil</a></li>
+            <li class="breadcrumb-item"><a href="{{ route($portalPrefix . '.profil.detail') }}">Profil</a></li>
             <li class="breadcrumb-item active">Edit Informasi Pribadi</li>
         </ol>
     </nav>
@@ -220,7 +221,7 @@
         </div>
     @endif
 
-    <form action="{{ route('anggota.update.infopribadi') }}" method="POST">
+    <form action="{{ route($portalPrefix . '.update.infopribadi') }}" method="POST">
         @csrf
         @method('PUT')
 
@@ -273,7 +274,7 @@
 
         <!-- Button Group -->
         <div class="button-group">
-            <a href="{{ route('anggota.profil.detail') }}" class="btn btn-secondary-custom">
+            <a href="{{ route($portalPrefix . '.profil.detail') }}" class="btn btn-secondary-custom">
                 <i class="bi bi-x-circle"></i> Batal
             </a>
             <button type="submit" class="btn btn-primary-custom">

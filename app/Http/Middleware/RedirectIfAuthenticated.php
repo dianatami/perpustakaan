@@ -2,7 +2,7 @@
 
 namespace App\Http\Middleware;
 
-use App\Providers\RouteServiceProvider;
+use Illuminate\Support\Facades\Route;
 use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -21,7 +21,13 @@ class RedirectIfAuthenticated
 
         foreach ($guards as $guard) {
             if (Auth::guard($guard)->check()) {
-                return redirect(RouteServiceProvider::HOME);
+                $dashboardRoute = Auth::guard($guard)->user()->dashboardRouteName();
+
+                if (! Route::has($dashboardRoute)) {
+                    $dashboardRoute = 'anggota.beranda';
+                }
+
+                return redirect()->route($dashboardRoute);
             }
         }
 

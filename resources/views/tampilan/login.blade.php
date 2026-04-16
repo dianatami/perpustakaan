@@ -264,7 +264,7 @@
                 @endif
 
                 <!-- Login Form -->
-                <form action="{{route('tampilan.login')}}" method="POST">
+                <form action="{{ route('tampilan.login.process') }}" method="POST">
                     @csrf
 
                     <!-- Email Field -->

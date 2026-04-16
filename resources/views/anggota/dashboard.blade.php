@@ -1,108 +1,247 @@
 @extends('layout.anggota')
-@section('title','Beranda')
+@section('title', 'Beranda Murid')
+
 @section('content')
-
-<div class="container-fluid px-4 py-4">
-    {{-- HERO SECTION --}}
-    <div class="hero p-5 mb-4 rounded-4 shadow-sm" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
-        <div class="d-flex align-items-center justify-content-between">
-            <div class="text-white">
-                <h2 class="fw-bold mb-2">Selamat Datang, {{ Auth::user()->nama }}! 👋</h2>
-                <p class="mb-0 opacity-75">Senang melihat Anda kembali. Mari jelajahi koleksi buku terbaru kami hari ini.</p>
-                <div class="mt-3 small opacity-50">Anggota sejak {{ Auth::user()->created_at->format('d F Y') }}</div>
-            </div>
-            <div class="reading">
-                <span class="d-inline-flex align-items-center justify-content-center"
-                 style="width:65px;height:65px;border-radius:50%;background: linear-gradient(135deg, #6f42c1, #4a148c);">
-                  <i class="bi bi-book-fill text-white fs-2"></i>
-                </span>
-            </div>
-        </div>
-    </div>
-
-    {{-- KARTU STATISTIK (Disederhanakan menjadi 2 kolom utama) --}}
-    <div class="row g-4 mb-5">
-        {{-- Kartu Buku Dipinjam --}}
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden" style="border-radius: 20px; background: #fff;">
-                <div class="card-body p-4 d-flex align-items-center">
-                    <div class="icon-box p-3 rounded-4 me-4" style="background: #eef2ff;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3389/3389081.png" width="60">
-                    </div>
-                    <div>
-                        <div class="text-muted small fw-bold text-uppercase tracking-wider">Sedang Dipinjam</div>
-                        <h2 class="fw-bold mb-1">{{ $bookrents ?? 0 }}<span class="fs-5 fw-normal text-muted">Buku</span></h2>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Kartu Riwayat Pinjam --}}
-        <div class="col-md-6">
-            <div class="card border-0 shadow-sm h-100 overflow-hidden" style="border-radius: 20px; background: #fff;">
-                <div class="card-body p-4 d-flex align-items-center">
-                    <div class="icon-box p-3 rounded-4 me-4" style="background: #f0fdf4;">
-                        <img src="https://cdn-icons-png.flaticon.com/512/3208/3208743.png" width="60">
-                    </div>
-                    <div>
-                        <div class="text-muted small fw-bold text-uppercase tracking-wider">Total Riwayat</div>
-                        <h2 class="fw-bold mb-1">{{$riyawatPinjam ?? 0}} <span class="fs-5 fw-normal text-muted">Buku</span></h2>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="row">
-        {{-- BAGIAN KIRI: REKOMENDASI BUKU --}}
-        <div class="col-md-12">
-            <div class="d-flex align-items-center justify-content-between mb-4">
-                <h5 class="fw-bold mb-0">Rekomendasi Untuk Anda</h5>
-            </div>
-
-            <div class="overflow-auto pb-3" style="white-space:nowrap; -webkit-overflow-scrolling: touch;">
-                @php
-                    $dummyBooks = [
-                        ['title' => 'Novel Misteri', 'author' => 'Author A', 'img' => 'https://picsum.photos/200/300?random=1'],
-                        ['title' => 'Ilmu Pengetahuan', 'author' => 'Author B', 'img' => 'https://picsum.photos/200/300?random=2'],
-                        ['title' => 'Sejarah Indonesia', 'author' => 'Author C', 'img' => 'https://picsum.photos/200/300?random=3'],
-                        ['title' => 'Panduan Sehat', 'author' => 'Author D', 'img' => 'https://picsum.photos/200/300?random=4'],
-                    ];
-                @endphp
-
-                @forelse($books ?? [] as $b)
-                    <div class="card d-inline-block border-0 shadow-sm me-3 transition-hover" style="width:160px; vertical-align:top; border-radius: 15px;">
-                        <img src="{{ asset('storage/' . $b->cover) }}" class="card-img-top" style="height:210px; object-fit:cover; border-radius: 15px;" alt="cover">
-                        <div class="card-body p-2 mt-1">
-                            <p class="fw-bold mb-0 text-truncate small mb-1">{{ $b->title }}</p>
-                            <p class="text-muted extra-small mb-0">{{ $b->author }}</p>
-                        </div>
-                    </div>
-                @empty
-                    @foreach($dummyBooks as $db)
-                        <div class="card d-inline-block border-0 shadow-sm me-3 transition-hover" style="width:160px; vertical-align:top; border-radius: 15px;">
-                            <img src="{{ $db['img'] }}" class="card-img-top" style="height:210px; object-fit:cover; border-radius: 15px;">
-                            <div class="card-body p-2 mt-1">
-                                <p class="fw-bold mb-0 text-truncate small mb-1">{{ $db['title'] }}</p>
-                                <p class="text-muted extra-small mb-0">{{ $db['author'] }}</p>
-                            </div>
-                        </div>
-                    @endforeach
-                @endforelse
-            </div>
-        </div>
+@php
+    $portalPrefix = request()->routeIs('guru.*') ? 'guru' : 'anggota';
+@endphp
 
 <style>
-    .extra-small { font-size: 0.7rem; }
-    .bg-soft-warning { background-color: #fff3cd; }
-    .transition-hover:hover {
-        transform: translateY(-5px);
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    .member-hero {
+        border-radius: 24px;
+        background: linear-gradient(140deg, #0b7ca6 0%, #08526f 70%, #ff6b6b 150%);
+        color: #fff;
+        padding: 28px;
+        box-shadow: 0 24px 40px rgba(13, 87, 112, 0.25);
+        position: relative;
+        overflow: hidden;
     }
-    /* Smooth Scrollbar */
-    ::-webkit-scrollbar { height: 5px; }
-    ::-webkit-scrollbar-thumb { background: #dee2e6; border-radius: 10px; }
+
+    .member-hero::after {
+        content: '';
+        position: absolute;
+        width: 290px;
+        height: 290px;
+        border-radius: 999px;
+        right: -130px;
+        top: -120px;
+        background: rgba(255, 255, 255, 0.16);
+    }
+
+    .member-hero > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .member-title {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
+    }
+
+    .member-subtitle {
+        margin: 8px 0 0;
+        color: rgba(255, 255, 255, 0.92);
+        max-width: 620px;
+    }
+
+    .member-meta {
+        margin-top: 12px;
+        display: inline-flex;
+        gap: 7px;
+        align-items: center;
+        font-size: 0.85rem;
+        border-radius: 999px;
+        padding: 7px 12px;
+        background: rgba(255, 255, 255, 0.18);
+    }
+
+    .info-card {
+        border: 1px solid rgba(13, 86, 106, 0.14);
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 12px 20px rgba(20, 59, 75, 0.08);
+        padding: 18px;
+        height: 100%;
+    }
+
+    .info-label {
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: #617b86;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    .info-value {
+        margin-top: 8px;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #133643;
+        line-height: 1;
+    }
+
+    .action-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 16px;
+    }
+
+    .action-btn {
+        border-radius: 999px;
+        text-decoration: none;
+        font-weight: 700;
+        font-size: 0.88rem;
+        padding: 9px 14px;
+        border: 1px solid rgba(13, 86, 106, 0.22);
+        color: #0b6f94;
+        background: #fff;
+        transition: transform 0.2s ease;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        color: #0b6f94;
+    }
+
+    .book-section {
+        margin-top: 22px;
+        border: 1px solid rgba(13, 86, 106, 0.14);
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 12px 20px rgba(20, 59, 75, 0.06);
+        padding: 18px;
+    }
+
+    .book-heading {
+        margin: 0 0 14px;
+        color: #133643;
+        font-size: 1.06rem;
+        font-weight: 800;
+    }
+
+    .book-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(140px, 1fr));
+        gap: 12px;
+    }
+
+    .book-card {
+        border: 1px solid #dde9ee;
+        border-radius: 14px;
+        padding: 10px;
+        text-decoration: none;
+        color: inherit;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        background: #fefefe;
+    }
+
+    .book-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 18px rgba(24, 74, 90, 0.12);
+        color: inherit;
+    }
+
+    .book-cover {
+        width: 100%;
+        height: 155px;
+        border-radius: 10px;
+        object-fit: cover;
+        background: #dbe9ef;
+    }
+
+    .book-title {
+        margin: 10px 0 3px;
+        font-size: 0.86rem;
+        font-weight: 700;
+        color: #173845;
+        line-height: 1.2;
+    }
+
+    .book-author {
+        margin: 0;
+        font-size: 0.75rem;
+        color: #687f8a;
+    }
+
+    @media (max-width: 1199px) {
+        .book-grid {
+            grid-template-columns: repeat(4, minmax(140px, 1fr));
+        }
+    }
+
+    @media (max-width: 992px) {
+        .book-grid {
+            grid-template-columns: repeat(3, minmax(140px, 1fr));
+        }
+    }
+
+    @media (max-width: 768px) {
+        .member-title {
+            font-size: 1.45rem;
+        }
+
+        .book-grid {
+            grid-template-columns: repeat(2, minmax(140px, 1fr));
+        }
+    }
 </style>
 
+<div class="member-hero mb-3">
+    <h2 class="member-title">Halo, {{ Auth::user()->nama }}.</h2>
+    <p class="member-subtitle">Lanjutkan petualangan literasi Anda hari ini. Temukan buku baru, cek kategori favorit, dan pantau riwayat peminjaman pribadi Anda.</p>
+    <span class="member-meta">
+        <i class="bi bi-calendar-week"></i>
+        Anggota sejak {{ Auth::user()->created_at->format('d M Y') }}
+    </span>
+
+    <div class="action-list">
+        <a href="{{ route($portalPrefix . '.buku.index') }}" class="action-btn"><i class="bi bi-journal-text"></i> Jelajahi Buku</a>
+        <a href="{{ route($portalPrefix . '.kategori.index') }}" class="action-btn"><i class="bi bi-collection"></i> Lihat Kategori</a>
+        <a href="{{ route($portalPrefix . '.profil.detail') }}" class="action-btn"><i class="bi bi-person-vcard"></i> Profil Saya</a>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="info-card">
+            <div class="info-label">Buku Tersedia</div>
+            <div class="info-value">{{ $bukuTersedia ?? 0 }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="info-card">
+            <div class="info-label">Sedang Dipinjam</div>
+            <div class="info-value">{{ $bookrents ?? 0 }}</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="info-card">
+            <div class="info-label">Total Riwayat</div>
+            <div class="info-value">{{ $riyawatPinjam ?? 0 }}</div>
+        </div>
+    </div>
+</div>
+
+<div class="book-section">
+    <h3 class="book-heading">Rekomendasi Koleksi</h3>
+
+    <div class="book-grid">
+        @forelse(($books ?? collect())->take(10) as $book)
+            <a href="{{ route($portalPrefix . '.buku.show', $book->id) }}" class="book-card">
+                @if($book->cover)
+                    <img src="{{ asset('storage/' . $book->cover) }}" alt="{{ $book->title }}" class="book-cover">
+                @else
+                    <div class="book-cover d-flex align-items-center justify-content-center text-muted small">Tanpa Cover</div>
+                @endif
+
+                <h4 class="book-title">{{ $book->title }}</h4>
+                <p class="book-author">{{ $book->author }}</p>
+            </a>
+        @empty
+            <div class="text-muted">Belum ada data buku untuk ditampilkan.</div>
+        @endforelse
+    </div>
+</div>
 @endsection

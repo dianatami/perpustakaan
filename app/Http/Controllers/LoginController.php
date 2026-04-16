@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
+use Illuminate\Support\Facades\Route;
 
 
 class LoginController extends Controller
@@ -21,19 +21,25 @@ class LoginController extends Controller
             'password' => 'required|min:6',
         ]);
         
-        if (Auth::attempt($credentials)){
-            if(Auth::user()->status == 0){
+        if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+
+            if (! $user->status) {
                 Auth::logout();
-                return back()->with('error','User belum aktif');
+                return back()->with('error', 'User belum aktif');
             }
+
             $request->session()->regenerate();
-           
-            if(Auth::user()->role == '1'){
-                return redirect()->intended(route('admin.beranda'));
-            } else {
-                return redirect()->intended(route('anggota.beranda')); // Sesuaikan nama route
+
+            $dashboardRoute = $user->dashboardRouteName();
+
+            if (! Route::has($dashboardRoute)) {
+                $dashboardRoute = 'anggota.beranda';
             }
+
+            return redirect()->intended(route($dashboardRoute));
         }
+
         return back()->with('error', 'Login Gagal');
     }
 

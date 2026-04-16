@@ -2,6 +2,7 @@
 @section('title', 'Profil Saya')
 
 @section('content')
+@php($portalPrefix = $portalPrefix ?? (request()->routeIs('guru.*') ? 'guru' : 'anggota'))
 <style>
     * {
         transition: all 0.3s ease;
@@ -149,7 +150,7 @@
                                 <img src="{{ ($user && $user->foto) ? asset('storage/' . $user->foto) : 'https://ui-avatars.com/api/?name=' . urlencode($user->nama ?? 'User') . '&background=667eea&color=fff&size=200' }}" 
                                      alt="Foto Profil">
                             </div>
-                            <a href="{{ route('anggota.edit.profil') }}" class="btn edit-btn btn-sm">
+                            <a href="{{ route($portalPrefix . '.edit.profil') }}" class="btn edit-btn btn-sm">
                                 <i class="bi bi-pencil-square"></i> Edit Profil
                             </a>
                         </div>
@@ -242,7 +243,7 @@
                     </div>
 
                     <div class="pt-3 border-top">
-                        <a href="{{ route('anggota.edit.infopribadi') }}" class="btn btn-sm w-100 rounded-3" 
+                        <a href="{{ route($portalPrefix . '.edit.infopribadi') }}" class="btn btn-sm w-100 rounded-3" 
                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; font-weight: 600;">
                             <i class="bi bi-pencil"></i> Ubah Informasi
                         </a>
