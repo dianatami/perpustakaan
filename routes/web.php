@@ -1,10 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AnggotaController;
+use App\Models\User;
 use App\Http\Controllers\ProfileAnggotaController;
 use App\Http\Controllers\Anggota\AnggotaKategoriController;
 use App\Http\Controllers\Anggota\BerandaAnggotaController;
@@ -27,8 +29,18 @@ use App\Http\Controllers\Admin\PeminjamanController;
 */
 
 Route::get('/', function () {
-    return redirect()->route('tampilan.login');
-});
+    if (Auth::check()) {
+        $user = Auth::user();
+
+        if ($user instanceof User) {
+            return redirect()->route($user->dashboardRouteName());
+        }
+
+        return redirect()->route('tampilan.login');
+    }
+
+    return view('welcome');
+})->name('landing');
 
 Route::middleware('guest')->group(function () {
     Route::get('tampilan/login', [LoginController::class, 'login'])->name('tampilan.login');
