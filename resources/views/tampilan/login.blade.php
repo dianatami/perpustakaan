@@ -4,323 +4,135 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login - Perpustakaan Digital</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f7cac9 0%, #92a8d1 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        .login-wrapper {
-            width: 100%;
-            padding: 20px;
-        }
-
-        .login-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(44, 167, 130, 0.3);
-            overflow: hidden;
-            width: 100%;
-            max-width: 450px;
-            margin: 0 auto;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .login-header {
-            background: linear-gradient(135deg,#92a8d1 100%);
-            padding: 40px 30px;
-            text-align: center;
-            color: rgb(255, 255, 255);
-        }
-
-        .login-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .login-header p {
-            font-size: 14px;
-            opacity: 0.95;
-        }
-
-        .login-body {
-            padding: 40px;
-        }
-
-        .form-group {
-            margin-bottom: 24px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control {
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-        }
-
-        .form-control:focus {
-            background-color: white;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: #999;
-        }
-
-        .form-control.is-invalid {
-            border-color: #dc3545;
-            background-color: #fff5f5;
-        }
-
-        .form-control.is-invalid:focus {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-        }
-
-        .invalid-feedback {
-            display: block;
-            margin-top: 8px;
-            font-size: 13px;
-            color: #dc3545;
-            font-weight: 500;
-        }
-
-        .alert {
-            margin-bottom: 24px;
-            padding: 14px 16px;
-            border-radius: 8px;
-            border: none;
-            font-size: 14px;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-danger {
-            background-color: #fee;
-            color: #c33;
-            border-left: 4px solid #dc3545;
-        }
-
-        .alert-danger strong {
-            font-weight: 700;
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #397ac5 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 16px;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .login-footer {
-            text-align: center;
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .login-footer p {
-            color: #666;
-            font-size: 14px;
-            margin: 0 0 12px 0;
-        }
-
-        .btn-register {
-            display: inline-block;
-            padding: 10px 24px;
-            background-color: #f0f0f0;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-register:hover {
-            background-color: #667eea;
-            color: white;
-            text-decoration: none;
-        }
-
-        .form-group-compact {
-            margin-bottom: 0;
-        }
-
-        @media (max-width: 480px) {
-            .login-container {
-                max-width: 100%;
-            }
-
-            .login-body {
-                padding: 30px 20px;
-            }
-
-            .login-header {
-                padding: 30px 20px;
-            }
-
-            .login-header h1 {
-                font-size: 28px;
-            }
-        }
-    </style>
+    <title>Masuk | Perpustakaan Sekolah</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Unbounded:wght@500;600;700;800&family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <div class="login-wrapper">
-        <div class="login-container">
-            <!-- Header -->
-            <div class="login-header">
-                <h1>
-                    <i class="fas fa-book"></i>
-                    LOGIN
-                </h1>
-                <p>Perpustakaan Digital</p>
+<body class="bg-shelf-cloud text-shelf-ink antialiased selection:bg-shelf-gold/80 selection:text-shelf-ink">
+    <div class="relative isolate min-h-screen overflow-hidden bg-aurora">
+        <div class="paper-grain"></div>
+
+        <div class="pointer-events-none absolute -left-20 top-12 h-72 w-72 rounded-full bg-shelf-gold/40 blur-3xl animate-float-soft"></div>
+        <div class="pointer-events-none absolute -right-16 top-18 h-80 w-80 rounded-full bg-shelf-teal/26 blur-3xl animate-float-soft [animation-delay:1.6s]"></div>
+        <div class="pointer-events-none absolute left-[8%] top-[36%] h-3 w-3 rounded-full bg-shelf-coral/75 animate-pulse"></div>
+        <div class="pointer-events-none absolute left-[12%] top-[64%] h-2.5 w-2.5 rounded-full bg-shelf-ocean/60 animate-pulse [animation-delay:.3s]"></div>
+        <div class="pointer-events-none absolute right-[10%] top-[30%] h-3 w-3 rounded-full bg-shelf-teal/70 animate-pulse [animation-delay:.8s]"></div>
+        <div class="pointer-events-none absolute right-[18%] top-[70%] h-2 w-2 rounded-full bg-shelf-gold/80 animate-pulse [animation-delay:1.2s]"></div>
+
+        <header class="relative z-20">
+            <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/72 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
+                    <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[150deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
+                    <span>
+                        <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
+                        <span class="block text-xs text-shelf-ink/65">Portal Literasi</span>
+                    </span>
+                </a>
+
+                <nav class="flex items-center gap-2">
+                    <a href="{{ route('landing') }}" class="rounded-full border border-shelf-ink/15 bg-white/75 px-4 py-2 text-sm font-semibold text-shelf-ink/85 transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Landing</a>
+                    @if (Route::has('tampilan.register'))
+                        <a href="{{ route('tampilan.register') }}" class="rounded-full bg-shelf-ink px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-shelf-ink/30 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">Daftar</a>
+                    @endif
+                </nav>
             </div>
+        </header>
 
-            <!-- Body -->
-            <div class="login-body">
-                <!-- Error Message -->
-                @if (session()->has('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle"></i> <strong>{{ session('error')}}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                @endif
+        <main class="relative z-10 mx-auto flex w-full max-w-6xl items-center px-5 pb-10 pt-2 sm:px-8 lg:px-10 lg:pb-16">
+            <section class="grid w-full items-stretch gap-6 lg:grid-cols-[1.05fr_0.95fr]">
+                <aside class="reveal-item glass-card relative hidden overflow-hidden rounded-[2rem] p-8 lg:block" data-reveal>
+                    <div class="absolute -right-16 -top-16 h-44 w-44 rounded-full border border-white/90"></div>
+                    <div class="absolute left-8 top-10 h-10 w-10 rounded-full bg-shelf-coral/75"></div>
+                    <div class="absolute right-10 top-24 h-3 w-3 rounded-full bg-shelf-gold/85 animate-pulse"></div>
 
-                <!-- Login Form -->
-                <form action="{{ route('tampilan.login.process') }}" method="POST">
-                    @csrf
+                    <p class="font-mono inline-flex items-center gap-2 rounded-full border border-shelf-coral/30 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-shelf-ink/76">
+                        <span class="h-1.5 w-1.5 rounded-full bg-shelf-coral"></span>
+                        Auth Access
+                    </p>
 
-                    <!-- Email Field -->
-                    <div class="form-group">
-                        <label for="email">
-                            <i class="fas fa-envelope"></i> Email
-                        </label>
-                        <input type="email" 
-                               name="email" 
-                               id="email"
-                               value="{{old('email')}}" 
-                               class="form-control @error('email') is-invalid @enderror" 
-                               placeholder="Masukkan Email Anda"
-                               required>
-                        @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <i class="fas fa-times-circle"></i> {{$message}}
-                        </span>
-                        @enderror
+                    <h1 class="mt-5 font-display text-4xl leading-tight text-shelf-ink">Masuk ke ruang baca digital yang lebih hidup.</h1>
+                    <p class="mt-4 max-w-md text-sm leading-relaxed text-shelf-ink/76">
+                        Temukan buku, kelola peminjaman, dan lanjutkan aktivitas literasi dari dashboard yang disesuaikan dengan peranmu.
+                    </p>
+
+                    <div class="mt-8 space-y-3">
+                        <article class="book-card rounded-2xl p-4">
+                            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-shelf-ink/58">Quick Access</p>
+                            <p class="mt-1 text-sm font-semibold text-shelf-ink">Langsung ke fitur terpenting setelah login.</p>
+                        </article>
+                        <article class="book-card rounded-2xl p-4">
+                            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-shelf-ink/58">Reading Pulse</p>
+                            <p class="mt-1 text-sm font-semibold text-shelf-ink">Aktivitas peminjaman selalu terpantau realtime.</p>
+                        </article>
+                    </div>
+                </aside>
+
+                <div class="reveal-item glass-card relative overflow-hidden rounded-[2rem] p-6 sm:p-8" data-reveal style="transition-delay:120ms;">
+                    <div class="absolute -right-12 top-4 h-24 w-24 rounded-full border border-white/90"></div>
+                    <div class="absolute left-3 top-3 h-2.5 w-2.5 rounded-full bg-shelf-gold/85 animate-pulse"></div>
+                    <div class="absolute right-10 top-16 h-2 w-2 rounded-full bg-shelf-coral/80 animate-pulse [animation-delay:.4s]"></div>
+
+                    <div class="relative">
+                        <p class="font-mono text-xs uppercase tracking-[0.16em] text-shelf-ink/62">Welcome Back</p>
+                        <h2 class="mt-2 font-display text-3xl text-shelf-ink">Masuk Akun</h2>
+                        <p class="mt-1 text-sm text-shelf-ink/68">Silakan login untuk melanjutkan perjalanan literasi.</p>
                     </div>
 
-                    <!-- Password Field -->
-                    <div class="form-group">
-                        <label for="password">
-                            <i class="fas fa-lock"></i> Password
-                        </label>
-                        <input type="password" 
-                               name="password" 
-                               id="password"
-                               class="form-control @error('password') is-invalid @enderror" 
-                               placeholder="Masukkan Password Anda"
-                               required>
-                        @error('password')
-                        <span class="invalid-feedback" role="alert">
-                            <i class="fas fa-times-circle"></i> {{$message}}
-                        </span>
-                        @enderror
+                    @if (session()->has('error'))
+                        <div class="relative mt-5 rounded-2xl border border-red-500/25 bg-red-50/90 px-4 py-3 text-sm text-red-700">
+                            <p class="font-semibold">{{ session('error') }}</p>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('tampilan.login.process') }}" method="POST" class="relative mt-6 space-y-4">
+                        @csrf
+
+                        <div>
+                            <label for="email" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                value="{{ old('email') }}"
+                                placeholder="nama@email.com"
+                                required
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('email') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                            >
+                            @error('email')
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="password" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="Masukkan password"
+                                required
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('password') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                            >
+                            @error('password')
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-[130deg,#10172e,#178f78] px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-shelf-ink/30 transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-shelf-teal/35">
+                            Masuk Dashboard
+                            <span aria-hidden="true">-&gt;</span>
+                        </button>
+                    </form>
+
+                    <div class="relative mt-6 border-t border-shelf-ink/10 pt-5 text-sm text-shelf-ink/70">
+                        Belum punya akun?
+                        <a href="{{ route('tampilan.register') }}" class="font-semibold text-shelf-teal transition hover:text-shelf-ocean">Daftar sekarang</a>
                     </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn-login">
-                        <i class="fas fa-sign-in-alt"></i> Masuk
-                    </button>
-                </form>
-
-                <!-- Footer -->
-                <div class="login-footer">
-                    <p>Belum memiliki akun?</p>
-                    <a href="{{route('tampilan.register')}}" class="btn-register">
-                        <i class="fas fa-user-plus"></i> Daftar Sekarang
-                    </a>
                 </div>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
