@@ -159,7 +159,7 @@
                         <div class="col-md-8 profile-info">
                             <h2 class="profile-name">{{ $user->nama ?? 'User' }}</h2>
                             <p class="profile-member-since">
-                                <i class="bi bi-calendar-event"></i> Member sejak {{ $user->created_at->format('d F Y') ?? '-' }}
+                                <i class="bi bi-calendar-event"></i> Member sejak {{ optional($user->created_at)->format('d F Y') ?? '-' }}
                             </p>
                             
                             <div class="row g-3">
@@ -208,6 +208,29 @@
                     </h5>
                 </div>
                 <div class="card-body pb-4">
+                    {{-- Form Pinjam Buku --}}
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2">Pinjam Buku</h6>
+                        @if(isset($availableBooks) && $availableBooks->count() > 0)
+                            <form action="{{ route($portalPrefix . '.pinjam.store') }}" method="POST" class="row g-2">
+                                @csrf
+                                <div class="col-8">
+                                    <select name="book_id" class="form-select form-select-sm" required>
+                                        <option value="">-- Pilih buku --</option>
+                                        @foreach($availableBooks as $b)
+                                            <option value="{{ $b->id }}">{{ $b->title }} (stok: {{ $b->stock }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-4 d-grid">
+                                    <button type="submit" class="btn btn-sm btn-primary">Pinjam</button>
+                                </div>
+                            </form>
+                        @else
+                            <div class="text-muted small">Tidak ada buku tersedia untuk dipinjam saat ini.</div>
+                        @endif
+                    </div>
+
                     <div class="mb-4">
                         <div class="text-muted small mb-2">
                             <i class="bi bi-geo-alt"></i> Tempat Lahir
@@ -261,6 +284,8 @@
                     </h5>
                 </div>
                 <div class="card-body pb-4">
+                    @php($activeBorrowings = $activeBorrowings ?? ($bookrents ?? collect())->where('status', 'dipinjam'))
+
                     <!-- Statistik -->
                     <div class="row g-3 mb-4">
                         <div class="col-4">
@@ -288,6 +313,33 @@
                             </div>
                         </div>
                     </div>
+
+                    @if($activeBorrowings->count() > 0)
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h6 class="fw-bold mb-0">Pinjaman Aktif</h6>
+                                <span class="badge bg-warning text-dark">Countdown 72 jam</span>
+                            </div>
+                            <div class="row g-3">
+                                @foreach($activeBorrowings->sortByDesc('created_at') as $rent)
+                                    <div class="col-md-6">
+                                        <div class="p-3 rounded-4 border" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 193, 7, 0.08) 100%); border-color: rgba(255, 152, 0, 0.18);">
+                                            <div class="fw-bold text-dark mb-1">{{ $rent->book->title ?? '-' }}</div>
+                                            <div class="text-muted small mb-2">
+                                                Dipinjam: {{ $rent->created_at ? $rent->created_at->format('d M Y H:i') : '-' }}
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                                <span class="badge rounded-pill text-bg-warning text-dark px-3 py-2 countdown-timer" data-countdown data-expires-at="{{ optional($rent->due_at)->toIso8601String() }}">
+                                                    Menghitung...
+                                                </span>
+                                                <span class="text-muted small">Sisa waktu</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- Tabel Buku -->
                     <div class="table-responsive">
@@ -548,6 +600,48 @@
                 const alert = new bootstrap.Alert(successAlert);
                 alert.close();
             }, 5000);
+        }
+
+        const timers = Array.from(document.querySelectorAll('[data-countdown]'));
+
+        if (timers.length > 0) {
+            const formatCountdown = (totalSeconds) => {
+                const safeSeconds = Math.max(0, totalSeconds);
+                const days = Math.floor(safeSeconds / 86400);
+                const hours = Math.floor((safeSeconds % 86400) / 3600);
+                const minutes = Math.floor((safeSeconds % 3600) / 60);
+                const seconds = safeSeconds % 60;
+
+                return `${days}h ${String(hours).padStart(2, '0')}j ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}d`;
+            };
+
+            const updateTimers = () => {
+                const now = Date.now();
+
+                timers.forEach((timer) => {
+                    const expiresAt = timer.getAttribute('data-expires-at');
+
+                    if (!expiresAt) {
+                        timer.textContent = '-';
+                        return;
+                    }
+
+                    const expiresMs = new Date(expiresAt).getTime();
+                    const remaining = Math.max(0, Math.floor((expiresMs - now) / 1000));
+
+                    if (remaining <= 0) {
+                        timer.textContent = 'Terlambat';
+                        timer.classList.remove('text-bg-warning');
+                        timer.classList.add('text-bg-danger');
+                        return;
+                    }
+
+                    timer.textContent = formatCountdown(remaining);
+                });
+            };
+
+            updateTimers();
+            setInterval(updateTimers, 1000);
         }
     });
 </script>

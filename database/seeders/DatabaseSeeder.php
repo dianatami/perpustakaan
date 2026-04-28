@@ -36,17 +36,6 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        User::updateOrCreate(
-            ['email' => 'kepalasekolah@smkn1.sch.id'],
-            [
-                'nama' => 'Kepala Sekolah',
-                'role' => User::ROLE_KEPALA_SEKOLAH,
-                'status' => 1,
-                'hp' => '081200000333',
-                'password' => Hash::make('Kepala12345'),
-            ]
-        );
-
         // Jalankan seeder tambahan
         $this->call([
             BookrentSeeder::class,

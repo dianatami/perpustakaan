@@ -26,7 +26,7 @@
         [
             'tag' => 'Role Focus',
             'title' => 'Setiap panel menonjolkan fungsi yang relevan tanpa distraksi.',
-            'value' => '4',
+            'value' => '3',
             'note' => 'Portal terintegrasi',
         ],
     ];
@@ -46,11 +46,6 @@
             'title' => 'Anggota',
             'description' => 'Menjelajah buku favorit, memperbarui profil, dan memeriksa status peminjaman.',
             'accent' => 'bg-shelf-coral/15 text-shelf-coral',
-        ],
-        [
-            'title' => 'Kepala Sekolah',
-            'description' => 'Akses ringkasan literasi untuk evaluasi kebijakan dan keputusan strategis.',
-            'accent' => 'bg-shelf-gold/25 text-shelf-ink',
         ],
     ];
 
@@ -115,13 +110,13 @@
                     </p>
 
                     <h1 class="mt-6 font-display font-semibold leading-[1.03] text-shelf-ink [font-size:clamp(2.2rem,7vw,5.9rem)]">
-                        Tampil modern,
+                        Tampil modern
                         <span class="ink-gradient">belajar makin fokus</span>
                         setiap hari.
                     </h1>
 
                     <p class="mt-6 max-w-2xl text-lg leading-relaxed text-shelf-ink/76">
-                        Dari pencarian buku sampai pelacakan peminjaman, semua dirancang seperti pengalaman produk premium: cepat, bersih, dan mudah dipahami oleh siswa, guru, admin, sampai kepala sekolah.
+                        Dari pencarian buku sampai pelacakan peminjaman, semua dirancang seperti pengalaman produk premium: cepat, bersih, dan mudah dipahami oleh siswa, guru, dan admin.
                     </p>
 
                     <div class="mt-8 flex flex-wrap gap-3">
@@ -137,7 +132,7 @@
                     <div class="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
                         <div class="glass-card rounded-2xl p-4">
                             <p class="text-xs uppercase tracking-[0.12em] text-shelf-ink/62">Portal Aktif</p>
-                            <p class="mt-1 font-display text-2xl text-shelf-ink">4 Role</p>
+                            <p class="mt-1 font-display text-2xl text-shelf-ink">3 Role</p>
                         </div>
                         <div class="glass-card rounded-2xl p-4">
                             <p class="text-xs uppercase tracking-[0.12em] text-shelf-ink/62">Status Sistem</p>

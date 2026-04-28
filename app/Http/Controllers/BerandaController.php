@@ -25,6 +25,16 @@ class BerandaController extends Controller
         ->orWhere('lost', '>', 0)
         ->count(); 
 
+    $leaderboardSiswa = User::query()
+        ->where('role', User::ROLE_ANGGOTA)
+        ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
+        ->selectRaw('user.id, user.nama, COUNT(bookrent.id) as total_peminjaman')
+        ->groupBy('user.id', 'user.nama')
+        ->orderByDesc('total_peminjaman')
+        ->orderBy('user.nama')
+        ->take(10)
+        ->get();
+
     return view(
         'admin.dashboard',
         ['judul'=> 'Halaman Beranda'],
@@ -36,7 +46,8 @@ class BerandaController extends Controller
             'totalPinjam',
             'stokTersedia',
             'dipinjam',
-            'totalRusakHilang'
+            'totalRusakHilang',
+            'leaderboardSiswa'
         )
     );
 }

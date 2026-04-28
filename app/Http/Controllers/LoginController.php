@@ -24,6 +24,11 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
 
+            if ((int) $user->role === 3) {
+                Auth::logout();
+                return back()->with('error', 'Akun kepala sekolah sudah tidak didukung. Silakan hubungi admin.');
+            }
+
             if (! $user->status) {
                 Auth::logout();
                 return back()->with('error', 'User belum aktif');

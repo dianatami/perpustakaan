@@ -29,7 +29,6 @@ class RoleAccessAndLoginTest extends TestCase
             User::ROLE_ADMIN => 'admin.beranda',
             User::ROLE_ANGGOTA => 'anggota.beranda',
             User::ROLE_GURU => 'guru.beranda',
-            User::ROLE_KEPALA_SEKOLAH => 'kepala.beranda',
         ];
 
         foreach ($roleRoutes as $role => $dashboardRoute) {
@@ -54,19 +53,15 @@ class RoleAccessAndLoginTest extends TestCase
         $admin = $this->makeUser(User::ROLE_ADMIN, 'admin-test@example.com');
         $anggota = $this->makeUser(User::ROLE_ANGGOTA, 'anggota-test@example.com');
         $guru = $this->makeUser(User::ROLE_GURU, 'guru-test@example.com');
-        $kepala = $this->makeUser(User::ROLE_KEPALA_SEKOLAH, 'kepala-test@example.com');
 
         $this->actingAs($admin)->get(route('admin.beranda'))->assertOk();
         $this->actingAs($admin)->get(route('guru.beranda'))->assertForbidden();
 
         $this->actingAs($anggota)->get(route('anggota.beranda'))->assertOk();
-        $this->actingAs($anggota)->get(route('kepala.beranda'))->assertForbidden();
+        $this->actingAs($anggota)->get(route('admin.beranda'))->assertForbidden();
 
         $this->actingAs($guru)->get(route('guru.beranda'))->assertOk();
         $this->actingAs($guru)->get(route('admin.beranda'))->assertForbidden();
-
-        $this->actingAs($kepala)->get(route('kepala.beranda'))->assertOk();
-        $this->actingAs($kepala)->get(route('anggota.beranda'))->assertForbidden();
     }
 
     public function test_guest_is_redirected_to_login_for_protected_route(): void

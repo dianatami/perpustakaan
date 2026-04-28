@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Book;
+use App\Models\Bookrent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 
 class ProfileAnggotaController extends Controller
 {
@@ -41,12 +44,73 @@ class ProfileAnggotaController extends Controller
 
         // Eager load relationship untuk menghindari N+1 query
         $bookrents = $user->bookrent()->with('book')->get();
-        
+        $activeBorrowings = $bookrents->where('status', 'dipinjam')->values();
+
+        // Buku yang tersedia untuk dipinjam
+        $availableBooks = Book::where('stock', '>', 0)->orderBy('title')->get();
+
         return view('anggota.Profile.index', [
             'user' => $user,
             'bookrents' => $bookrents,
+            'activeBorrowings' => $activeBorrowings,
+            'availableBooks' => $availableBooks,
             'portalPrefix' => $this->portalPrefix($request),
         ]);
+    }
+
+    /**
+     * Handle borrow request from anggota/guru profile
+     */
+    public function borrow(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'book_id' => 'required|exists:books,id',
+            'borrow_date' => 'nullable|date',
+        ]);
+
+        $bookId = $request->book_id;
+
+        // batasi maksimal 3 peminjaman aktif
+        $activeCount = Bookrent::where('user_id', $user->id)
+            ->where('status', 'dipinjam')
+            ->count();
+
+        if ($activeCount >= 3) {
+            return back()->with('error', 'Anda sudah meminjam 3 buku. Kembalikan dulu sebelum meminjam lagi.');
+        }
+
+        // cek apakah user sudah meminjam buku yang sama
+        $already = Bookrent::where('user_id', $user->id)
+            ->where('book_id', $bookId)
+            ->where('status', 'dipinjam')
+            ->exists();
+
+        if ($already) {
+            return back()->with('error', 'Anda sudah meminjam buku ini.');
+        }
+
+        $book = Book::findOrFail($bookId);
+
+        if ($book->stock < 1) {
+            return back()->with('error', 'Stok buku habis.');
+        }
+
+        // kurangi stok
+        $book->stock -= 1;
+        $book->save();
+
+        $borrowDate = $request->borrow_date ? Carbon::parse($request->borrow_date)->toDateString() : Carbon::now()->toDateString();
+
+        Bookrent::create([
+            'user_id' => $user->id,
+            'book_id' => $bookId,
+            'borrow_date' => $borrowDate,
+            'status' => 'dipinjam',
+        ]);
+
+        return back()->with('success', 'Buku berhasil dipinjam');
     }
 
     /**
@@ -138,7 +202,7 @@ class ProfileAnggotaController extends Controller
         $peminjaman = Auth::user()
             ->bookrent()
             ->with('book')
-            ->latest('borrow_date')
+            ->latest('created_at')
             ->get();
 
         return view('anggota.riwayat-peminjaman', compact('peminjaman'));

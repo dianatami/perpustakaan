@@ -2,340 +2,513 @@
 @section('title', 'Beranda Admin')
 
 @section('content')
+@php
+    $totalPenggunaPortal = max(1, $totalAnggota + $totalGuru);
+    $persenAnggota = round(($totalAnggota / $totalPenggunaPortal) * 100);
+    $persenGuru = round(($totalGuru / $totalPenggunaPortal) * 100);
+
+    $adminStats = [
+        ['label' => 'Total Buku', 'value' => $totalBuku, 'icon' => 'bi-journal-bookmark-fill', 'tone' => 'teal'],
+        ['label' => 'Total Anggota', 'value' => $totalAnggota, 'icon' => 'bi-people-fill', 'tone' => 'ocean'],
+        ['label' => 'Total Guru', 'value' => $totalGuru, 'icon' => 'bi-mortarboard-fill', 'tone' => 'indigo'],
+        ['label' => 'Total Peminjaman', 'value' => $totalPinjam, 'icon' => 'bi-arrow-repeat', 'tone' => 'amber'],
+        ['label' => 'Kategori Buku', 'value' => $totalKategori, 'icon' => 'bi-tags-fill', 'tone' => 'forest'],
+        ['label' => 'Buku Rusak/Hilang', 'value' => $totalRusakHilang, 'icon' => 'bi-exclamation-triangle-fill', 'tone' => 'coral'],
+    ];
+@endphp
+
 <style>
-    .admin-hero {
-        border-radius: 22px;
+    @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+    .admin-shell {
+        background:
+            radial-gradient(circle at 8% -8%, rgba(24, 142, 122, 0.2), transparent 34%),
+            radial-gradient(circle at 110% 12%, rgba(255, 122, 89, 0.18), transparent 36%),
+            #f7f2e8;
+    }
+
+    .admin-sidebar {
+        background: linear-gradient(170deg, #10172e 0%, #1d4f78 58%, #178f78 100%);
+    }
+
+    .admin-brand-title,
+    .admin-topbar-title {
+        font-family: 'Unbounded', sans-serif;
+        letter-spacing: 0.02em;
+    }
+
+    .admin-brand-subtitle,
+    .admin-topbar-subtitle,
+    .admin-nav-link,
+    .admin-user-chip,
+    .admin-footer {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .admin-nav-link.active {
+        background: linear-gradient(135deg, rgba(255, 201, 92, 0.34), rgba(255, 255, 255, 0.15));
+    }
+
+    .admin-topbar {
+        border-bottom: 1px solid rgba(16, 23, 46, 0.12);
+        background: rgba(255, 255, 255, 0.72);
+        backdrop-filter: blur(9px);
+    }
+
+    .admin-user-chip {
+        color: #1d4f78;
+        border-color: rgba(29, 79, 120, 0.2);
+    }
+
+    .admin-content {
         padding: 28px;
-        color: #fff;
-        background: linear-gradient(135deg, #0f8c80 0%, #0f6a63 55%, #ff8a3d 135%);
-        box-shadow: 0 24px 42px rgba(15, 103, 96, 0.25);
-        margin-bottom: 24px;
+    }
+
+    .shelf-admin-wrap {
+        display: grid;
+        gap: 18px;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .shelf-admin-hero {
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        background:
+            linear-gradient(124deg, rgba(16, 23, 46, 0.92) 0%, rgba(29, 79, 120, 0.88) 45%, rgba(23, 143, 120, 0.86) 100%);
+        color: #f7f2e8;
+        box-shadow: 0 28px 50px rgba(21, 55, 82, 0.27);
+        padding: 28px;
         position: relative;
         overflow: hidden;
     }
 
-    .admin-hero::before {
+    .shelf-admin-hero::before {
         content: '';
         position: absolute;
-        width: 260px;
-        height: 260px;
+        width: 290px;
+        height: 290px;
         border-radius: 999px;
-        right: -110px;
+        right: -120px;
         top: -120px;
-        background: rgba(255, 255, 255, 0.15);
+        background: rgba(255, 201, 92, 0.28);
+        filter: blur(4px);
     }
 
-    .admin-hero > * {
-        position: relative;
+    .shelf-admin-hero::after {
+        content: '';
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 999px;
+        left: -70px;
+        bottom: -90px;
+        background: rgba(255, 122, 89, 0.28);
+        filter: blur(5px);
+    }
+
+    .hero-bead {
+        position: absolute;
+        border-radius: 999px;
+        box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.18);
+        animation: beadPulse 3.5s ease-in-out infinite;
         z-index: 1;
     }
 
-    .admin-hero-title {
+    .hero-bead.one {
+        width: 16px;
+        height: 16px;
+        top: 28px;
+        right: 150px;
+        background: #ffc95c;
+    }
+
+    .hero-bead.two {
+        width: 11px;
+        height: 11px;
+        top: 56px;
+        right: 115px;
+        background: #ff7a59;
+        animation-delay: 0.9s;
+    }
+
+    .hero-bead.three {
+        width: 12px;
+        height: 12px;
+        bottom: 36px;
+        left: 42%;
+        background: #7ad9c6;
+        animation-delay: 1.6s;
+    }
+
+    .shelf-admin-hero > * {
+        position: relative;
+        z-index: 2;
+    }
+
+    .hero-kicker {
         margin: 0;
-        font-size: 2rem;
-        font-weight: 800;
+        font-size: 0.78rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: rgba(247, 242, 232, 0.82);
+        font-weight: 700;
     }
 
-    .admin-hero-subtitle {
-        margin: 8px 0 16px;
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1rem;
+    .hero-title {
+        margin: 10px 0 8px;
+        font-family: 'Unbounded', sans-serif;
+        font-size: 1.7rem;
+        line-height: 1.28;
     }
 
-    .admin-quick-actions {
+    .hero-subtitle {
+        margin: 0;
+        max-width: 760px;
+        color: rgba(247, 242, 232, 0.9);
+    }
+
+    .hero-actions {
+        margin-top: 18px;
         display: flex;
         flex-wrap: wrap;
         gap: 10px;
     }
 
-    .admin-quick-btn {
+    .hero-action-btn {
         text-decoration: none;
         border-radius: 999px;
-        padding: 9px 16px;
+        padding: 10px 16px;
+        font-size: 0.86rem;
         font-weight: 700;
-        font-size: 0.9rem;
-        color: #0f6d64;
-        background: #fff;
-        transition: transform 0.2s ease;
+        color: #0f1d3a;
+        background: #f7f2e8;
+        transition: transform 0.22s ease, box-shadow 0.22s ease;
+        box-shadow: 0 10px 18px rgba(0, 0, 0, 0.15);
     }
 
-    .admin-quick-btn:hover {
+    .hero-action-btn:hover {
         transform: translateY(-2px);
-        color: #0f6d64;
+        color: #0f1d3a;
     }
 
-    .metric-card {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid #d6e7e4;
-        padding: 18px;
-        box-shadow: 0 10px 20px rgba(20, 59, 58, 0.07);
-        height: 100%;
+    .hero-action-btn.alt {
+        color: #f7f2e8;
+        background: rgba(247, 242, 232, 0.19);
+        border: 1px solid rgba(247, 242, 232, 0.36);
+        box-shadow: none;
     }
 
-    .metric-label {
-        color: #6c8489;
-        font-size: 0.82rem;
-        font-weight: 700;
+    .hero-action-btn.alt:hover {
+        color: #f7f2e8;
+    }
+
+    .shelf-kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .shelf-kpi-card {
+        border-radius: 18px;
+        padding: 16px;
+        border: 1px solid rgba(19, 33, 64, 0.13);
+        background: rgba(255, 255, 255, 0.78);
+        backdrop-filter: blur(7px);
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        box-shadow: 0 14px 28px rgba(20, 47, 68, 0.08);
+        transition: transform 0.24s ease;
+    }
+
+    .shelf-kpi-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .kpi-label {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #4e5d7f;
         text-transform: uppercase;
-        letter-spacing: 0.6px;
+        letter-spacing: 0.08em;
+        font-weight: 700;
     }
 
-    .metric-value {
-        margin: 7px 0 0;
-        color: #17353c;
-        font-size: 1.85rem;
-        font-weight: 800;
+    .kpi-value {
+        margin: 8px 0 0;
+        font-family: 'Unbounded', sans-serif;
+        color: #10172e;
+        font-size: 1.48rem;
         line-height: 1;
     }
 
-    .metric-icon {
+    .kpi-icon {
         width: 44px;
         height: 44px;
         border-radius: 13px;
         display: inline-flex;
-        align-items: center;
         justify-content: center;
+        align-items: center;
         color: #fff;
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
 
-    .metric-icon.books { background: linear-gradient(135deg, #0f8c80, #0f6a63); }
-    .metric-icon.members { background: linear-gradient(135deg, #ff8a3d, #dd6b20); }
-    .metric-icon.teachers { background: linear-gradient(135deg, #2d90d8, #1f6aa6); }
-    .metric-icon.borrow { background: linear-gradient(135deg, #8968cc, #5c43a1); }
-    .metric-icon.category { background: linear-gradient(135deg, #3eac61, #2d7f45); }
-    .metric-icon.warning { background: linear-gradient(135deg, #d86045, #a33e2b); }
+    .kpi-icon.teal { background: linear-gradient(140deg, #178f78, #116557); }
+    .kpi-icon.ocean { background: linear-gradient(140deg, #1d4f78, #133553); }
+    .kpi-icon.indigo { background: linear-gradient(140deg, #4d5ea9, #303d7a); }
+    .kpi-icon.amber { background: linear-gradient(140deg, #ffb33d, #e3891e); }
+    .kpi-icon.forest { background: linear-gradient(140deg, #2a9a6f, #1d6c4f); }
+    .kpi-icon.coral { background: linear-gradient(140deg, #ff7a59, #df5131); }
 
-    .insight-card {
-        background: #fff;
-        border-radius: 16px;
-        border: 1px solid #d6e7e4;
-        box-shadow: 0 10px 20px rgba(20, 59, 58, 0.06);
-        padding: 20px;
-        height: 100%;
+    .shelf-admin-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 14px;
     }
 
-    .insight-title {
-        margin: 0 0 14px;
-        font-size: 1.08rem;
+    .shelf-panel {
+        border-radius: 18px;
+        border: 1px solid rgba(19, 33, 64, 0.14);
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(7px);
+        box-shadow: 0 14px 24px rgba(20, 47, 68, 0.08);
+        padding: 18px;
+    }
+
+    .panel-title {
+        margin: 0;
+        font-size: 1.02rem;
         font-weight: 800;
-        color: #17353c;
+        color: #10172e;
     }
 
-    .overview-row {
+    .panel-subtitle {
+        margin: 6px 0 14px;
+        font-size: 0.86rem;
+        color: #54607f;
+    }
+
+    .progress-item {
+        margin-bottom: 12px;
+    }
+
+    .progress-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .progress-row {
         display: flex;
-        align-items: center;
         justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px dashed #d3e4e2;
-        font-size: 0.92rem;
-    }
-
-    .overview-row:last-child {
-        border-bottom: none;
-        padding-bottom: 0;
-    }
-
-    .overview-label {
-        color: #678186;
-        font-weight: 700;
-    }
-
-    .overview-value {
-        color: #16343b;
-        font-weight: 800;
-    }
-
-    .status-pill {
-        display: inline-flex;
         align-items: center;
-        gap: 6px;
-        border-radius: 999px;
-        padding: 6px 12px;
-        font-size: 0.8rem;
-        font-weight: 700;
-        margin-top: 6px;
-    }
-
-    .status-pill.success {
-        color: #155a43;
-        background: #d8f5ea;
-    }
-
-    .status-pill.warning {
-        color: #8a4f13;
-        background: #ffedd4;
-    }
-
-    .bar-wrap {
-        margin-top: 16px;
-    }
-
-    .bar-title {
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #6d848a;
         margin-bottom: 6px;
+        color: #455273;
+        font-size: 0.87rem;
+        font-weight: 700;
     }
 
-    .bar-track {
-        height: 9px;
-        background: #ebf3f2;
+    .progress-track {
+        height: 10px;
         border-radius: 999px;
+        background: #e4ebef;
         overflow: hidden;
     }
 
-    .bar-fill {
+    .progress-fill {
         height: 100%;
         border-radius: inherit;
     }
 
-    .bar-fill.student { background: linear-gradient(90deg, #0f8c80, #18a297); }
-    .bar-fill.teacher { background: linear-gradient(90deg, #ff8a3d, #f5b03a); }
+    .progress-fill.student {
+        background: linear-gradient(90deg, #178f78, #2ab59a);
+    }
+
+    .progress-fill.teacher {
+        background: linear-gradient(90deg, #ff7a59, #ffc95c);
+    }
+
+    .ops-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        border-bottom: 1px dashed #d3dee6;
+        font-size: 0.9rem;
+    }
+
+    .ops-row:last-child {
+        border-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .ops-label {
+        color: #556284;
+        font-weight: 700;
+    }
+
+    .ops-value {
+        color: #10172e;
+        font-family: 'Unbounded', sans-serif;
+        font-size: 0.9rem;
+    }
+
+    .status-pill {
+        margin-top: 14px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
+        padding: 7px 12px;
+        font-size: 0.79rem;
+        font-weight: 700;
+    }
+
+    .status-pill.success {
+        color: #125642;
+        background: #d4f2e8;
+    }
+
+    .status-pill.warning {
+        color: #7a4314;
+        background: #ffe5cf;
+    }
+
+    @keyframes beadPulse {
+        0%,
+        100% {
+            transform: translateY(0);
+            opacity: 0.9;
+        }
+        50% {
+            transform: translateY(-5px);
+            opacity: 1;
+        }
+    }
+
+    @media (max-width: 1199px) {
+        .shelf-kpi-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 991.98px) {
+        .shelf-admin-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .admin-content {
+            padding: 16px;
+        }
+
+        .shelf-admin-hero {
+            padding: 20px;
+        }
+
+        .hero-title {
+            font-size: 1.3rem;
+        }
+
+        .shelf-kpi-grid {
+            grid-template-columns: 1fr;
+        }
+    }
 </style>
 
-<div class="admin-hero">
-    <h2 class="admin-hero-title">Selamat Datang, {{ Auth::user()->nama }}</h2>
-    <p class="admin-hero-subtitle">
-        Anda masuk sebagai {{ Auth::user()->roleLabel() }}. Monitor seluruh aktivitas perpustakaan dari satu panel.
-    </p>
+<div class="shelf-admin-wrap">
+    <section class="shelf-admin-hero">
+        <span class="hero-bead one"></span>
+        <span class="hero-bead two"></span>
+        <span class="hero-bead three"></span>
 
-    <div class="admin-quick-actions">
-        <a href="{{ route('admin.books.create') }}" class="admin-quick-btn">
-            <i class="bi bi-plus-circle"></i> Tambah Buku
-        </a>
-        <a href="{{ route('admin.anggota.create') }}" class="admin-quick-btn">
-            <i class="bi bi-person-plus"></i> Tambah Anggota
-        </a>
-        <a href="{{ route('admin.peminjaman.index') }}" class="admin-quick-btn">
-            <i class="bi bi-arrow-repeat"></i> Kelola Peminjaman
-        </a>
-    </div>
-</div>
+        <p class="hero-kicker">Ruang Kendali Perpustakaan</p>
+        <h2 class="hero-title">Selamat datang, {{ Auth::user()->nama }}.</h2>
+        <p class="hero-subtitle">
+            Semua metrik utama perpustakaan ada di sini. Pantau koleksi, pengguna, dan transaksi harian dalam satu kanvas kerja dengan nuansa visual yang konsisten.
+        </p>
 
-<div class="row g-3 mb-3">
-    <div class="col-md-6 col-xl-4">
-        <div class="metric-card d-flex justify-content-between align-items-start">
-            <div>
-                <div class="metric-label">Total Buku</div>
-                <div class="metric-value">{{ $totalBuku }}</div>
-            </div>
-            <span class="metric-icon books"><i class="bi bi-journal-bookmark-fill"></i></span>
+        <div class="hero-actions">
+            <a href="{{ route('admin.books.create') }}" class="hero-action-btn">
+                <i class="bi bi-plus-circle"></i> Tambah Buku
+            </a>
+            <a href="{{ route('admin.anggota.create') }}" class="hero-action-btn alt">
+                <i class="bi bi-person-plus"></i> Tambah Anggota
+            </a>
+            <a href="{{ route('admin.peminjaman.index') }}" class="hero-action-btn alt">
+                <i class="bi bi-arrow-repeat"></i> Kelola Peminjaman
+            </a>
         </div>
-    </div>
+    </section>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="metric-card d-flex justify-content-between align-items-start">
-            <div>
-                <div class="metric-label">Total Anggota</div>
-                <div class="metric-value">{{ $totalAnggota }}</div>
-            </div>
-            <span class="metric-icon members"><i class="bi bi-people-fill"></i></span>
-        </div>
-    </div>
+    <section class="shelf-kpi-grid">
+        @foreach ($adminStats as $stat)
+            <article class="shelf-kpi-card">
+                <div>
+                    <p class="kpi-label">{{ $stat['label'] }}</p>
+                    <p class="kpi-value">{{ $stat['value'] }}</p>
+                </div>
+                <span class="kpi-icon {{ $stat['tone'] }}">
+                    <i class="bi {{ $stat['icon'] }}"></i>
+                </span>
+            </article>
+        @endforeach
+    </section>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="metric-card d-flex justify-content-between align-items-start">
-            <div>
-                <div class="metric-label">Total Guru</div>
-                <div class="metric-value">{{ $totalGuru }}</div>
-            </div>
-            <span class="metric-icon teachers"><i class="bi bi-mortarboard-fill"></i></span>
-        </div>
-    </div>
+    <section class="shelf-admin-grid">
+        <article class="shelf-panel">
+            <h3 class="panel-title">Distribusi Pengguna Portal</h3>
+            <p class="panel-subtitle">Komposisi pengguna aktif antara murid dan guru saat ini.</p>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="metric-card d-flex justify-content-between align-items-start">
-            <div>
-                <div class="metric-label">Total Peminjaman</div>
-                <div class="metric-value">{{ $totalPinjam }}</div>
-            </div>
-            <span class="metric-icon borrow"><i class="bi bi-arrow-left-right"></i></span>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-4">
-        <div class="metric-card d-flex justify-content-between align-items-start">
-            <div>
-                <div class="metric-label">Kategori Buku</div>
-                <div class="metric-value">{{ $totalKategori }}</div>
-            </div>
-            <span class="metric-icon category"><i class="bi bi-tags-fill"></i></span>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-xl-4">
-        <div class="metric-card d-flex justify-content-between align-items-start">
-            <div>
-                <div class="metric-label">Buku Rusak/Hilang</div>
-                <div class="metric-value">{{ $totalRusakHilang }}</div>
-            </div>
-            <span class="metric-icon warning"><i class="bi bi-exclamation-triangle-fill"></i></span>
-        </div>
-    </div>
-</div>
-
-<div class="row g-3">
-    <div class="col-lg-7">
-        <div class="insight-card">
-            <h3 class="insight-title">Distribusi Pengguna</h3>
-
-            @php
-                $totalPenggunaPortal = max(1, $totalAnggota + $totalGuru);
-                $persenAnggota = round(($totalAnggota / $totalPenggunaPortal) * 100);
-                $persenGuru = round(($totalGuru / $totalPenggunaPortal) * 100);
-            @endphp
-
-            <div class="bar-wrap">
-                <div class="d-flex justify-content-between bar-title">
+            <div class="progress-item">
+                <div class="progress-row">
                     <span>Murid</span>
                     <span>{{ $persenAnggota }}%</span>
                 </div>
-                <div class="bar-track">
-                    <div class="bar-fill student" style="width: {{ $persenAnggota }}%"></div>
+                <div class="progress-track">
+                    <div class="progress-fill student" style="width: {{ $persenAnggota }}%"></div>
                 </div>
             </div>
 
-            <div class="bar-wrap">
-                <div class="d-flex justify-content-between bar-title">
+            <div class="progress-item">
+                <div class="progress-row">
                     <span>Guru</span>
                     <span>{{ $persenGuru }}%</span>
                 </div>
-                <div class="bar-track">
-                    <div class="bar-fill teacher" style="width: {{ $persenGuru }}%"></div>
+                <div class="progress-track">
+                    <div class="progress-fill teacher" style="width: {{ $persenGuru }}%"></div>
                 </div>
             </div>
 
-            <div class="status-pill success">
+            <span class="status-pill success">
                 <i class="bi bi-check-circle-fill"></i>
-                Sistem anggota aktif dan terdata
-            </div>
-        </div>
-    </div>
+                Struktur akun tersinkron dengan baik
+            </span>
+        </article>
 
-    <div class="col-lg-5">
-        <div class="insight-card">
-            <h3 class="insight-title">Operasional Harian</h3>
+        <article class="shelf-panel">
+            <h3 class="panel-title">Operasional Harian</h3>
+            <p class="panel-subtitle">Snapshot kondisi inventaris dan transaksi.</p>
 
-            <div class="overview-row">
-                <span class="overview-label">Buku tersedia</span>
-                <span class="overview-value">{{ $stokTersedia }}</span>
+            <div class="ops-row">
+                <span class="ops-label">Buku tersedia</span>
+                <span class="ops-value">{{ $stokTersedia }}</span>
             </div>
-            <div class="overview-row">
-                <span class="overview-label">Sedang dipinjam</span>
-                <span class="overview-value">{{ $dipinjam }}</span>
+            <div class="ops-row">
+                <span class="ops-label">Sedang dipinjam</span>
+                <span class="ops-value">{{ $dipinjam }}</span>
             </div>
-            <div class="overview-row">
-                <span class="overview-label">Koleksi perlu perhatian</span>
-                <span class="overview-value">{{ $totalRusakHilang }}</span>
+            <div class="ops-row">
+                <span class="ops-label">Koleksi perlu perhatian</span>
+                <span class="ops-value">{{ $totalRusakHilang }}</span>
             </div>
 
-            <div class="status-pill {{ $dipinjam > 0 ? 'warning' : 'success' }}">
+            <span class="status-pill {{ $dipinjam > 0 ? 'warning' : 'success' }}">
                 <i class="bi bi-activity"></i>
-                {{ $dipinjam > 0 ? 'Ada transaksi peminjaman aktif' : 'Tidak ada peminjaman aktif saat ini' }}
-            </div>
-        </div>
-    </div>
+                {{ $dipinjam > 0 ? 'Ada peminjaman aktif yang harus dipantau' : 'Tidak ada peminjaman aktif saat ini' }}
+            </span>
+        </article>
+    </section>
+
+    @include('partials.leaderboard-siswa')
 </div>
 @endsection

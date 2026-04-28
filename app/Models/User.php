@@ -15,7 +15,6 @@ class User extends Authenticatable
     public const ROLE_ANGGOTA = 0;
     public const ROLE_ADMIN = 1;
     public const ROLE_GURU = 2;
-    public const ROLE_KEPALA_SEKOLAH = 3;
 
     /**
      * The attributes that are mass assignable.
@@ -89,7 +88,6 @@ class User extends Authenticatable
         return match ((int) $this->role) {
             self::ROLE_ADMIN => 'Admin',
             self::ROLE_GURU => 'Guru',
-            self::ROLE_KEPALA_SEKOLAH => 'Kepala Sekolah',
             default => 'Anggota',
         };
     }
@@ -102,7 +100,6 @@ class User extends Authenticatable
         return match ((int) $this->role) {
             self::ROLE_ADMIN => 'admin.beranda',
             self::ROLE_GURU => 'guru.beranda',
-            self::ROLE_KEPALA_SEKOLAH => 'kepala.beranda',
             default => 'anggota.beranda',
         };
     }
