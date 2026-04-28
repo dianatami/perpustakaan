@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Bookrent;
@@ -14,7 +14,7 @@ class PeminjamanController extends Controller
     public function index()
     {
         $peminjaman = Bookrent::with (['user', 'book'])->paginate(10);
-        $users = User::where('role', 1)->get();
+        $users = User::whereIn('role', [User::ROLE_ANGGOTA, User::ROLE_GURU])->get();
         $books = Book::where('stock', '>', 0)->get();
         return view('admin.peminjaman.index', compact('peminjaman', 'users', 'books'));
     }

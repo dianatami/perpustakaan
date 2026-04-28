@@ -16,11 +16,10 @@ class BerandaAnggotaController extends Controller
         $bookrents = Bookrent::where('user_id', auth()->user()->id)
             ->whereNull('return_date')
             ->count();
-        $books = Book::all();
+        $books = Book::with('category')->latest()->take(10)->get();
         $riyawatPinjam = Bookrent::where('user_id', auth()->user()->id)->count();
-        // dd($riyawatPinjam);
 
-        return view('anggota.dashboard',['judul'=> 'Halaman Beranda'], compact('bukuTersedia', 'bookrents', 'books','riyawatPinjam'));
+        return view('anggota.dashboard', compact('bukuTersedia', 'bookrents', 'books', 'riyawatPinjam'));
     }
 
 

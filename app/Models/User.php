@@ -12,6 +12,11 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
 
+    public const ROLE_ANGGOTA = 0;
+    public const ROLE_ADMIN = 1;
+    public const ROLE_GURU = 2;
+    public const ROLE_KEPALA_SEKOLAH = 3;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -24,6 +29,7 @@ class User extends Authenticatable
         'password',
         'hp',
         'status',
+        'role',
         'jenis_kelamin',
         'tempat_lahir',
         'tanggal_lahir',
@@ -48,10 +54,13 @@ class User extends Authenticatable
      */
     protected $casts = [
         'email_verified_at' => 'datetime',
+        'status' => 'boolean',
+        'role' => 'integer',
     ];
 
     protected $attributes = [
-        'status' => 1
+        'status' => 1,
+        'role' => self::ROLE_ANGGOTA,
     ];
 
     /**
@@ -60,5 +69,49 @@ class User extends Authenticatable
     public function bookrent()
     {
         return $this->hasMany(Bookrent::class, 'user_id');
+    }
+
+    /**
+     * Check if user has any of the given roles.
+     */
+    public function hasRole(int|string ...$roles): bool
+    {
+        $allowedRoles = array_map(static fn ($role) => (string) $role, $roles);
+
+        return in_array((string) $this->role, $allowedRoles, true);
+    }
+
+    /**
+     * Human-readable role label for UI.
+     */
+    public function roleLabel(): string
+    {
+        return match ((int) $this->role) {
+            self::ROLE_ADMIN => 'Admin',
+            self::ROLE_GURU => 'Guru',
+            self::ROLE_KEPALA_SEKOLAH => 'Kepala Sekolah',
+            default => 'Anggota',
+        };
+    }
+
+    /**
+     * Default dashboard route name by role.
+     */
+    public function dashboardRouteName(): string
+    {
+        return match ((int) $this->role) {
+            self::ROLE_ADMIN => 'admin.beranda',
+            self::ROLE_GURU => 'guru.beranda',
+            self::ROLE_KEPALA_SEKOLAH => 'kepala.beranda',
+            default => 'anggota.beranda',
+        };
+    }
+
+    /**
+     * Normalize role assignment for enum storage.
+     */
+    public function setRoleAttribute(int|string $value): void
+    {
+        $this->attributes['role'] = (string) $value;
     }
 }

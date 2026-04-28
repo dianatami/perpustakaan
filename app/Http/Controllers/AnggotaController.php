@@ -12,7 +12,7 @@ class AnggotaController extends Controller
      */
     public function index()
     {
-        $anggota = User::where('role', '0')->paginate(10);
+        $anggota = User::where('role', User::ROLE_ANGGOTA)->paginate(10);
         return view('admin.user.anggota', compact('anggota'));
     }
 
@@ -41,7 +41,7 @@ class AnggotaController extends Controller
             'email' => $request->email,
             'hp' => $request->hp,
             'password' => bcrypt($request->password),
-            'role' => 0, // Anggota
+            'role' => User::ROLE_ANGGOTA,
             'status' => 1,
         ]);
 

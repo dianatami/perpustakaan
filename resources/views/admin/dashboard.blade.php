@@ -1,234 +1,340 @@
 @extends('layout.admin')
+@section('title', 'Beranda Admin')
+
 @section('content')
-@section('title','Beranda')
-
 <style>
-    .welcome-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 15px;
-        padding: 40px;
-        color: white;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    .admin-hero {
+        border-radius: 22px;
+        padding: 28px;
+        color: #fff;
+        background: linear-gradient(135deg, #0f8c80 0%, #0f6a63 55%, #ff8a3d 135%);
+        box-shadow: 0 24px 42px rgba(15, 103, 96, 0.25);
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
     }
 
-    .welcome-card h2 {
-        font-size: 32px;
-        margin-bottom: 10px;
-        color: white;
+    .admin-hero::before {
+        content: '';
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        border-radius: 999px;
+        right: -110px;
+        top: -120px;
+        background: rgba(255, 255, 255, 0.15);
     }
 
-    .welcome-card p {
-        font-size: 16px;
-        opacity: 0.95;
+    .admin-hero > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .admin-hero-title {
         margin: 0;
+        font-size: 2rem;
+        font-weight: 800;
     }
 
-    .stat-card {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        text-align: center;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        transition: all 0.3s ease;
-        border-top: 4px solid #667eea;
-        margin-bottom: 20px;
+    .admin-hero-subtitle {
+        margin: 8px 0 16px;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
     }
 
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
-    }
-
-    .stat-card.green {
-        border-top-color: #11998e;
-    }
-
-    .stat-card.red {
-        border-top-color: #f5576c;
-    }
-
-    .stat-card.blue {
-        border-top-color: #4facfe;
-    }
-
-    .stat-icon {
-        font-size: 40px;
-        margin-bottom: 15px;
-        color: #667eea;
-    }
-
-    .stat-card.green .stat-icon {
-        color: #11998e;
-    }
-
-    .stat-card.red .stat-icon {
-        color: #f5576c;
-    }
-
-    .stat-card.blue .stat-icon {
-        color: #4facfe;
-    }
-
-    .stat-number {
-        font-size: 36px;
-        font-weight: bold;
-        color: #333;
-        margin-bottom: 10px;
-    }
-
-    .stat-label {
-        font-size: 14px;
-        color: #999;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .dashboard-section {
-        background: white;
-        border-radius: 12px;
-        padding: 25px;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-        margin-bottom: 25px;
-    }
-
-    .dashboard-section h4 {
-        color: #333;
-        margin-bottom: 20px;
-        font-weight: 700;
-        border-bottom: 3px solid #667eea;
-        padding-bottom: 10px;
+    .admin-quick-actions {
         display: flex;
-        align-items: center;
+        flex-wrap: wrap;
         gap: 10px;
     }
 
-    .dashboard-section h4 i {
-        color: #667eea;
+    .admin-quick-btn {
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 9px 16px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #0f6d64;
+        background: #fff;
+        transition: transform 0.2s ease;
     }
 
-    .info-box {
-        background: #f8f9fa;
-        border-left: 4px solid #667eea;
-        padding: 15px;
-        border-radius: 8px;
+    .admin-quick-btn:hover {
+        transform: translateY(-2px);
+        color: #0f6d64;
     }
 
-    .info-box-item {
-        display: flex;
-        justify-content: space-between;
+    .metric-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #d6e7e4;
+        padding: 18px;
+        box-shadow: 0 10px 20px rgba(20, 59, 58, 0.07);
+        height: 100%;
+    }
+
+    .metric-label {
+        color: #6c8489;
+        font-size: 0.82rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.6px;
+    }
+
+    .metric-value {
+        margin: 7px 0 0;
+        color: #17353c;
+        font-size: 1.85rem;
+        font-weight: 800;
+        line-height: 1;
+    }
+
+    .metric-icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 13px;
+        display: inline-flex;
         align-items: center;
-        padding: 12px 0;
-        border-bottom: 1px solid #e0e0e0;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.1rem;
     }
 
-    .info-box-item:last-child {
+    .metric-icon.books { background: linear-gradient(135deg, #0f8c80, #0f6a63); }
+    .metric-icon.members { background: linear-gradient(135deg, #ff8a3d, #dd6b20); }
+    .metric-icon.teachers { background: linear-gradient(135deg, #2d90d8, #1f6aa6); }
+    .metric-icon.borrow { background: linear-gradient(135deg, #8968cc, #5c43a1); }
+    .metric-icon.category { background: linear-gradient(135deg, #3eac61, #2d7f45); }
+    .metric-icon.warning { background: linear-gradient(135deg, #d86045, #a33e2b); }
+
+    .insight-card {
+        background: #fff;
+        border-radius: 16px;
+        border: 1px solid #d6e7e4;
+        box-shadow: 0 10px 20px rgba(20, 59, 58, 0.06);
+        padding: 20px;
+        height: 100%;
+    }
+
+    .insight-title {
+        margin: 0 0 14px;
+        font-size: 1.08rem;
+        font-weight: 800;
+        color: #17353c;
+    }
+
+    .overview-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px dashed #d3e4e2;
+        font-size: 0.92rem;
+    }
+
+    .overview-row:last-child {
         border-bottom: none;
+        padding-bottom: 0;
     }
 
-    .info-label {
-        color: #555;
-        font-weight: 500;
+    .overview-label {
+        color: #678186;
+        font-weight: 700;
     }
 
-    .badge {
-        display: inline-block;
+    .overview-value {
+        color: #16343b;
+        font-weight: 800;
+    }
+
+    .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        border-radius: 999px;
         padding: 6px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 600;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-top: 6px;
     }
 
-    .badge-success {
-        background: #d4edda;
-        color: #155724;
+    .status-pill.success {
+        color: #155a43;
+        background: #d8f5ea;
     }
 
-    .badge-warning {
-        background: #fff3cd;
-        color: #856404;
+    .status-pill.warning {
+        color: #8a4f13;
+        background: #ffedd4;
     }
 
-    .badge-danger {
-        background: #f8d7da;
-        color: #721c24;
+    .bar-wrap {
+        margin-top: 16px;
     }
+
+    .bar-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #6d848a;
+        margin-bottom: 6px;
+    }
+
+    .bar-track {
+        height: 9px;
+        background: #ebf3f2;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .bar-fill {
+        height: 100%;
+        border-radius: inherit;
+    }
+
+    .bar-fill.student { background: linear-gradient(90deg, #0f8c80, #18a297); }
+    .bar-fill.teacher { background: linear-gradient(90deg, #ff8a3d, #f5b03a); }
 </style>
 
-<!-- Welcome Section -->
-<div class="welcome-card">
-    <h2>
-        <i class="fas fa-wave-hand"></i> Selamat Datang, <b>{{Auth::user()->nama}}</b>!
-    </h2>
-    <p>
-        <i class="fas fa-user-tie"></i> Anda login sebagai 
-        <b>@if (Auth::user()->role == 1)
-            Administrator
-        @elseif (Auth::user()->role == 0)
-            Anggota
-        @endif
-        </b> di Sistem Perpustakaan Digital
+<div class="admin-hero">
+    <h2 class="admin-hero-title">Selamat Datang, {{ Auth::user()->nama }}</h2>
+    <p class="admin-hero-subtitle">
+        Anda masuk sebagai {{ Auth::user()->roleLabel() }}. Monitor seluruh aktivitas perpustakaan dari satu panel.
     </p>
-</div>
 
-<!-- Statistik Dashboard -->
-<div class="row">
-    <div class="col-md-6 col-lg-3">
-        <div class="stat-card">
-            <div class="stat-icon"><i class="fas fa-book"></i></div>
-            <div class="stat-number">{{ $totalBuku }}</div>
-            <div class="stat-label">Total Buku</div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-lg-3">
-        <div class="stat-card green">
-            <div class="stat-icon"><i class="fas fa-users"></i></div>
-            <div class="stat-number">{{ $totalAnggota }}</div>
-            <div class="stat-label">Total Anggota</div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-lg-3">
-        <div class="stat-card red">
-            <div class="stat-icon"><i class="fas fa-handshake"></i></div>
-            <div class="stat-number">{{ $totalPinjam }}</div>
-            <div class="stat-label">Total Peminjaman</div>
-        </div>
-    </div>
-
-    <div class="col-md-6 col-lg-3">
-        <div class="stat-card blue">
-            <div class="stat-icon"><i class="fas fa-list"></i></div>
-            <div class="stat-number">{{ $totalKategori }}</div>
-            <div class="stat-label">Kategori Buku</div>
-        </div>
+    <div class="admin-quick-actions">
+        <a href="{{ route('admin.books.create') }}" class="admin-quick-btn">
+            <i class="bi bi-plus-circle"></i> Tambah Buku
+        </a>
+        <a href="{{ route('admin.anggota.create') }}" class="admin-quick-btn">
+            <i class="bi bi-person-plus"></i> Tambah Anggota
+        </a>
+        <a href="{{ route('admin.peminjaman.index') }}" class="admin-quick-btn">
+            <i class="bi bi-arrow-repeat"></i> Kelola Peminjaman
+        </a>
     </div>
 </div>
 
-<!-- Quick Actions -->
-<div class="dashboard-section">
-    <h4><i class="fas fa-rocket"></i> Aksi Cepat</h4>
-    <a href="{{ route('admin.books.create') }}" class="quick-action" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin-right: 10px; margin-bottom: 10px; transition: all 0.3s ease;"><i class="fas fa-plus"></i> Tambah Buku</a>
-    <a href="{{ route('admin.anggota.create') }}" class="quick-action" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin-right: 10px; margin-bottom: 10px; transition: all 0.3s ease;"><i class="fas fa-plus"></i> Tambah Anggota</a>
-    <a href="{{ route('admin.peminjaman.index') }}" class="quick-action" style="display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin-right: 10px; margin-bottom: 10px; transition: all 0.3s ease;"><i class="fas fa-plus"></i> Proses Peminjaman</a>
+<div class="row g-3 mb-3">
+    <div class="col-md-6 col-xl-4">
+        <div class="metric-card d-flex justify-content-between align-items-start">
+            <div>
+                <div class="metric-label">Total Buku</div>
+                <div class="metric-value">{{ $totalBuku }}</div>
+            </div>
+            <span class="metric-icon books"><i class="bi bi-journal-bookmark-fill"></i></span>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="metric-card d-flex justify-content-between align-items-start">
+            <div>
+                <div class="metric-label">Total Anggota</div>
+                <div class="metric-value">{{ $totalAnggota }}</div>
+            </div>
+            <span class="metric-icon members"><i class="bi bi-people-fill"></i></span>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="metric-card d-flex justify-content-between align-items-start">
+            <div>
+                <div class="metric-label">Total Guru</div>
+                <div class="metric-value">{{ $totalGuru }}</div>
+            </div>
+            <span class="metric-icon teachers"><i class="bi bi-mortarboard-fill"></i></span>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="metric-card d-flex justify-content-between align-items-start">
+            <div>
+                <div class="metric-label">Total Peminjaman</div>
+                <div class="metric-value">{{ $totalPinjam }}</div>
+            </div>
+            <span class="metric-icon borrow"><i class="bi bi-arrow-left-right"></i></span>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="metric-card d-flex justify-content-between align-items-start">
+            <div>
+                <div class="metric-label">Kategori Buku</div>
+                <div class="metric-value">{{ $totalKategori }}</div>
+            </div>
+            <span class="metric-icon category"><i class="bi bi-tags-fill"></i></span>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="metric-card d-flex justify-content-between align-items-start">
+            <div>
+                <div class="metric-label">Buku Rusak/Hilang</div>
+                <div class="metric-value">{{ $totalRusakHilang }}</div>
+            </div>
+            <span class="metric-icon warning"><i class="bi bi-exclamation-triangle-fill"></i></span>
+        </div>
+    </div>
 </div>
 
-<!-- Info Perpustakaan -->
-<div class="dashboard-section">
-    <h4><i class="fas fa-chart-bar"></i> Ringkasan Buku</h4>
-    <div class="info-box">
-        <div class="info-box-item">
-            <span class="info-label">Buku Tersedia</span>
-            <span class="badge badge-success">{{ $stokTersedia }}</span>
+<div class="row g-3">
+    <div class="col-lg-7">
+        <div class="insight-card">
+            <h3 class="insight-title">Distribusi Pengguna</h3>
+
+            @php
+                $totalPenggunaPortal = max(1, $totalAnggota + $totalGuru);
+                $persenAnggota = round(($totalAnggota / $totalPenggunaPortal) * 100);
+                $persenGuru = round(($totalGuru / $totalPenggunaPortal) * 100);
+            @endphp
+
+            <div class="bar-wrap">
+                <div class="d-flex justify-content-between bar-title">
+                    <span>Murid</span>
+                    <span>{{ $persenAnggota }}%</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill student" style="width: {{ $persenAnggota }}%"></div>
+                </div>
+            </div>
+
+            <div class="bar-wrap">
+                <div class="d-flex justify-content-between bar-title">
+                    <span>Guru</span>
+                    <span>{{ $persenGuru }}%</span>
+                </div>
+                <div class="bar-track">
+                    <div class="bar-fill teacher" style="width: {{ $persenGuru }}%"></div>
+                </div>
+            </div>
+
+            <div class="status-pill success">
+                <i class="bi bi-check-circle-fill"></i>
+                Sistem anggota aktif dan terdata
+            </div>
         </div>
-        <div class="info-box-item">
-            <span class="info-label">Sedang Dipinjam</span>
-            <span class="badge badge-warning">{{ $dipinjam }}</span>
-        </div>
-        <div class="info-box-item">
-            <span class="info-label">Rusak/Hilang</span>
-            <span class="badge badge-danger">{{ $totalRusakHilang }}</span>
+    </div>
+
+    <div class="col-lg-5">
+        <div class="insight-card">
+            <h3 class="insight-title">Operasional Harian</h3>
+
+            <div class="overview-row">
+                <span class="overview-label">Buku tersedia</span>
+                <span class="overview-value">{{ $stokTersedia }}</span>
+            </div>
+            <div class="overview-row">
+                <span class="overview-label">Sedang dipinjam</span>
+                <span class="overview-value">{{ $dipinjam }}</span>
+            </div>
+            <div class="overview-row">
+                <span class="overview-label">Koleksi perlu perhatian</span>
+                <span class="overview-value">{{ $totalRusakHilang }}</span>
+            </div>
+
+            <div class="status-pill {{ $dipinjam > 0 ? 'warning' : 'success' }}">
+                <i class="bi bi-activity"></i>
+                {{ $dipinjam > 0 ? 'Ada transaksi peminjaman aktif' : 'Tidak ada peminjaman aktif saat ini' }}
+            </div>
         </div>
     </div>
 </div>

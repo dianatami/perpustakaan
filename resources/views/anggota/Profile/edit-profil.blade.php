@@ -2,6 +2,7 @@
 @section('title', 'Edit Profil')
 
 @section('content')
+@php($portalPrefix = $portalPrefix ?? (request()->routeIs('guru.*') ? 'guru' : 'anggota'))
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-8">
@@ -20,7 +21,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('anggota.update.profil') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route($portalPrefix . '.update.profil') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -75,7 +76,7 @@
                         </div>
 
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <a href="{{ route('anggota.profil') }}" class="btn btn-secondary">Batal</a>
+                            <a href="{{ route($portalPrefix . '.profil.detail') }}" class="btn btn-secondary">Batal</a>
                             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                         </div>
                     </form>

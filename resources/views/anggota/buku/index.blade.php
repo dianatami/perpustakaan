@@ -1,6 +1,7 @@
 @extends('layout.anggota')
 @section('title','Daftar Buku')
 @section('content')
+@php($portalPrefix = request()->routeIs('guru.*') ? 'guru' : 'anggota')
 <div class="container mt-4">
     <h3 class="mb-4">Daftar Buku</h3>
 
@@ -39,7 +40,7 @@
                             <strong>{{ $book->stock }}</strong>
                         </p>
 
-                        <a href="{{ route('anggota.buku.show', $book->id) }}"
+                        <a href="{{ route($portalPrefix . '.buku.show', $book->id) }}"
                            class="btn btn-sm btn-primary w-100">
                             Lihat Detail
                         </a>

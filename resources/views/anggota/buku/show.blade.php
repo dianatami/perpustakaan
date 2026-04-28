@@ -1,8 +1,9 @@
 @extends('layout.anggota')
 
 @section('content')
+@php($portalPrefix = request()->routeIs('guru.*') ? 'guru' : 'anggota')
 <div class="container mt-4">
-    <a href="{{ route('anggota.buku.index') }}" class="btn btn-secondary mb-3">
+    <a href="{{ route($portalPrefix . '.buku.index') }}" class="btn btn-secondary mb-3">
         ← Kembali
     </a>
 

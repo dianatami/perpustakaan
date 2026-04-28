@@ -4,385 +4,175 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Daftar - Perpustakaan Digital</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: linear-gradient(135deg, #f7cac9 0%, #92a8d1 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
-        }
-
-        .register-wrapper {
-            width: 100%;
-        }
-
-        .register-container {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
-            width: 100%;
-            max-width: 500px;
-            margin: 0 auto;
-            animation: slideIn 0.5s ease-out;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .register-header {
-            background: linear-gradient(135deg,#92a8d1 100%);
-            padding: 40px 30px;
-            text-align: center;
-            color: white;
-        }
-
-        .register-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-
-        .register-header p {
-            font-size: 14px;
-            opacity: 0.95;
-        }
-
-        .register-body {
-            padding: 40px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 14px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-control {
-            padding: 12px 16px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            background-color: #f8f9fa;
-        }
-
-        .form-control:focus {
-            background-color: white;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            outline: none;
-        }
-
-        .form-control::placeholder {
-            color: #999;
-        }
-
-        .form-control.is-invalid {
-            border-color: #dc3545;
-            background-color: #fff5f5;
-        }
-
-        .form-control.is-invalid:focus {
-            border-color: #dc3545;
-            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
-        }
-
-        .invalid-feedback {
-            display: block;
-            margin-top: 8px;
-            font-size: 13px;
-            color: #dc3545;
-            font-weight: 500;
-        }
-
-        .alert {
-            margin-bottom: 20px;
-            padding: 14px 16px;
-            border-radius: 8px;
-            border: none;
-            font-size: 14px;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-danger {
-            background-color: #fee;
-            color: #c33;
-            border-left: 4px solid #dc3545;
-        }
-
-        .alert-success {
-            background-color: #efe;
-            color: #060;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert strong {
-            font-weight: 700;
-        }
-
-        .btn-register {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #2ab95a 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 16px;
-        }
-
-        .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-            color: white;
-            text-decoration: none;
-        }
-
-        .btn-register:active {
-            transform: translateY(0);
-        }
-
-        .register-footer {
-            text-align: center;
-            margin-top: 24px;
-            padding-top: 24px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .register-footer p {
-            color: #666;
-            font-size: 14px;
-            margin: 0 0 12px 0;
-        }
-
-        .btn-login {
-            display: inline-block;
-            padding: 10px 24px;
-            background-color: #f0f0f0;
-            color: #667eea;
-            border: 2px solid #667eea;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .btn-login:hover {
-            background-color: #667eea;
-            color: white;
-            text-decoration: none;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .form-row-full {
-            grid-column: 1 / -1;
-        }
-
-        @media (max-width: 480px) {
-            .register-container {
-                max-width: 100%;
-            }
-
-            .register-body {
-                padding: 30px 20px;
-            }
-
-            .register-header {
-                padding: 30px 20px;
-            }
-
-            .register-header h1 {
-                font-size: 28px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    <title>Daftar | Perpustakaan Sekolah</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Unbounded:wght@500;600;700;800&family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body>
-    <div class="register-wrapper">
-        <div class="register-container">
-            <!-- Header -->
-            <div class="register-header">
-                <h1>
-                    <i class="fas fa-user-plus"></i>
-                    {{$judul}}
-                </h1>
-                <p>Perpustakaan Digital</p>
+<body class="bg-shelf-cloud text-shelf-ink antialiased selection:bg-shelf-gold/80 selection:text-shelf-ink">
+    <div class="relative isolate min-h-screen overflow-hidden bg-aurora">
+        <div class="paper-grain"></div>
+
+        <div class="pointer-events-none absolute -left-24 top-8 h-80 w-80 rounded-full bg-shelf-gold/42 blur-3xl animate-float-soft"></div>
+        <div class="pointer-events-none absolute -right-20 top-20 h-96 w-96 rounded-full bg-shelf-teal/28 blur-3xl animate-float-soft [animation-delay:1.8s]"></div>
+        <div class="pointer-events-none absolute left-[7%] top-[24%] h-3 w-3 rounded-full bg-shelf-coral/75 animate-pulse"></div>
+        <div class="pointer-events-none absolute left-[13%] top-[67%] h-2.5 w-2.5 rounded-full bg-shelf-ocean/70 animate-pulse [animation-delay:.45s]"></div>
+        <div class="pointer-events-none absolute right-[11%] top-[31%] h-3 w-3 rounded-full bg-shelf-teal/74 animate-pulse [animation-delay:.7s]"></div>
+        <div class="pointer-events-none absolute right-[16%] top-[74%] h-2 w-2 rounded-full bg-shelf-gold/86 animate-pulse [animation-delay:1.1s]"></div>
+
+        <header class="relative z-20">
+            <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/72 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
+                    <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[150deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
+                    <span>
+                        <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
+                        <span class="block text-xs text-shelf-ink/65">Portal Literasi</span>
+                    </span>
+                </a>
+
+                <nav class="flex items-center gap-2">
+                    <a href="{{ route('landing') }}" class="rounded-full border border-shelf-ink/15 bg-white/75 px-4 py-2 text-sm font-semibold text-shelf-ink/85 transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Landing</a>
+                    <a href="{{ route('tampilan.login') }}" class="rounded-full bg-shelf-ink px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-shelf-ink/30 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">Masuk</a>
+                </nav>
             </div>
+        </header>
 
-            <!-- Body -->
-            <div class="register-body">
-                <!-- Error Message -->
-                @if (session()->has('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-circle"></i> <strong>{{ session('error')}}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <main class="relative z-10 mx-auto flex w-full max-w-6xl items-center px-5 pb-10 pt-2 sm:px-8 lg:px-10 lg:pb-16">
+            <section class="grid w-full items-stretch gap-6 lg:grid-cols-[0.95fr_1.05fr]">
+                <aside class="reveal-item glass-card relative hidden overflow-hidden rounded-[2rem] p-8 lg:block" data-reveal>
+                    <div class="absolute -right-16 -top-16 h-44 w-44 rounded-full border border-white/90"></div>
+                    <div class="absolute right-10 top-10 h-8 w-8 rounded-full bg-shelf-gold/85"></div>
+                    <div class="absolute left-8 top-24 h-3 w-3 rounded-full bg-shelf-coral/80 animate-pulse"></div>
+
+                    <p class="font-mono inline-flex items-center gap-2 rounded-full border border-shelf-ocean/30 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-shelf-ink/76">
+                        <span class="h-1.5 w-1.5 rounded-full bg-shelf-ocean"></span>
+                        New Member Access
+                    </p>
+
+                    <h1 class="mt-5 font-display text-4xl leading-tight text-shelf-ink">Buat akun dan mulai eksplorasi koleksi terbaik.</h1>
+                    <p class="mt-4 max-w-md text-sm leading-relaxed text-shelf-ink/76">
+                        Registrasi hanya beberapa langkah. Setelah itu kamu bisa mencari buku, meminjam, dan mengelola profil belajar dengan tampilan yang nyaman.
+                    </p>
+
+                    <div class="mt-8 space-y-3">
+                        <article class="book-card rounded-2xl p-4">
+                            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-shelf-ink/58">Fast Onboarding</p>
+                            <p class="mt-1 text-sm font-semibold text-shelf-ink">Proses daftar singkat dengan field inti saja.</p>
+                        </article>
+                        <article class="book-card rounded-2xl p-4">
+                            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-shelf-ink/58">Personal Space</p>
+                            <p class="mt-1 text-sm font-semibold text-shelf-ink">Profil anggota siap dipersonalisasi setelah login.</p>
+                        </article>
+                        <article class="book-card rounded-2xl p-4">
+                            <p class="font-mono text-[10px] uppercase tracking-[0.14em] text-shelf-ink/58">Read Consistently</p>
+                            <p class="mt-1 text-sm font-semibold text-shelf-ink">Dukung kebiasaan baca harian yang lebih terukur.</p>
+                        </article>
+                    </div>
+                </aside>
+
+                <div class="reveal-item glass-card relative overflow-hidden rounded-[2rem] p-6 sm:p-8" data-reveal style="transition-delay:120ms;">
+                    <div class="absolute -right-12 top-4 h-24 w-24 rounded-full border border-white/90"></div>
+                    <div class="absolute left-3 top-3 h-2.5 w-2.5 rounded-full bg-shelf-gold/85 animate-pulse"></div>
+                    <div class="absolute right-9 top-14 h-2 w-2 rounded-full bg-shelf-coral/80 animate-pulse [animation-delay:.35s]"></div>
+
+                    <div class="relative">
+                        <p class="font-mono text-xs uppercase tracking-[0.16em] text-shelf-ink/62">Create Account</p>
+                        <h2 class="mt-2 font-display text-3xl text-shelf-ink">{{ $judul ?? 'Daftar Akun Baru' }}</h2>
+                        <p class="mt-1 text-sm text-shelf-ink/68">Isi data berikut untuk mulai menggunakan sistem perpustakaan.</p>
+                    </div>
+
+                    @if (session()->has('error'))
+                        <div class="relative mt-5 rounded-2xl border border-red-500/25 bg-red-50/90 px-4 py-3 text-sm text-red-700">
+                            <p class="font-semibold">{{ session('error') }}</p>
+                        </div>
+                    @endif
+
+                    @if (session('status'))
+                        <div class="relative mt-5 rounded-2xl border border-emerald-500/30 bg-emerald-50/90 px-4 py-3 text-sm text-emerald-700">
+                            <p class="font-semibold">{{ session('message') }}</p>
+                        </div>
+                    @endif
+
+                    <form action="{{ route('tampilan.register.process') }}" method="POST" class="relative mt-6 space-y-4">
+                        @csrf
+
+                        <div>
+                            <label for="nama" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Nama Lengkap</label>
+                            <input
+                                type="text"
+                                name="nama"
+                                id="nama"
+                                value="{{ old('nama') }}"
+                                placeholder="Masukkan nama lengkap"
+                                required
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('nama') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                            >
+                            @error('nama')
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="email" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Email</label>
+                            <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                value="{{ old('email') }}"
+                                placeholder="nama@email.com"
+                                required
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('email') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                            >
+                            @error('email')
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="password" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Password</label>
+                            <input
+                                type="password"
+                                name="password"
+                                id="password"
+                                placeholder="Masukkan password"
+                                required
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('password') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                            >
+                            @error('password')
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="hp" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">No Handphone</label>
+                            <input
+                                type="text"
+                                name="hp"
+                                id="hp"
+                                value="{{ old('hp') }}"
+                                placeholder="08xxxxxxxxxx"
+                                required
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('hp') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                            >
+                            @error('hp')
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <button type="submit" class="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-linear-[130deg,#10172e,#178f78] px-5 py-3 text-sm font-semibold text-white shadow-xl shadow-shelf-ink/30 transition hover:-translate-y-0.5 hover:shadow-2xl hover:shadow-shelf-teal/35">
+                            Buat Akun
+                            <span aria-hidden="true">-&gt;</span>
+                        </button>
+                    </form>
+
+                    <div class="relative mt-6 border-t border-shelf-ink/10 pt-5 text-sm text-shelf-ink/70">
+                        Sudah punya akun?
+                        <a href="{{ route('tampilan.login') }}" class="font-semibold text-shelf-teal transition hover:text-shelf-ocean">Masuk di sini</a>
+                    </div>
                 </div>
-                @endif
-
-                <!-- Success Message -->
-                @if (session('status'))
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <i class="fas fa-check-circle"></i> <strong>{{ session('message')}}</strong>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                @endif
-
-                <!-- Register Form -->
-                <form action="{{route('tampilan.register')}}" method="POST">
-                    @csrf
-
-                    <!-- Nama Field -->
-                    <div class="form-group">
-                        <label for="nama">
-                            <i class="fas fa-user"></i> Nama Lengkap
-                        </label>
-                        <input type="text" 
-                               name="nama" 
-                               id="nama"
-                               value="{{old('nama')}}"
-                               class="form-control @error('nama') is-invalid @enderror" 
-                               placeholder="Masukkan Nama Lengkap"
-                               required>
-                        @error('nama')
-                        <span class="invalid-feedback" role="alert">
-                            <i class="fas fa-times-circle"></i> {{$message}}
-                        </span>
-                        @enderror
-                    </div>
-
-                    <!-- Email Field -->
-                    <div class="form-group">
-                        <label for="email">
-                            <i class="fas fa-envelope"></i> Email
-                        </label>
-                        <input type="email" 
-                               name="email" 
-                               id="email"
-                               value="{{old('email')}}"
-                               class="form-control @error('email') is-invalid @enderror" 
-                               placeholder="Masukkan Alamat Email"
-                               required>
-                        @error('email')
-                        <span class="invalid-feedback" role="alert">
-                            <i class="fas fa-times-circle"></i> {{$message}}
-                        </span>
-                        @enderror
-                    </div>
-
-                    <!-- Password Field -->
-                    <div class="form-group">
-                        <label for="password">
-                            <i class="fas fa-lock"></i> Password
-                        </label>
-                        <input type="password" 
-                               name="password" 
-                               id="password"
-                               class="form-control @error('password') is-invalid @enderror" 
-                               placeholder="Masukkan Password"
-                               required>
-                        @error('password')
-                        <span class="invalid-feedback" role="alert">
-                            <i class="fas fa-times-circle"></i> {{$message}}
-                        </span>
-                        @enderror
-                    </div>
-
-                    <!-- Phone Field -->
-                    <div class="form-group">
-                        <label for="hp">
-                            <i class="fas fa-phone"></i> No Handphone
-                        </label>
-                        <input type="text" 
-                               name="hp" 
-                               id="hp"
-                               value="{{old('hp')}}"
-                               class="form-control @error('hp') is-invalid @enderror" 
-                               placeholder="Masukkan Nomor Handphone"
-                               required>
-                        @error('hp')
-                        <span class="invalid-feedback" role="alert">
-                            <i class="fas fa-times-circle"></i> {{$message}}
-                        </span>
-                        @enderror
-                    </div>
-
-                    <!-- Submit Button -->
-                    <button type="submit" class="btn-register">
-                        <i class="fas fa-user-check"></i> Daftar
-                    </button>
-                </form>
-
-                <!-- Footer -->
-                <div class="register-footer">
-                    <p>Sudah memiliki akun?</p>
-                    <a href="{{route('tampilan.login')}}" class="btn-login">
-                        <i class="fas fa-sign-in-alt"></i> Masuk Di Sini
-                    </a>
-                </div>
-            </div>
-        </div>
+            </section>
+        </main>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
