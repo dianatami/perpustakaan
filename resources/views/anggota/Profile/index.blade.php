@@ -158,7 +158,7 @@
                         <div class="col-md-8 profile-info">
                             <h2 class="profile-name">{{ $user->nama ?? 'User' }}</h2>
                             <p class="profile-member-since">
-                                <i class="bi bi-calendar-event"></i> Member sejak {{ $user->created_at->format('d F Y') ?? '-' }}
+                                <i class="bi bi-calendar-event"></i> Member sejak {{ optional($user->created_at)->format('d F Y') ?? '-' }}
                             </p>
                             
                             <div class="row g-3">
@@ -260,6 +260,8 @@
                     </h5>
                 </div>
                 <div class="card-body pb-4">
+                    @php($activeBorrowings = $activeBorrowings ?? ($bookrents ?? collect())->where('status', 'dipinjam'))
+
                     <!-- Statistik -->
                     <div class="row g-3 mb-4">
                         <div class="col-4">
@@ -287,6 +289,33 @@
                             </div>
                         </div>
                     </div>
+
+                    @if($activeBorrowings->count() > 0)
+                        <div class="mb-4">
+                            <div class="d-flex align-items-center justify-content-between mb-2">
+                                <h6 class="fw-bold mb-0">Pinjaman Aktif</h6>
+                                <span class="badge bg-warning text-dark">Countdown 72 jam</span>
+                            </div>
+                            <div class="row g-3">
+                                @foreach($activeBorrowings->sortByDesc('created_at') as $rent)
+                                    <div class="col-md-6">
+                                        <div class="p-3 rounded-4 border" style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.08) 0%, rgba(255, 193, 7, 0.08) 100%); border-color: rgba(255, 152, 0, 0.18);">
+                                            <div class="fw-bold text-dark mb-1">{{ $rent->book->title ?? '-' }}</div>
+                                            <div class="text-muted small mb-2">
+                                                Dipinjam: {{ $rent->created_at ? $rent->created_at->format('d M Y H:i') : '-' }}
+                                            </div>
+                                            <div class="d-flex align-items-center justify-content-between gap-2">
+                                                <span class="badge rounded-pill text-bg-warning text-dark px-3 py-2 countdown-timer" data-countdown data-expires-at="{{ optional($rent->due_at)->toIso8601String() }}">
+                                                    Menghitung...
+                                                </span>
+                                                <span class="text-muted small">Sisa waktu</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     <!-- Tabel Buku -->
                     <div class="table-responsive">
