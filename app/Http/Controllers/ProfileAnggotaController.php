@@ -8,6 +8,7 @@ use App\Models\Bookrent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
 
 class ProfileAnggotaController extends Controller
@@ -144,6 +145,10 @@ class ProfileAnggotaController extends Controller
 
         // Handle foto upload
         if ($request->hasFile('foto')) {
+            if ($user->foto) {
+                Storage::disk('public')->delete($user->foto);
+            }
+
             $foto = $request->file('foto');
             $nama_foto = time() . '_' . $foto->getClientOriginalName();
             $foto->storeAs('public/profil', $nama_foto);
@@ -155,6 +160,28 @@ class ProfileAnggotaController extends Controller
         return redirect()
             ->route($this->portalRouteName($request, 'profil.detail'))
             ->with('success', 'Profil berhasil diperbarui');
+    }
+
+    /**
+     * Menghapus foto profil user yang sedang login
+     */
+    public function deleteFoto(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user->foto) {
+            Storage::disk('public')->delete($user->foto);
+            $user->foto = null;
+            $user->save();
+
+            return redirect()
+                ->route($this->portalRouteName($request, 'edit.profil'))
+                ->with('success', 'Foto profil berhasil dihapus');
+        }
+
+        return redirect()
+            ->route($this->portalRouteName($request, 'edit.profil'))
+            ->with('info', 'Foto profil belum tersedia');
     }
 
     /**
@@ -225,7 +252,11 @@ class ProfileAnggotaController extends Controller
     {
         $request->validate([
             'tempat_lahir' => 'nullable|string|max:255',
-            'tanggal_lahir' => 'nullable|date',
+            'tanggal_lahir' => ['nullable', 'date_format:Y-m-d', function (string $attribute, mixed $value, \Closure $fail): void {
+                if (! $this->isValidCalendarDate((string) $value)) {
+                    $fail('Format tanggal lahir tidak valid.');
+                }
+            }],
             'alamat' => 'nullable|string|max:500',
         ]);
 
@@ -241,6 +272,13 @@ class ProfileAnggotaController extends Controller
         return redirect()
             ->route($this->portalRouteName($request, 'profil.detail'))
             ->with('success', 'Informasi pribadi berhasil diperbarui');
+    }
+
+    private function isValidCalendarDate(string $value): bool
+    {
+        $date = \DateTimeImmutable::createFromFormat('Y-m-d', $value);
+
+        return $date !== false && $date->format('Y-m-d') === $value;
     }
 }
  

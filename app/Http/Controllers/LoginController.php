@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Route;
 
 
@@ -17,35 +19,47 @@ class LoginController extends Controller
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required|email',
+            'identifier' => 'required|string',
             'password' => 'required|min:6',
         ]);
-        
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
 
-            if ((int) $user->role === 3) {
-                Auth::logout();
-                return back()->with('error', 'Akun kepala sekolah sudah tidak didukung. Silakan hubungi admin.');
-            }
-
-            if (! $user->status) {
-                Auth::logout();
-                return back()->with('error', 'User belum aktif');
-            }
-
-            $request->session()->regenerate();
-
-            $dashboardRoute = $user->dashboardRouteName();
-
-            if (! Route::has($dashboardRoute)) {
-                $dashboardRoute = 'anggota.beranda';
-            }
-
-            return redirect()->intended(route($dashboardRoute));
+        $identifier = trim($credentials['identifier']);
+        if (! User::isValidLoginIdentifier($identifier)) {
+            return back()->with('error', 'Format NIP/NISN tidak valid.');
         }
 
-        return back()->with('error', 'Login Gagal');
+        $user = User::query()
+            ->where('email', $identifier)
+            ->first();
+
+        if (! $user) {
+            $user = User::query()
+                ->where('nip', $identifier)
+                ->first();
+        }
+
+        if (! $user || ! Hash::check($credentials['password'], $user->password)) {
+            return back()->with('error', 'Login Gagal');
+        }
+
+        if ((int) $user->role === 3) {
+            return back()->with('error', 'Akun kepala sekolah sudah tidak didukung. Silakan hubungi admin.');
+        }
+
+        if (! $user->status) {
+            return back()->with('error', 'User belum aktif');
+        }
+
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        $dashboardRoute = $user->dashboardRouteName();
+
+        if (! Route::has($dashboardRoute)) {
+            $dashboardRoute = 'anggota.beranda';
+        }
+
+        return redirect()->route($dashboardRoute);
     }
 
     public function logout()

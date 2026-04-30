@@ -23,13 +23,16 @@
 
         <header class="relative z-20">
             <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
-                <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/72 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
-                    <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[150deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
-                    <span>
-                        <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
-                        <span class="block text-xs text-shelf-ink/65">Portal Literasi</span>
-                    </span>
-                </a>
+                <div>
+                    <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/72 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
+                        <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[150deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
+                        <span>
+                            <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
+                            <span class="block text-xs text-shelf-ink/65">Portal Literasi</span>
+                        </span>
+                    </a>
+                    <p class="mt-2 ml-4 text-xs font-semibold text-shelf-ocean/80">Perpustakaan SMKN 1 Tirtamulya</p>
+                </div>
 
                 <nav class="flex items-center gap-2">
                     <a href="{{ route('landing') }}" class="rounded-full border border-shelf-ink/15 bg-white/75 px-4 py-2 text-sm font-semibold text-shelf-ink/85 transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Landing</a>
@@ -125,6 +128,22 @@
                                 class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('email') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
                             >
                             @error('email')
+                                <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label for="nip" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">NIP / NISN</label>
+                            <input
+                                type="text"
+                                name="nip"
+                                id="nip"
+                                value="{{ old('nip') }}"
+                                placeholder="197104122006041001 atau 10 digit NISN"
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('nip') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                            >
+                            <p class="mt-1 text-[11px] text-shelf-ink/55">Gunakan NIP 18 digit untuk guru atau NISN 10 digit untuk siswa. Jika diisi NIP, akun akan dianggap sebagai guru.</p>
+                            @error('nip')
                                 <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
                             @enderror
                         </div>

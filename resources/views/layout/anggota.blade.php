@@ -130,6 +130,24 @@
             font-size: 0.81rem;
         }
 
+        .portal-school-name {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--portal-border);
+            font-size: 0.77rem;
+            font-weight: 600;
+            color: var(--portal-primary);
+            letter-spacing: 0.05em;
+        }
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--portal-border);
+            font-size: 0.77rem;
+            font-weight: 600;
+            color: var(--portal-primary);
+            letter-spacing: 0.05em;
+        }
+
         .portal-actions {
             display: flex;
             align-items: center;
@@ -285,6 +303,7 @@
                     <span>
                         <h1 class="portal-brand-title">{{ $portalTitle }}</h1>
                         <p class="portal-brand-subtitle">{{ $portalSubtitle }}</p>
+                        <p class="portal-school-name">Perpustakaan SMKN 1 Tirtamulya</p>
                     </span>
                 </a>
 
@@ -333,6 +352,11 @@
     <script>
         const portalNavToggle = document.getElementById('portalNavToggle');
         const portalNavWrap = document.getElementById('portalNavWrap');
+
+        // Hindari prompt "resubmit form" saat user refresh halaman setelah submit.
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.href);
+        }
 
         if (portalNavToggle && portalNavWrap) {
             portalNavToggle.addEventListener('click', () => {

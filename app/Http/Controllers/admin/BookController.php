@@ -47,6 +47,7 @@ class BookController extends Controller
             'title' => 'required',
             'author' => 'required',
             'stock' => 'required|integer|min:0',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $data = $request->only(['category_id','book_code','title','author','publisher','year','cover','description','stock']);
@@ -72,10 +73,12 @@ class BookController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
+            'category_id' => 'required|exists:categories,id',
             'book_code' => 'required',
             'title' => 'required',
             'author' => 'required',
             'stock' => 'required|integer|min:0',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
 
         $book = Book::findOrFail($id);

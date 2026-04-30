@@ -106,6 +106,16 @@
             color: rgba(226, 245, 242, 0.72);
         }
 
+        .admin-school-name {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(214, 245, 240, 0.25);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.05em;
+        }
+
         .admin-nav {
             margin-top: 14px;
             display: grid;
@@ -295,6 +305,7 @@
                 <span>
                     <span class="admin-brand-title">Control Room</span>
                     <span class="admin-brand-subtitle d-block">Perpustakaan Sekolah</span>
+                    <span class="admin-school-name d-block">Perpustakaan SMKN 1 Tirtamulya</span>
                 </span>
             </a>
 
@@ -352,6 +363,11 @@
     <script>
         const toggleSidebarButton = document.getElementById('toggleSidebar');
         const adminSidebar = document.getElementById('adminSidebar');
+
+        // Hindari prompt "resubmit form" saat user refresh setelah submit.
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.href);
+        }
 
         if (toggleSidebarButton && adminSidebar) {
             toggleSidebarButton.addEventListener('click', () => {

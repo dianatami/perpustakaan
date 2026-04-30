@@ -11,11 +11,14 @@ class RoleAccessAndLoginTest extends TestCase
 {
     use DatabaseTransactions;
 
-    private function makeUser(int $role, string $email, bool $active = true): User
+    private function makeUser(int $role, string $email, bool $active = true, ?string $nip = null): User
     {
+        $nip = $nip ?? ($role === User::ROLE_GURU ? '198704122010011001' : null);
+
         return User::create([
             'nama' => 'User ' . $role,
             'email' => $email,
+            'nip' => $nip,
             'password' => Hash::make('secret123'),
             'hp' => '081234567890',
             'status' => $active,
@@ -36,7 +39,7 @@ class RoleAccessAndLoginTest extends TestCase
             $user = $this->makeUser($role, $email);
 
             $response = $this->post(route('tampilan.login.process'), [
-                'email' => $email,
+                'identifier' => $email,
                 'password' => 'secret123',
             ]);
 
@@ -67,5 +70,78 @@ class RoleAccessAndLoginTest extends TestCase
     public function test_guest_is_redirected_to_login_for_protected_route(): void
     {
         $this->get(route('admin.beranda'))->assertRedirect(route('tampilan.login'));
+    }
+
+    public function test_guru_can_login_with_nip(): void
+    {
+        $guru = $this->makeUser(User::ROLE_GURU, 'guru-nip@example.com');
+
+        $response = $this->post(route('tampilan.login.process'), [
+            'identifier' => '198704122010011001',
+            'password' => 'secret123',
+        ]);
+
+        $response->assertRedirect(route('guru.beranda'));
+        $this->assertAuthenticatedAs($guru);
+    }
+
+    public function test_siswa_can_login_with_nis(): void
+    {
+        $siswa = $this->makeUser(User::ROLE_ANGGOTA, 'siswa-nis@example.com', true, '1234567890');
+
+        $response = $this->post(route('tampilan.login.process'), [
+            'identifier' => '1234567890',
+            'password' => 'secret123',
+        ]);
+
+        $response->assertRedirect(route('anggota.beranda'));
+        $this->assertAuthenticatedAs($siswa);
+    }
+
+    public function test_invalid_nip_is_rejected_on_login(): void
+    {
+        $this->post(route('tampilan.login.process'), [
+            'identifier' => '1234567',
+            'password' => 'secret123',
+        ])->assertSessionHas('error', 'Format NIP/NISN tidak valid.');
+
+        $this->assertGuest();
+    }
+
+    public function test_invalid_nisn_length_is_rejected_on_login(): void
+    {
+        $this->post(route('tampilan.login.process'), [
+            'identifier' => '123456789',
+            'password' => 'secret123',
+        ])->assertSessionHas('error', 'Format NIP/NISN tidak valid.');
+
+        $this->assertGuest();
+    }
+
+    public function test_invalid_nip_month_is_rejected_on_login(): void
+    {
+        $this->post(route('tampilan.login.process'), [
+            'identifier' => '198713122010011001',
+            'password' => 'secret123',
+        ])->assertSessionHas('error', 'Format NIP/NISN tidak valid.');
+
+        $this->assertGuest();
+    }
+
+    public function test_invalid_birthdate_month_is_rejected_on_profile_update(): void
+    {
+        $user = $this->makeUser(User::ROLE_ANGGOTA, 'anggota-birthdate@example.com');
+
+        $response = $this->actingAs($user)->put(route('anggota.update.infopribadi'), [
+            'tempat_lahir' => 'Bandung',
+            'tanggal_lahir' => '2026-13-01',
+            'alamat' => 'Jl. Contoh No. 1',
+        ]);
+
+        $response->assertSessionHasErrors('tanggal_lahir');
+        $this->assertDatabaseMissing('user', [
+            'id' => $user->id,
+            'tanggal_lahir' => '2026-13-01',
+        ]);
     }
 }
