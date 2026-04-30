@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 
 class RegisterController extends Controller
@@ -34,19 +35,19 @@ class RegisterController extends Controller
             'hp' => 'required|digits_between:10,13',
         ]);
 
-        $role = User::isValidNip((string) $request->nip)
-            ? User::ROLE_GURU
-            : User::ROLE_ANGGOTA;
+        $identifier = trim((string) $request->input('nip'));
 
-        $user = User::create([
-            'nama' => $request->nama,
-            'email' => $request->email,
-            'nip' => $request->nip,
-            'password' => bcrypt($request->password),
-            'hp' => $request->hp,
-            'status' => 1,
-            'role' => $role,
-        ]);
+        $user = DB::transaction(function () use ($request, $identifier) {
+            return User::create([
+                'nama' => trim((string) $request->input('nama')),
+                'email' => trim((string) $request->input('email')),
+                'nip' => $identifier !== '' ? $identifier : null,
+                'password' => bcrypt($request->input('password')),
+                'hp' => trim((string) $request->input('hp')),
+                'status' => 1,
+                'role' => User::resolveRegistrationRole($identifier),
+            ]);
+        });
 
         Auth::login($user);
         $request->session()->regenerate();

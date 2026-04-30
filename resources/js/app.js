@@ -1,5 +1,40 @@
 import './bootstrap';
 
+const clockFormatter = new Intl.DateTimeFormat('id-ID', {
+	hour: '2-digit',
+	minute: '2-digit',
+	second: '2-digit',
+	hour12: false,
+});
+
+const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+	weekday: 'long',
+	day: '2-digit',
+	month: 'long',
+	year: 'numeric',
+});
+
+const updateLiveClocks = () => {
+	const clockNodes = document.querySelectorAll('[data-live-clock]');
+	const dateNodes = document.querySelectorAll('[data-live-date]');
+
+	if (!clockNodes.length && !dateNodes.length) {
+		return;
+	}
+
+	const now = new Date();
+	const timeText = clockFormatter.format(now);
+	const dateText = dateFormatter.format(now);
+
+	clockNodes.forEach((node) => {
+		node.textContent = timeText;
+	});
+
+	dateNodes.forEach((node) => {
+		node.textContent = dateText;
+	});
+};
+
 const initRevealMotion = () => {
 	const revealNodes = document.querySelectorAll('[data-reveal]');
 
@@ -34,8 +69,17 @@ const initRevealMotion = () => {
 	revealNodes.forEach((node) => observer.observe(node));
 };
 
+const initLiveClocks = () => {
+	updateLiveClocks();
+	window.setInterval(updateLiveClocks, 1000);
+};
+
 if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initRevealMotion, { once: true });
+	document.addEventListener('DOMContentLoaded', () => {
+		initRevealMotion();
+		initLiveClocks();
+	}, { once: true });
 } else {
 	initRevealMotion();
+	initLiveClocks();
 }

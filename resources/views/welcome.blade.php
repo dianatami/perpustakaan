@@ -157,6 +157,17 @@
                             <p class="mt-1 font-display text-2xl text-shelf-ink">18K+</p>
                         </div>
                     </div>
+
+                    <div class="live-clock-shell mt-5 max-w-fit" aria-live="polite" aria-atomic="true">
+                        <div class="live-clock-icon">
+                            <i class="bi bi-clock-history text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="live-clock-label">Waktu Real-time</p>
+                            <p class="live-clock-time" data-live-clock>--:--:--</p>
+                            <p class="live-clock-date" data-live-date>--</p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="reveal-item relative" data-reveal style="transition-delay: 140ms;">

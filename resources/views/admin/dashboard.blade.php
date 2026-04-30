@@ -438,6 +438,17 @@
                 <i class="bi bi-arrow-repeat"></i> Kelola Peminjaman
             </a>
         </div>
+
+        <div class="live-clock-chip mt-5 max-w-fit" aria-live="polite" aria-atomic="true">
+            <div class="grid h-12 w-12 place-items-center rounded-2xl bg-white/18 text-white shadow-lg shadow-shelf-gold/10">
+                <i class="bi bi-stopwatch-fill text-lg"></i>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">Waktu Operasional</p>
+                <p class="font-display text-lg leading-tight text-white sm:text-xl" data-live-clock>--:--:--</p>
+                <p class="text-[0.8rem] text-white/78" data-live-date>--</p>
+            </div>
+        </div>
     </section>
 
     <section class="shelf-kpi-grid">

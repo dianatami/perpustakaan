@@ -38,6 +38,8 @@ class DatabaseSeeder extends Seeder
 
         // Jalankan seeder tambahan
         $this->call([
+            KategoriSeeder::class,
+            BookSeeder::class,
             BookrentSeeder::class,
         ]);
     }

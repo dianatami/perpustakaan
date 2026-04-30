@@ -155,6 +155,17 @@ class User extends Authenticatable
             || self::isValidNisn($value);
     }
 
+    public static function resolveRegistrationRole(?string $identifier): int
+    {
+        $value = trim((string) $identifier);
+
+        if (self::isValidNip($value)) {
+            return self::ROLE_GURU;
+        }
+
+        return self::ROLE_ANGGOTA;
+    }
+
     /**
      * Normalize role assignment for enum storage.
      */

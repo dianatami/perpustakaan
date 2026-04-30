@@ -340,8 +340,20 @@
                         <div class="admin-topbar-subtitle">Kelola inventaris, anggota, dan transaksi perpustakaan.</div>
                     </div>
                 </div>
-                <div class="admin-user-chip">
-                    <i class="bi bi-person-check-fill"></i> {{ Auth::user()->nama }}
+                <div class="d-flex align-items-center gap-2 gap-lg-3 flex-wrap justify-content-end">
+                    <div class="live-clock-shell" aria-live="polite" aria-atomic="true">
+                        <div class="live-clock-icon">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <div>
+                            <span class="live-clock-label">Waktu Real-time</span>
+                            <span class="live-clock-time" data-live-clock>--:--:--</span>
+                            <span class="live-clock-date" data-live-date>--</span>
+                        </div>
+                    </div>
+                    <div class="admin-user-chip">
+                        <i class="bi bi-person-check-fill"></i> {{ Auth::user()->nama }}
+                    </div>
                 </div>
             </header>
 
