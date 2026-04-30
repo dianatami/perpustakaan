@@ -333,6 +333,11 @@
         const portalNavToggle = document.getElementById('portalNavToggle');
         const portalNavWrap = document.getElementById('portalNavWrap');
 
+        // Hindari prompt "resubmit form" saat user refresh halaman setelah submit.
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.href);
+        }
+
         if (portalNavToggle && portalNavWrap) {
             portalNavToggle.addEventListener('click', () => {
                 portalNavWrap.classList.toggle('show');

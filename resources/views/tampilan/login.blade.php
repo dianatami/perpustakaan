@@ -34,7 +34,7 @@
                 <nav class="flex items-center gap-2">
                     <a href="{{ route('landing') }}" class="rounded-full border border-shelf-ink/15 bg-white/75 px-4 py-2 text-sm font-semibold text-shelf-ink/85 transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Landing</a>
                     @if (Route::has('tampilan.register'))
-                        <a href="{{ route('tampilan.register') }}" class="rounded-full bg-shelf-ink px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-shelf-ink/30 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">Daftar</a>
+                        <a href="{{ route('tampilan.register') }}" class="rounded-full bg-shelf-ink px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-shelf-ink/30 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">Register</a>
                     @endif
                 </nav>
             </div>

@@ -67,6 +67,21 @@
 
                         <div class="mb-3">
                             <label for="foto" class="form-label">Foto Profil</label>
+                            @if(Auth::user()->foto)
+                                <div class="mb-2">
+                                    <img src="{{ asset('storage/' . Auth::user()->foto) }}" alt="Foto Profil" class="rounded" style="max-height:120px;">
+                                </div>
+                                <div class="mb-2">
+                                    <button
+                                        type="submit"
+                                        form="delete-foto-form"
+                                        class="btn btn-sm btn-outline-danger"
+                                        onclick="return confirm('Yakin ingin menghapus foto profil?');"
+                                    >
+                                        Hapus Foto Profil
+                                    </button>
+                                </div>
+                            @endif
                             <input type="file" class="form-control @error('foto') is-invalid @enderror" 
                                    id="foto" name="foto" accept="image/*">
                             @error('foto')
@@ -80,6 +95,13 @@
                             <button type="submit" class="btn btn-primary">Simpan Perubahan</button>
                         </div>
                     </form>
+
+                    @if(Auth::user()->foto)
+                        <form id="delete-foto-form" action="{{ route($portalPrefix . '.delete.foto') }}" method="POST" class="d-none">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                    @endif
                 </div>
             </div>
         </div>

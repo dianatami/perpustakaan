@@ -352,6 +352,11 @@
         const toggleSidebarButton = document.getElementById('toggleSidebar');
         const adminSidebar = document.getElementById('adminSidebar');
 
+        // Hindari prompt "resubmit form" saat user refresh setelah submit.
+        if (window.history && window.history.replaceState) {
+            window.history.replaceState(null, '', window.location.href);
+        }
+
         if (toggleSidebarButton && adminSidebar) {
             toggleSidebarButton.addEventListener('click', () => {
                 adminSidebar.classList.toggle('show');

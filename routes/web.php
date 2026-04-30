@@ -29,18 +29,22 @@ use App\Http\Controllers\Admin\PeminjamanController;
 */
 
 Route::get('/', function () {
-    if (Auth::check()) {
-        $user = Auth::user();
+    return view('welcome');
+})->name('landing');
 
-        if ($user instanceof User) {
-            return redirect()->route($user->dashboardRouteName());
-        }
-
+Route::get('dashboard', function () {
+    if (! Auth::check()) {
         return redirect()->route('tampilan.login');
     }
 
-    return view('welcome');
-})->name('landing');
+    $user = Auth::user();
+
+    if ($user instanceof User) {
+        return redirect()->route($user->dashboardRouteName());
+    }
+
+    return redirect()->route('tampilan.login');
+})->name('dashboard');
 
 Route::middleware('guest')->group(function () {
     Route::get('tampilan/login', [LoginController::class, 'login'])->name('tampilan.login');
@@ -87,6 +91,7 @@ $portalSharedRoutes = function () {
     Route::get('profil-detail', [ProfileAnggotaController::class, 'profilDetail'])->name('profil.detail');
     Route::get('edit-profil', [ProfileAnggotaController::class, 'editProfil'])->name('edit.profil');
     Route::put('update-profil', [ProfileAnggotaController::class, 'updateProfil'])->name('update.profil');
+    Route::delete('hapus-foto-profil', [ProfileAnggotaController::class, 'deleteFoto'])->name('delete.foto');
     Route::get('edit-infopribadi', [ProfileAnggotaController::class, 'editInfoPribadi'])->name('edit.infopribadi');
     Route::put('update-infopribadi', [ProfileAnggotaController::class, 'updateInfoPribadi'])->name('update.infopribadi');
     Route::get('ubah-password', [ProfileAnggotaController::class, 'ubahPassword'])->name('ubah.password');

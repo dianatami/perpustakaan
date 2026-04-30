@@ -98,9 +98,13 @@
                 </nav>
 
                 <div class="flex items-center gap-2">
-                    <a href="{{ route('tampilan.login') }}" class="rounded-full border border-shelf-ink/22 bg-white/86 px-4 py-2 text-sm font-semibold text-shelf-ink transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Masuk</a>
-                    @if (Route::has('tampilan.register'))
-                        <a href="{{ route('tampilan.register') }}" class="rounded-full bg-shelf-ink px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-shelf-ink/35 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">Daftar</a>
+                    @if (Auth::check())
+                        <a href="{{ route('dashboard') }}" class="rounded-full border border-shelf-ink/22 bg-white/86 px-4 py-2 text-sm font-semibold text-shelf-ink transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Dashboard</a>
+                    @else
+                        <a href="{{ route('tampilan.login') }}" class="rounded-full border border-shelf-ink/22 bg-white/86 px-4 py-2 text-sm font-semibold text-shelf-ink transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Masuk</a>
+                        @if (Route::has('tampilan.register'))
+                            <a href="{{ route('tampilan.register') }}" class="rounded-full bg-shelf-ink px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-shelf-ink/35 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">Daftar</a>
+                        @endif
                     @endif
                 </div>
             </div>
@@ -125,12 +129,19 @@
                     </p>
 
                     <div class="mt-8 flex flex-wrap gap-3">
-                        <a href="{{ route('tampilan.login') }}" class="inline-flex items-center gap-2 rounded-full bg-shelf-teal px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-shelf-teal/35 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">
-                            Masuk ke Dashboard
-                            <span aria-hidden="true">-&gt;</span>
-                        </a>
-                        @if (Route::has('tampilan.register'))
-                            <a href="{{ route('tampilan.register') }}" class="inline-flex items-center gap-2 rounded-full border border-shelf-ink/22 bg-white/82 px-6 py-3 text-sm font-semibold text-shelf-ink backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-shelf-coral/45">Buat Akun Baru</a>
+                        @if (Auth::check())
+                            <a href="{{ route('dashboard') }}" class="inline-flex items-center gap-2 rounded-full bg-shelf-teal px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-shelf-teal/35 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">
+                                Buka Dashboard
+                                <span aria-hidden="true">-&gt;</span>
+                            </a>
+                        @else
+                            <a href="{{ route('tampilan.login') }}" class="inline-flex items-center gap-2 rounded-full bg-shelf-teal px-6 py-3 text-sm font-semibold text-white shadow-xl shadow-shelf-teal/35 transition hover:-translate-y-0.5 hover:bg-shelf-ocean">
+                                Masuk ke Dashboard
+                                <span aria-hidden="true">-&gt;</span>
+                            </a>
+                            @if (Route::has('tampilan.register'))
+                                <a href="{{ route('tampilan.register') }}" class="inline-flex items-center gap-2 rounded-full border border-shelf-ink/22 bg-white/82 px-6 py-3 text-sm font-semibold text-shelf-ink backdrop-blur-sm transition hover:-translate-y-0.5 hover:border-shelf-coral/45">Buat Akun Baru</a>
+                            @endif
                         @endif
                     </div>
 
