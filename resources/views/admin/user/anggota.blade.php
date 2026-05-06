@@ -24,9 +24,13 @@
         </div>
     @endif
 
-    <div class="card">
+    <!-- Tabel Siswa -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Data Siswa ({{ $siswa->total() }} terdaftar)</h5>
+        </div>
         <div class="card-body">
-            @if ($anggota->count() > 0)
+            @if ($siswa->count() > 0)
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">
@@ -41,9 +45,9 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse ($anggota as $item)
+                            @forelse ($siswa as $item)
                                 <tr>
-                                    <td>{{ ($anggota->currentPage() - 1) * $anggota->perPage() + $loop->iteration }}</td>
+                                    <td>{{ ($siswa->currentPage() - 1) * $siswa->perPage() + $loop->iteration }}</td>
                                     <td>{{ $item->nama }}</td>
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->hp }}</td>
@@ -58,7 +62,7 @@
                                             <a href="{{ route('admin.anggota.edit', $item->id) }}" class="btn btn-sm btn-warning text-white" title="Edit">
                                                 <i class="fas fa-edit"></i> Edit
                                             </a>
-                                            <form action="{{ route('admin.anggota.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus anggota ini?');">
+                                            <form action="{{ route('admin.anggota.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus siswa ini?');">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-sm btn-danger text-white" title="Hapus">
@@ -70,19 +74,93 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center">Data anggota tidak ditemukan</td>
+                                    <td colspan="7" class="text-center text-muted">Belum ada data siswa terdaftar</td>
                                 </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
 
-                <div class="d-flex justify-content-center">
-                    {{ $anggota->links() }}
-                </div>
+                @if ($siswa->hasPages())
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $siswa->links() }}
+                    </div>
+                @endif
             @else
                 <div class="alert alert-info">
-                    Belum ada data anggota. <a href="{{ route('admin.anggota.create') }}">Tambah anggota sekarang</a>
+                    Belum ada data siswa terdaftar. <a href="{{ route('admin.anggota.create') }}">Tambah siswa sekarang</a>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Tabel Guru -->
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h5 class="mb-0">Data Guru ({{ $guru->total() }} terdaftar)</h5>
+        </div>
+        <div class="card-body">
+            @if ($guru->count() > 0)
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>No</th>
+                                <th>Nama</th>
+                                <th>Email</th>
+                                <th>NIP</th>
+                                <th>Nomor HP</th>
+                                <th>Status</th>
+                                <th>Tanggal Terdaftar</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse ($guru as $item)
+                                <tr>
+                                    <td>{{ ($guru->currentPage() - 1) * $guru->perPage() + $loop->iteration }}</td>
+                                    <td>{{ $item->nama }}</td>
+                                    <td>{{ $item->email }}</td>
+                                    <td>{{ $item->nip ?? '-' }}</td>
+                                    <td>{{ $item->hp }}</td>
+                                    <td>
+                                        <span class="badge {{ $item->status == 1 ? 'bg-success' : 'bg-danger' }}">
+                                            {{ $item->status == 1 ? 'Aktif' : 'Nonaktif' }}
+                                        </span>
+                                    </td>
+                                    <td>{{ $item->created_at->format('d-m-Y H:i') }}</td>
+                                    <td>
+                                        <div class="d-flex gap-2">
+                                            <a href="{{ route('admin.anggota.edit', $item->id) }}" class="btn btn-sm btn-warning text-white" title="Edit">
+                                                <i class="fas fa-edit"></i> Edit
+                                            </a>
+                                            <form action="{{ route('admin.anggota.destroy', $item->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus guru ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger text-white" title="Hapus">
+                                                    <i class="fas fa-trash"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="8" class="text-center text-muted">Belum ada data guru terdaftar</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+
+                @if ($guru->hasPages())
+                    <div class="d-flex justify-content-center mt-3">
+                        {{ $guru->links() }}
+                    </div>
+                @endif
+            @else
+                <div class="alert alert-info">
+                    Belum ada data guru terdaftar.
                 </div>
             @endif
         </div>

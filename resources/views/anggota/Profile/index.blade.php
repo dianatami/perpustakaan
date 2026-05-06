@@ -221,9 +221,10 @@
                                     </select>
                                 </div>
                                 <div class="col-4 d-grid">
-                                    <button type="submit" class="btn btn-sm btn-primary">Pinjam</button>
+                                    <button type="submit" class="btn btn-sm btn-primary">Ajukan</button>
                                 </div>
                             </form>
+                            <div class="text-muted small mt-2">Pengajuan akan diproses setelah disetujui admin.</div>
                         @else
                             <div class="text-muted small">Tidak ada buku tersedia untuk dipinjam saat ini.</div>
                         @endif

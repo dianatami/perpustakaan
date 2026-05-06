@@ -47,12 +47,6 @@
         vertical-align: middle;
         font-size: 0.9rem;
     }
-
-    .countdown-badge {
-        min-width: 150px;
-        text-align: center;
-        font-weight: 700;
-    }
 </style>
 
 <div class="history-card">
@@ -114,9 +108,13 @@
                                             <i class="bi bi-arrow-return-left"></i> Kembalikan
                                         </button>
                                     </form>
-=======
-                            <td>{{ $item->borrow_date ? \Carbon\Carbon::parse($item->borrow_date)->format('d M Y') : '-' }}</td>
-                            <td>{{ $item->return_date ? \Carbon\Carbon::parse($item->return_date)->format('d M Y') : '-' }}</td>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
                             <td colspan="5" class="text-muted">Belum ada riwayat peminjaman.</td>
                         </tr>
                     @endforelse
@@ -131,52 +129,4 @@
         </div>
     </div>
 </div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const timers = Array.from(document.querySelectorAll('[data-countdown]'));
-
-        if (!timers.length) {
-            return;
-        }
-
-        const formatCountdown = (totalSeconds) => {
-            const safeSeconds = Math.max(0, totalSeconds);
-            const days = Math.floor(safeSeconds / 86400);
-            const hours = Math.floor((safeSeconds % 86400) / 3600);
-            const minutes = Math.floor((safeSeconds % 3600) / 60);
-            const seconds = safeSeconds % 60;
-
-            return `${days}h ${String(hours).padStart(2, '0')}j ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}d`;
-        };
-
-        const updateTimers = () => {
-            const now = Date.now();
-
-            timers.forEach((timer) => {
-                const expiresAt = timer.getAttribute('data-expires-at');
-
-                if (!expiresAt) {
-                    timer.textContent = '-';
-                    return;
-                }
-
-                const expiresMs = new Date(expiresAt).getTime();
-                const remaining = Math.max(0, Math.floor((expiresMs - now) / 1000));
-
-                if (remaining <= 0) {
-                    timer.textContent = 'Terlambat';
-                    timer.classList.remove('text-bg-warning');
-                    timer.classList.add('text-bg-danger');
-                    return;
-                }
-
-                timer.textContent = formatCountdown(remaining);
-            });
-        };
-
-        updateTimers();
-        setInterval(updateTimers, 1000);
-    });
-</script>
 @endsection

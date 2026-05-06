@@ -134,8 +134,8 @@
             margin-top: 8px;
             padding-top: 8px;
             border-top: 1px solid var(--portal-border);
-            font-size: 0.77rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: var(--portal-primary);
             letter-spacing: 0.05em;
         }

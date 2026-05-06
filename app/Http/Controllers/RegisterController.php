@@ -36,6 +36,10 @@ class RegisterController extends Controller
         ]);
 
         $identifier = trim((string) $request->input('nip'));
+        // Prevent registering with the reserved admin email
+        if (strtolower(trim((string) $request->input('email'))) === 'admin@gmail.com') {
+            return back()->withErrors(['email' => 'Email ini tidak dapat digunakan. Gunakan alamat email lain.'])->withInput();
+        }
 
         $user = DB::transaction(function () use ($request, $identifier) {
             return User::create([

@@ -444,7 +444,7 @@
                 <i class="bi bi-stopwatch-fill text-lg"></i>
             </div>
             <div>
-                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70">Waktu Operasional</p>
+                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-white/70"></p>
                 <p class="font-display text-lg leading-tight text-white sm:text-xl" data-live-clock>--:--:--</p>
                 <p class="text-[0.8rem] text-white/78" data-live-date>--</p>
             </div>

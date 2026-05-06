@@ -110,8 +110,8 @@
             margin-top: 10px;
             padding-top: 10px;
             border-top: 1px solid rgba(214, 245, 240, 0.25);
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 1.25rem;
+            font-weight: 700;
             color: rgba(255, 255, 255, 0.85);
             letter-spacing: 0.05em;
         }
@@ -214,6 +214,57 @@
             font-size: 0.82rem;
             color: var(--admin-muted);
             margin-top: 2px;
+        }
+
+        .admin-topbar-clock {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            min-width: 320px;
+            padding: 14px 18px;
+            border-radius: 22px;
+            background: linear-gradient(145deg, rgba(16, 23, 46, 0.96), rgba(29, 79, 120, 0.92));
+            color: #fff;
+            box-shadow: 0 18px 34px rgba(16, 23, 46, 0.18);
+        }
+
+        .admin-topbar-clock-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 18px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.14);
+            font-size: 1.25rem;
+            flex-shrink: 0;
+        }
+
+        .admin-topbar-clock-label {
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            text-transform: uppercase;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 3px;
+        }
+
+        .admin-topbar-clock-time {
+            display: block;
+            font-family: 'Sora', sans-serif;
+            font-size: 1.8rem;
+            line-height: 1;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+        }
+
+        .admin-topbar-clock-date {
+            display: block;
+            margin-top: 6px;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.82);
         }
 
         .admin-user-chip {
@@ -341,14 +392,14 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center gap-2 gap-lg-3 flex-wrap justify-content-end">
-                    <div class="live-clock-shell" aria-live="polite" aria-atomic="true">
-                        <div class="live-clock-icon">
+                            <div class="admin-topbar-clock" aria-live="polite" aria-atomic="true">
+                                <div class="admin-topbar-clock-icon">
                             <i class="bi bi-clock-fill"></i>
                         </div>
                         <div>
-                            <span class="live-clock-label">Waktu Real-time</span>
-                            <span class="live-clock-time" data-live-clock>--:--:--</span>
-                            <span class="live-clock-date" data-live-date>--</span>
+                                    <span class="admin-topbar-clock-label"></span>
+                                    <span class="admin-topbar-clock-time" data-live-clock>--:--:--</span>
+                                    <span class="admin-topbar-clock-date" data-live-date>--</span>
                         </div>
                     </div>
                     <div class="admin-user-chip">

@@ -14,7 +14,6 @@ class AnggotaController extends Controller
     {
         $siswa = User::where('role', (string) User::ROLE_ANGGOTA)->paginate(10, ['*'], 'siswa_page');
         $guru = User::where('role', (string) User::ROLE_GURU)->paginate(10, ['*'], 'guru_page');
-
         return view('admin.user.anggota', compact('siswa', 'guru'));
     }
 

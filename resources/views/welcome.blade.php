@@ -86,7 +86,7 @@
                             <span class="block text-xs text-shelf-ink/68">Ruang baca yang bergerak</span>
                         </span>
                     </a>
-                    <p class="mt-2 ml-4 text-xs font-semibold text-shelf-teal/75">Perpustakaan SMKN 1 Tirtamulya</p>
+                    <p class="mt-2 ml-4 text-2xl font-bold text-shelf-teal">Perpustakaan SMKN 1 Tirtamulya</p>
                 </div>
 
                 <nav class="hidden items-center gap-1 rounded-full border border-shelf-ink/12 bg-white/70 p-1 text-sm font-semibold backdrop-blur-sm md:flex">
@@ -163,7 +163,7 @@
                             <i class="bi bi-clock-history text-lg"></i>
                         </div>
                         <div>
-                            <p class="live-clock-label">Waktu Real-time</p>
+                            <p class="live-clock-label"></p>
                             <p class="live-clock-time" data-live-clock>--:--:--</p>
                             <p class="live-clock-date" data-live-date>--</p>
                         </div>
