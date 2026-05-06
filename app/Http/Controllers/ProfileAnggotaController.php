@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\Book;
+use App\Models\Bookrent;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 
@@ -42,12 +46,70 @@ class ProfileAnggotaController extends Controller
 
         // Eager load relationship untuk menghindari N+1 query
         $bookrents = $user->bookrent()->with('book')->get();
-        
+        $activeBorrowings = $bookrents->where('status', 'dipinjam')->values();
+
+        // Buku yang tersedia untuk dipinjam
+        $availableBooks = Book::where('stock', '>', 0)->orderBy('title')->get();
+
         return view('anggota.Profile.index', [
             'user' => $user,
             'bookrents' => $bookrents,
+            'activeBorrowings' => $activeBorrowings,
+            'availableBooks' => $availableBooks,
             'portalPrefix' => $this->portalPrefix($request),
         ]);
+    }
+
+    /**
+     * Handle borrow request from anggota/guru profile
+     */
+    public function borrow(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'book_id' => 'required|exists:books,id',
+            'borrow_date' => 'nullable|date',
+        ]);
+
+        $bookId = $request->book_id;
+        $activeStatuses = ['menunggu_acc', 'dipinjam', 'proses_kembali'];
+
+        $activeCount = Bookrent::where('user_id', $user->id)
+            ->whereIn('status', $activeStatuses)
+            ->count();
+
+        if ($activeCount >= 3) {
+            return back()->with('error', 'Anda sudah memiliki 3 pengajuan atau peminjaman aktif.');
+        }
+
+        $already = Bookrent::where('user_id', $user->id)
+            ->where('book_id', $bookId)
+            ->whereIn('status', $activeStatuses)
+            ->exists();
+
+        if ($already) {
+            return back()->with('error', 'Pengajuan atau peminjaman buku ini masih aktif.');
+        }
+
+        $book = Book::findOrFail($bookId);
+
+        if ($book->stock < 1) {
+            return back()->with('error', 'Stok buku habis.');
+        }
+
+        $borrowDate = $request->borrow_date
+            ? Carbon::parse($request->borrow_date)->toDateString()
+            : Carbon::now()->toDateString();
+
+        Bookrent::create([
+            'user_id' => $user->id,
+            'book_id' => $bookId,
+            'borrow_date' => $borrowDate,
+            'status' => 'menunggu_acc',
+        ]);
+
+        return back()->with('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin.');
     }
 
     /**
@@ -169,6 +231,92 @@ class ProfileAnggotaController extends Controller
             ->get();
 
         return view('anggota.riwayat-peminjaman', compact('peminjaman'));
+    }
+
+    /**
+     * Handle return request from anggota/guru history page
+     */
+    public function returnBook(Request $request, int $bookrentId)
+    {
+        $user = Auth::user();
+
+        $bookrent = Bookrent::query()
+            ->where('id', $bookrentId)
+            ->where('user_id', $user->id)
+            ->with('book')
+            ->first();
+
+        if (! $bookrent) {
+            return back()->with('error', 'Data peminjaman tidak ditemukan.');
+        }
+
+        if ($bookrent->status !== 'dipinjam') {
+            return back()->with('error', 'Pengembalian hanya bisa diajukan untuk buku yang sedang dipinjam.');
+        }
+
+        DB::transaction(function () use ($bookrent): void {
+            $lockedBookrent = Bookrent::query()->where('id', $bookrent->id)->lockForUpdate()->first();
+
+            if (! $lockedBookrent || $lockedBookrent->status !== 'dipinjam') {
+                return;
+            }
+
+            $lockedBookrent->status = 'proses_kembali';
+            $lockedBookrent->save();
+        });
+
+        return back()->with('success', 'Permintaan pengembalian berhasil dikirim. Menunggu konfirmasi admin.');
+    }
+
+    /**
+     * Handle return request from anggota/guru history page
+     */
+    public function returnBook(Request $request, int $bookrentId)
+    {
+        $user = Auth::user();
+
+        $bookrent = Bookrent::query()
+            ->where('id', $bookrentId)
+            ->where('user_id', $user->id)
+            ->with('book')
+            ->first();
+
+        if (! $bookrent) {
+            return back()->with('error', 'Data peminjaman tidak ditemukan.');
+        }
+
+        if ($bookrent->status !== 'dipinjam') {
+            return back()->with('error', 'Buku ini sudah dikembalikan.');
+        }
+
+        $today = Carbon::today();
+        $days = Carbon::parse($bookrent->borrow_date)->diffInDays($today);
+        $denda = $days > 7 ? ($days - 7) * 5000 : 0;
+
+        DB::transaction(function () use ($bookrent, $today, $denda): void {
+            $lockedBookrent = Bookrent::query()->where('id', $bookrent->id)->lockForUpdate()->first();
+
+            if (! $lockedBookrent || $lockedBookrent->status !== 'dipinjam') {
+                return;
+            }
+
+            $lockedBookrent->return_date = $today->toDateString();
+            $lockedBookrent->status = 'dikembalikan';
+            $lockedBookrent->denda = $denda;
+            $lockedBookrent->save();
+
+            $book = Book::query()->where('id', $lockedBookrent->book_id)->lockForUpdate()->first();
+            if ($book) {
+                $book->stock += 1;
+                $book->save();
+            }
+        });
+
+        if ($denda > 0) {
+            return back()->with('success', 'Buku berhasil dikembalikan. Denda keterlambatan: Rp ' . number_format($denda, 0, ',', '.'));
+        }
+
+        return back()->with('success', 'Buku berhasil dikembalikan.');
     }
 
     /**

@@ -97,6 +97,7 @@ $portalSharedRoutes = function () {
     Route::get('ubah-password', [ProfileAnggotaController::class, 'ubahPassword'])->name('ubah.password');
     Route::post('store-password', [ProfileAnggotaController::class, 'storePassword'])->name('store.password');
     Route::get('riwayat-peminjaman', [ProfileAnggotaController::class, 'riwayatPeminjaman'])->name('riwayat.peminjaman');
+    Route::post('pengembalian/{bookrent}', [ProfileAnggotaController::class, 'returnBook'])->name('pengembalian.store');
 };
 
 Route::prefix('anggota')->name('anggota.')->middleware(['auth', 'role:0'])->group(function () use ($portalSharedRoutes) {

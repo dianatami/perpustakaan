@@ -153,8 +153,6 @@
                             <a href="{{ route($portalPrefix . '.edit.profil') }}" class="btn edit-btn btn-sm">
                                 <i class="bi bi-pencil-square"></i> Edit Profil
                             </a>
-                        </div>
-
                         <!-- Info Profil -->
                         <div class="col-md-8 profile-info">
                             <h2 class="profile-name">{{ $user->nama ?? 'User' }}</h2>
@@ -285,7 +283,7 @@
                             <div class="p-4 rounded-4" style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%); border-left: 5px solid #4caf50;">
                                 <div class="text-muted small fw-bold mb-2">Selesai Dipinjam</div>
                                 <div class="fw-bold" style="color: #4caf50; font-size: 2rem;">
-                                    {{ $bookrents->where('status', 'dikembalikan')->count() ?? 0 }}
+                                    {{ $bookrents->where('status', 'kembali')->count() ?? 0 }}
                                 </div>
                             </div>
                         </div>
@@ -352,19 +350,30 @@
                                                 {{ $rent->return_date ? \Carbon\Carbon::parse($rent->return_date)->format('d M Y') : '-' }}
                                             </td>
                                             <td class="py-3">
-                                                @if(in_array($rent->status, ['borrowed', 'dipinjam', 0]))
-                                                <span class="badge" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); padding: 8px 12px; border-radius: 50px;">
-                                                    <i class="bi bi-hourglass-split"></i> Sedang Dipinjam
-                                                </span>
-                                                @elseif(in_array($rent->status, ['returned', 'dikembalikan', 1]))
-                                                <span class="badge" style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); padding: 8px 12px; border-radius: 50px;">
-                                                     <i class="bi bi-check-circle"></i> Dikembalikan
-                                                </span>
+                                                @if(($rent->status ?? null) === 'menunggu_acc')
+                                                    <span class="badge" style="background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%); padding: 8px 12px; border-radius: 50px;">
+                                                        <i class="bi bi-hourglass-split"></i> Menunggu ACC
+                                                    </span>
+                                                @elseif(($rent->status ?? null) === 'dipinjam')
+                                                    <span class="badge" style="background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%); padding: 8px 12px; border-radius: 50px;">
+                                                        <i class="bi bi-hourglass-split"></i> Sedang Dipinjam
+                                                    </span>
+                                                @elseif(($rent->status ?? null) === 'ditolak')
+                                                    <span class="badge" style="background: linear-gradient(135deg, #ef5350 0%, #d32f2f 100%); padding: 8px 12px; border-radius: 50px;">
+                                                        <i class="bi bi-x-circle"></i> Ditolak
+                                                    </span>
+                                                @elseif(($rent->status ?? null) === 'proses_kembali')
+                                                    <span class="badge" style="background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%); padding: 8px 12px; border-radius: 50px;">
+                                                        <i class="bi bi-arrow-repeat"></i> Proses Pengembalian
+                                                    </span>
+                                                @elseif(($rent->status ?? null) === 'kembali')
+                                                    <span class="badge" style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); padding: 8px 12px; border-radius: 50px;">
+                                                        <i class="bi bi-check-circle"></i> Sudah Dikembalikan
+                                                    </span>
                                                 @else
-                                                
-                                                <span class="badge bg-secondary" style="padding: 8px 12px; border-radius: 50px;">
-                                                    {{ $rent->status }}
-                                                </span>
+                                                    <span class="badge bg-secondary" style="padding: 8px 12px; border-radius: 50px;">
+                                                        {{ $rent->status ?? '-' }}
+                                                    </span>
                                                 @endif
                                             </td>
 

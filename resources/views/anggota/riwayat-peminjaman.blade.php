@@ -56,6 +56,18 @@
     </div>
 
     <div class="history-body">
+        @if (session('success'))
+            <div class="alert alert-success" role="alert">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        @if (session('error'))
+            <div class="alert alert-danger" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
+
         <div class="table-responsive">
             <table class="table history-table mb-0">
                 <thead>
@@ -64,6 +76,7 @@
                         <th>Tanggal Pinjam</th>
                         <th>Tanggal Kembali</th>
                         <th>Status</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -72,11 +85,37 @@
                             <td>{{ $item->book->title ?? '-' }}</td>
                             <td>{{ $item->borrow_date ?? '-' }}</td>
                             <td>{{ $item->return_date ?? '-' }}</td>
-                            <td>{{ ucfirst($item->status ?? '-') }}</td>
+                            <td>
+                                @if(($item->status ?? null) === 'menunggu_acc')
+                                    Menunggu ACC
+                                @elseif(($item->status ?? null) === 'dipinjam')
+                                    Dipinjam
+                                @elseif(($item->status ?? null) === 'ditolak')
+                                    Ditolak
+                                @elseif(($item->status ?? null) === 'proses_kembali')
+                                    Proses Pengembalian
+                                @elseif(($item->status ?? null) === 'kembali')
+                                    Sudah dikembalikan
+                                @else
+                                    -
+                                @endif
+                            </td>
+                            <td>
+                                @if(($item->status ?? null) === 'dipinjam')
+                                    <form action="{{ route($portalPrefix . '.pengembalian.store', $item->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mengembalikan buku ini?')">
+                                        @csrf
+                                        <button type="submit" class="btn btn-sm btn-success">
+                                            <i class="bi bi-arrow-return-left"></i> Kembalikan
+                                        </button>
+                                    </form>
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="text-muted">Belum ada riwayat peminjaman.</td>
+                            <td colspan="5" class="text-muted">Belum ada riwayat peminjaman.</td>
                         </tr>
                     @endforelse
                 </tbody>

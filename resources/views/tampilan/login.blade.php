@@ -90,17 +90,17 @@
                         @csrf
 
                         <div>
-                            <label for="email" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Email</label>
+                            <label for="identifier" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Email / NIP / NISN</label>
                             <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                value="{{ old('email') }}"
-                                placeholder="nama@email.com"
+                                type="text"
+                                name="identifier"
+                                id="identifier"
+                                value="{{ old('identifier') }}"
+                                placeholder="Email admin, NIP guru, atau NISN siswa"
                                 required
-                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('email') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
+                                class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('identifier') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
                             >
-                            @error('email')
+                            @error('identifier')
                                 <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
