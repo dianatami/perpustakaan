@@ -153,6 +153,7 @@
                             <a href="{{ route($portalPrefix . '.edit.profil') }}" class="btn edit-btn btn-sm">
                                 <i class="bi bi-pencil-square"></i> Edit Profil
                             </a>
+                        </div>
                         <!-- Info Profil -->
                         <div class="col-md-8 profile-info">
                             <h2 class="profile-name">{{ $user->nama ?? 'User' }}</h2>
