@@ -59,7 +59,8 @@ Lokasi: `/anggota` (dengan middleware auth)
   - Menampilkan daftar semua peminjaman anggota
   - Informasi: Nama Buku, Tanggal Pinjam, Tanggal Kembali, Status, Denda
   - Aksi pengembalian buku untuk siswa dan guru
-  - Status mengikuti alur approval admin (Menunggu ACC → Dipinjam → Proses Pengembalian → Sudah Dikembalikan)
+  - Status berubah menjadi `Sudah dikembalikan` setelah admin mengonfirmasi pengembalian
+  - Status peminjaman mengikuti alur approval admin (Menunggu ACC → Dipinjam → Proses Pengembalian → Sudah Dikembalikan)
 
 #### Routes (Anggota):
 ```
