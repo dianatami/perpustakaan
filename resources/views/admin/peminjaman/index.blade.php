@@ -97,7 +97,7 @@
 
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-check"></i> Pinjamkan
+                            <i class="fas fa-check"></i> Ajukan
                         </button>
                     </div>
                 </div>
@@ -143,10 +143,18 @@
                                 @endif
                             </td>
                             <td>
-                                @if ($item->status === 'dipinjam')
+                                @if ($item->status === 'menunggu_acc')
+                                    <span class="badge bg-warning text-dark">Menunggu ACC</span>
+                                @elseif ($item->status === 'dipinjam')
                                     <span class="badge bg-info">Dipinjam</span>
+                                @elseif ($item->status === 'ditolak')
+                                    <span class="badge bg-danger">Ditolak</span>
+                                @elseif ($item->status === 'proses_kembali')
+                                    <span class="badge bg-primary">Proses Pengembalian</span>
+                                @elseif ($item->status === 'kembali')
+                                    <span class="badge bg-success">Sudah Dikembalikan</span>
                                 @else
-                                    <span class="badge bg-success">Dikembalikan</span>
+                                    <span class="badge bg-secondary">-</span>
                                 @endif
                             </td>
                             <td>
@@ -157,6 +165,30 @@
                             @endif
                             </td>
                             <td>
+                                @if ($item->status === 'menunggu_acc')
+                                    <form action="{{ route('admin.peminjaman.approve', $item->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Setujui peminjaman ini?')">
+                                            <i class="fas fa-check"></i> ACC
+                                        </button>
+                                    </form>
+                                    <form action="{{ route('admin.peminjaman.reject', $item->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Tolak peminjaman ini?')">
+                                            <i class="fas fa-times"></i> Tolak
+                                        </button>
+                                    </form>
+                                @elseif ($item->status === 'proses_kembali')
+                                    <form action="{{ route('admin.peminjaman.confirm-return', $item->id) }}" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Konfirmasi pengembalian buku?')">
+                                            <i class="fas fa-clipboard-check"></i> Konfirmasi
+                                        </button>
+                                    </form>
+                                @endif
                                 <a href="{{ route('admin.peminjaman.edit', $item->id) }}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-edit"></i> Edit
                                 </a>

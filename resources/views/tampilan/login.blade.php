@@ -23,13 +23,16 @@
 
         <header class="relative z-20">
             <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
-                <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/72 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
-                    <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[150deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
-                    <span>
-                        <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
-                        <span class="block text-xs text-shelf-ink/65">Portal Literasi</span>
-                    </span>
-                </a>
+                <div>
+                    <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/72 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
+                        <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[150deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
+                        <span>
+                            <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
+                            <span class="block text-xs text-shelf-ink/65">Portal Literasi</span>
+                        </span>
+                    </a>
+                    <p class="mt-2 ml-4 text-xs font-semibold text-shelf-teal/80">Perpustakaan SMKN 1 Tirtamulya</p>
+                </div>
 
                 <nav class="flex items-center gap-2">
                     <a href="{{ route('landing') }}" class="rounded-full border border-shelf-ink/15 bg-white/75 px-4 py-2 text-sm font-semibold text-shelf-ink/85 transition hover:-translate-y-0.5 hover:border-shelf-teal/45 hover:text-shelf-teal">Landing</a>

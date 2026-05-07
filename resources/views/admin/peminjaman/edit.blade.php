@@ -75,16 +75,19 @@
                         <div class="mb-3">
                             <label for="status" class="form-label">Status *</label>
                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                <option value="menunggu_acc" @selected($peminjaman->status == 'menunggu_acc')>Menunggu ACC</option>
                                 <option value="dipinjam" @selected($peminjaman->status == 'dipinjam')>Dipinjam</option>
-                                <option value="dikembalikan" @selected($peminjaman->status == 'dikembalikan')>Dikembalikan</option>
+                                <option value="ditolak" @selected($peminjaman->status == 'ditolak')>Ditolak</option>
+                                <option value="proses_kembali" @selected($peminjaman->status == 'proses_kembali')>Proses Pengembalian</option>
+                                <option value="kembali" @selected($peminjaman->status == 'kembali')>Sudah Dikembalikan</option>
                             </select>
                             @error('status')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
                         <div class="mb-3">
-                        <label>Kondisi Buku</label>
-                        <select name="condition" class="form-control" required>
+                        <label>Kondisi Buku (isi jika status kembali)</label>
+                        <select name="condition" class="form-control">
                             <option value="baik">Baik</option>
                             <option value="rusak">Rusak</option>
                              <option value="hilang">Hilang</option>

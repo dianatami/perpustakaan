@@ -15,7 +15,8 @@ class User extends Authenticatable
     public const ROLE_ANGGOTA = 0;
     public const ROLE_ADMIN = 1;
     public const ROLE_GURU = 2;
-    public const ROLE_KEPALA_SEKOLAH = 3;
+    public const NIP_REGEX = '/^\d{18}$/';
+    public const NISN_REGEX = '/^\d{10}$/';
 
     /**
      * The attributes that are mass assignable.
@@ -26,6 +27,7 @@ class User extends Authenticatable
     protected $fillable = [
         'nama',
         'email',
+        'nip',
         'password',
         'hp',
         'status',
@@ -89,7 +91,6 @@ class User extends Authenticatable
         return match ((int) $this->role) {
             self::ROLE_ADMIN => 'Admin',
             self::ROLE_GURU => 'Guru',
-            self::ROLE_KEPALA_SEKOLAH => 'Kepala Sekolah',
             default => 'Anggota',
         };
     }
@@ -102,9 +103,67 @@ class User extends Authenticatable
         return match ((int) $this->role) {
             self::ROLE_ADMIN => 'admin.beranda',
             self::ROLE_GURU => 'guru.beranda',
-            self::ROLE_KEPALA_SEKOLAH => 'kepala.beranda',
             default => 'anggota.beranda',
         };
+    }
+
+    public static function isValidNip(string $value): bool
+    {
+        if (preg_match(self::NIP_REGEX, $value) !== 1) {
+            return false;
+        }
+
+        $birthYear = (int) substr($value, 0, 4);
+        $birthMonth = (int) substr($value, 4, 2);
+        $birthDay = (int) substr($value, 6, 2);
+        $appointYear = (int) substr($value, 8, 4);
+        $appointMonth = (int) substr($value, 12, 2);
+        $genderDigit = (int) substr($value, 14, 1);
+
+        if ($birthMonth < 1 || $birthMonth > 12) {
+            return false;
+        }
+
+        if ($birthDay < 1 || $birthDay > 31) {
+            return false;
+        }
+
+        if ($appointYear < $birthYear) {
+            return false;
+        }
+
+        if ($appointMonth < 1 || $appointMonth > 12) {
+            return false;
+        }
+
+        if (! in_array($genderDigit, [1, 2], true)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static function isValidNisn(string $value): bool
+    {
+        return preg_match(self::NISN_REGEX, $value) === 1;
+    }
+
+    public static function isValidLoginIdentifier(string $value): bool
+    {
+        return filter_var($value, FILTER_VALIDATE_EMAIL) !== false
+            || self::isValidNip($value)
+            || self::isValidNisn($value);
+    }
+
+    public static function resolveRegistrationRole(?string $identifier): int
+    {
+        $value = trim((string) $identifier);
+
+        if (self::isValidNip($value)) {
+            return self::ROLE_GURU;
+        }
+
+        return self::ROLE_ANGGOTA;
     }
 
     /**

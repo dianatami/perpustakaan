@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
@@ -127,6 +128,24 @@
             margin: 2px 0 0;
             color: var(--portal-muted);
             font-size: 0.81rem;
+        }
+
+        .portal-school-name {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--portal-border);
+            font-size: 0.77rem;
+            font-weight: 600;
+            color: var(--portal-primary);
+            letter-spacing: 0.05em;
+        }
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--portal-border);
+            font-size: 0.77rem;
+            font-weight: 600;
+            color: var(--portal-primary);
+            letter-spacing: 0.05em;
         }
 
         .portal-actions {
@@ -284,6 +303,7 @@
                     <span>
                         <h1 class="portal-brand-title">{{ $portalTitle }}</h1>
                         <p class="portal-brand-subtitle">{{ $portalSubtitle }}</p>
+                        <p class="portal-school-name">Perpustakaan SMKN 1 Tirtamulya</p>
                     </span>
                 </a>
 

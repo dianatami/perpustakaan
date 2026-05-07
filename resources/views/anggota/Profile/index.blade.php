@@ -206,6 +206,29 @@
                     </h5>
                 </div>
                 <div class="card-body pb-4">
+                    {{-- Form Pinjam Buku --}}
+                    <div class="mb-4">
+                        <h6 class="fw-bold mb-2">Pinjam Buku</h6>
+                        @if(isset($availableBooks) && $availableBooks->count() > 0)
+                            <form action="{{ route($portalPrefix . '.pinjam.store') }}" method="POST" class="row g-2">
+                                @csrf
+                                <div class="col-8">
+                                    <select name="book_id" class="form-select form-select-sm" required>
+                                        <option value="">-- Pilih buku --</option>
+                                        @foreach($availableBooks as $b)
+                                            <option value="{{ $b->id }}">{{ $b->title }} (stok: {{ $b->stock }})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-4 d-grid">
+                                    <button type="submit" class="btn btn-sm btn-primary">Pinjam</button>
+                                </div>
+                            </form>
+                        @else
+                            <div class="text-muted small">Tidak ada buku tersedia untuk dipinjam saat ini.</div>
+                        @endif
+                    </div>
+
                     <div class="mb-4">
                         <div class="text-muted small mb-2">
                             <i class="bi bi-geo-alt"></i> Tempat Lahir
@@ -586,6 +609,48 @@
                 const alert = new bootstrap.Alert(successAlert);
                 alert.close();
             }, 5000);
+        }
+
+        const timers = Array.from(document.querySelectorAll('[data-countdown]'));
+
+        if (timers.length > 0) {
+            const formatCountdown = (totalSeconds) => {
+                const safeSeconds = Math.max(0, totalSeconds);
+                const days = Math.floor(safeSeconds / 86400);
+                const hours = Math.floor((safeSeconds % 86400) / 3600);
+                const minutes = Math.floor((safeSeconds % 3600) / 60);
+                const seconds = safeSeconds % 60;
+
+                return `${days}h ${String(hours).padStart(2, '0')}j ${String(minutes).padStart(2, '0')}m ${String(seconds).padStart(2, '0')}d`;
+            };
+
+            const updateTimers = () => {
+                const now = Date.now();
+
+                timers.forEach((timer) => {
+                    const expiresAt = timer.getAttribute('data-expires-at');
+
+                    if (!expiresAt) {
+                        timer.textContent = '-';
+                        return;
+                    }
+
+                    const expiresMs = new Date(expiresAt).getTime();
+                    const remaining = Math.max(0, Math.floor((expiresMs - now) / 1000));
+
+                    if (remaining <= 0) {
+                        timer.textContent = 'Terlambat';
+                        timer.classList.remove('text-bg-warning');
+                        timer.classList.add('text-bg-danger');
+                        return;
+                    }
+
+                    timer.textContent = formatCountdown(remaining);
+                });
+            };
+
+            updateTimers();
+            setInterval(updateTimers, 1000);
         }
     });
 </script>

@@ -18,8 +18,17 @@ class BerandaAnggotaController extends Controller
             ->count();
         $books = Book::with('category')->latest()->take(10)->get();
         $riyawatPinjam = Bookrent::where('user_id', auth()->user()->id)->count();
+        $leaderboardSiswa = User::query()
+            ->where('role', User::ROLE_ANGGOTA)
+            ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
+            ->selectRaw('user.id, user.nama, COUNT(bookrent.id) as total_peminjaman')
+            ->groupBy('user.id', 'user.nama')
+            ->orderByDesc('total_peminjaman')
+            ->orderBy('user.nama')
+            ->take(10)
+            ->get();
 
-        return view('anggota.dashboard', compact('bukuTersedia', 'bookrents', 'books', 'riyawatPinjam'));
+        return view('anggota.dashboard', compact('bukuTersedia', 'bookrents', 'books', 'riyawatPinjam', 'leaderboardSiswa'));
     }
 
 

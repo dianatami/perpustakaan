@@ -26,7 +26,7 @@
         [
             'tag' => 'Role Focus',
             'title' => 'Setiap panel menonjolkan fungsi yang relevan tanpa distraksi.',
-            'value' => '4',
+            'value' => '3',
             'note' => 'Portal terintegrasi',
         ],
     ];
@@ -46,11 +46,6 @@
             'title' => 'Anggota',
             'description' => 'Menjelajah buku favorit, memperbarui profil, dan memeriksa status peminjaman.',
             'accent' => 'bg-shelf-coral/15 text-shelf-coral',
-        ],
-        [
-            'title' => 'Kepala Sekolah',
-            'description' => 'Akses ringkasan literasi untuk evaluasi kebijakan dan keputusan strategis.',
-            'accent' => 'bg-shelf-gold/25 text-shelf-ink',
         ],
     ];
 
@@ -83,13 +78,16 @@
 
         <header class="relative z-20">
             <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
-                <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/70 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
-                    <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[148deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
-                    <span>
-                        <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
-                        <span class="block text-xs text-shelf-ink/68">Ruang baca yang bergerak</span>
-                    </span>
-                </a>
+                <div>
+                    <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/70 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
+                        <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[148deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
+                        <span>
+                            <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
+                            <span class="block text-xs text-shelf-ink/68">Ruang baca yang bergerak</span>
+                        </span>
+                    </a>
+                    <p class="mt-2 ml-4 text-xs font-semibold text-shelf-teal/75">Perpustakaan SMKN 1 Tirtamulya</p>
+                </div>
 
                 <nav class="hidden items-center gap-1 rounded-full border border-shelf-ink/12 bg-white/70 p-1 text-sm font-semibold backdrop-blur-sm md:flex">
                     <a href="#fitur" class="rounded-full px-4 py-2 text-shelf-ink/75 transition hover:bg-shelf-mist hover:text-shelf-ocean">Fitur</a>
@@ -119,13 +117,13 @@
                     </p>
 
                     <h1 class="mt-6 font-display font-semibold leading-[1.03] text-shelf-ink [font-size:clamp(2.2rem,7vw,5.9rem)]">
-                        Tampil modern,
+                        Tampil modern
                         <span class="ink-gradient">belajar makin fokus</span>
                         setiap hari.
                     </h1>
 
                     <p class="mt-6 max-w-2xl text-lg leading-relaxed text-shelf-ink/76">
-                        Dari pencarian buku sampai pelacakan peminjaman, semua dirancang seperti pengalaman produk premium: cepat, bersih, dan mudah dipahami oleh siswa, guru, admin, sampai kepala sekolah.
+                        Dari pencarian buku sampai pelacakan peminjaman, semua dirancang seperti pengalaman produk premium: cepat, bersih, dan mudah dipahami oleh siswa, guru, dan admin.
                     </p>
 
                     <div class="mt-8 flex flex-wrap gap-3">
@@ -148,7 +146,7 @@
                     <div class="mt-8 grid max-w-2xl grid-cols-1 gap-3 sm:grid-cols-3">
                         <div class="glass-card rounded-2xl p-4">
                             <p class="text-xs uppercase tracking-[0.12em] text-shelf-ink/62">Portal Aktif</p>
-                            <p class="mt-1 font-display text-2xl text-shelf-ink">4 Role</p>
+                            <p class="mt-1 font-display text-2xl text-shelf-ink">3 Role</p>
                         </div>
                         <div class="glass-card rounded-2xl p-4">
                             <p class="text-xs uppercase tracking-[0.12em] text-shelf-ink/62">Status Sistem</p>
@@ -157,6 +155,17 @@
                         <div class="glass-card rounded-2xl p-4">
                             <p class="text-xs uppercase tracking-[0.12em] text-shelf-ink/62">Skala Koleksi</p>
                             <p class="mt-1 font-display text-2xl text-shelf-ink">18K+</p>
+                        </div>
+                    </div>
+
+                    <div class="live-clock-shell mt-5 max-w-fit" aria-live="polite" aria-atomic="true">
+                        <div class="live-clock-icon">
+                            <i class="bi bi-clock-history text-lg"></i>
+                        </div>
+                        <div>
+                            <p class="live-clock-label">Waktu Real-time</p>
+                            <p class="live-clock-time" data-live-clock>--:--:--</p>
+                            <p class="live-clock-date" data-live-date>--</p>
                         </div>
                     </div>
                 </div>

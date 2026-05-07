@@ -113,6 +113,41 @@ class ProfileAnggotaController extends Controller
     }
 
     /**
+     * Handle return request from anggota/guru history page
+     */
+    public function returnBook(Request $request, int $bookrentId)
+    {
+        $user = Auth::user();
+
+        $bookrent = Bookrent::query()
+            ->where('id', $bookrentId)
+            ->where('user_id', $user->id)
+            ->with('book')
+            ->first();
+
+        if (! $bookrent) {
+            return back()->with('error', 'Data peminjaman tidak ditemukan.');
+        }
+
+        if ($bookrent->status !== 'dipinjam') {
+            return back()->with('error', 'Pengembalian hanya bisa diajukan untuk buku yang sedang dipinjam.');
+        }
+
+        DB::transaction(function () use ($bookrent): void {
+            $lockedBookrent = Bookrent::query()->where('id', $bookrent->id)->lockForUpdate()->first();
+
+            if (! $lockedBookrent || $lockedBookrent->status !== 'dipinjam') {
+                return;
+            }
+
+            $lockedBookrent->status = 'proses_kembali';
+            $lockedBookrent->save();
+        });
+
+        return back()->with('success', 'Permintaan pengembalian berhasil dikirim. Menunggu konfirmasi admin.');
+    }
+
+    /**
      * Menampilkan form edit profil
      */
     public function editProfil(Request $request)
@@ -227,96 +262,10 @@ class ProfileAnggotaController extends Controller
         $peminjaman = Auth::user()
             ->bookrent()
             ->with('book')
-            ->latest('borrow_date')
+            ->latest('created_at')
             ->get();
 
         return view('anggota.riwayat-peminjaman', compact('peminjaman'));
-    }
-
-    /**
-     * Handle return request from anggota/guru history page
-     */
-    public function returnBook(Request $request, int $bookrentId)
-    {
-        $user = Auth::user();
-
-        $bookrent = Bookrent::query()
-            ->where('id', $bookrentId)
-            ->where('user_id', $user->id)
-            ->with('book')
-            ->first();
-
-        if (! $bookrent) {
-            return back()->with('error', 'Data peminjaman tidak ditemukan.');
-        }
-
-        if ($bookrent->status !== 'dipinjam') {
-            return back()->with('error', 'Pengembalian hanya bisa diajukan untuk buku yang sedang dipinjam.');
-        }
-
-        DB::transaction(function () use ($bookrent): void {
-            $lockedBookrent = Bookrent::query()->where('id', $bookrent->id)->lockForUpdate()->first();
-
-            if (! $lockedBookrent || $lockedBookrent->status !== 'dipinjam') {
-                return;
-            }
-
-            $lockedBookrent->status = 'proses_kembali';
-            $lockedBookrent->save();
-        });
-
-        return back()->with('success', 'Permintaan pengembalian berhasil dikirim. Menunggu konfirmasi admin.');
-    }
-
-    /**
-     * Handle return request from anggota/guru history page
-     */
-    public function returnBook(Request $request, int $bookrentId)
-    {
-        $user = Auth::user();
-
-        $bookrent = Bookrent::query()
-            ->where('id', $bookrentId)
-            ->where('user_id', $user->id)
-            ->with('book')
-            ->first();
-
-        if (! $bookrent) {
-            return back()->with('error', 'Data peminjaman tidak ditemukan.');
-        }
-
-        if ($bookrent->status !== 'dipinjam') {
-            return back()->with('error', 'Buku ini sudah dikembalikan.');
-        }
-
-        $today = Carbon::today();
-        $days = Carbon::parse($bookrent->borrow_date)->diffInDays($today);
-        $denda = $days > 7 ? ($days - 7) * 5000 : 0;
-
-        DB::transaction(function () use ($bookrent, $today, $denda): void {
-            $lockedBookrent = Bookrent::query()->where('id', $bookrent->id)->lockForUpdate()->first();
-
-            if (! $lockedBookrent || $lockedBookrent->status !== 'dipinjam') {
-                return;
-            }
-
-            $lockedBookrent->return_date = $today->toDateString();
-            $lockedBookrent->status = 'dikembalikan';
-            $lockedBookrent->denda = $denda;
-            $lockedBookrent->save();
-
-            $book = Book::query()->where('id', $lockedBookrent->book_id)->lockForUpdate()->first();
-            if ($book) {
-                $book->stock += 1;
-                $book->save();
-            }
-        });
-
-        if ($denda > 0) {
-            return back()->with('success', 'Buku berhasil dikembalikan. Denda keterlambatan: Rp ' . number_format($denda, 0, ',', '.'));
-        }
-
-        return back()->with('success', 'Buku berhasil dikembalikan.');
     }
 
     /**
@@ -336,7 +285,11 @@ class ProfileAnggotaController extends Controller
     {
         $request->validate([
             'tempat_lahir' => 'nullable|string|max:255',
-            'tanggal_lahir' => 'nullable|date',
+            'tanggal_lahir' => ['nullable', 'date_format:Y-m-d', function (string $attribute, mixed $value, \Closure $fail): void {
+                if (! $this->isValidCalendarDate((string) $value)) {
+                    $fail('Format tanggal lahir tidak valid.');
+                }
+            }],
             'alamat' => 'nullable|string|max:500',
         ]);
 
@@ -352,6 +305,13 @@ class ProfileAnggotaController extends Controller
         return redirect()
             ->route($this->portalRouteName($request, 'profil.detail'))
             ->with('success', 'Informasi pribadi berhasil diperbarui');
+    }
+
+    private function isValidCalendarDate(string $value): bool
+    {
+        $date = \DateTimeImmutable::createFromFormat('Y-m-d', $value);
+
+        return $date !== false && $date->format('Y-m-d') === $value;
     }
 }
  

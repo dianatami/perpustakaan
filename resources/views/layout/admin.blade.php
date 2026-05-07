@@ -8,6 +8,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;500;600;700;800&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -103,6 +104,16 @@
         .admin-brand-subtitle {
             font-size: 0.78rem;
             color: rgba(226, 245, 242, 0.72);
+        }
+
+        .admin-school-name {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(214, 245, 240, 0.25);
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.85);
+            letter-spacing: 0.05em;
         }
 
         .admin-nav {
@@ -294,6 +305,7 @@
                 <span>
                     <span class="admin-brand-title">Control Room</span>
                     <span class="admin-brand-subtitle d-block">Perpustakaan Sekolah</span>
+                    <span class="admin-school-name d-block">Perpustakaan SMKN 1 Tirtamulya</span>
                 </span>
             </a>
 
@@ -328,8 +340,20 @@
                         <div class="admin-topbar-subtitle">Kelola inventaris, anggota, dan transaksi perpustakaan.</div>
                     </div>
                 </div>
-                <div class="admin-user-chip">
-                    <i class="bi bi-person-check-fill"></i> {{ Auth::user()->nama }}
+                <div class="d-flex align-items-center gap-2 gap-lg-3 flex-wrap justify-content-end">
+                    <div class="live-clock-shell" aria-live="polite" aria-atomic="true">
+                        <div class="live-clock-icon">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <div>
+                            <span class="live-clock-label">Waktu Real-time</span>
+                            <span class="live-clock-time" data-live-clock>--:--:--</span>
+                            <span class="live-clock-date" data-live-date>--</span>
+                        </div>
+                    </div>
+                    <div class="admin-user-chip">
+                        <i class="bi bi-person-check-fill"></i> {{ Auth::user()->nama }}
+                    </div>
                 </div>
             </header>
 

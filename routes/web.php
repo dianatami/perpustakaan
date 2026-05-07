@@ -12,7 +12,6 @@ use App\Http\Controllers\Anggota\AnggotaKategoriController;
 use App\Http\Controllers\Anggota\BerandaAnggotaController;
 use App\Http\Controllers\Anggota\BukuController;
 use App\Http\Controllers\Guru\BerandaGuruController;
-use App\Http\Controllers\KepalaSekolah\BerandaKepalaSekolahController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\BookController;
 use App\Http\Controllers\Admin\PeminjamanController;
@@ -73,6 +72,13 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
     Route::resource('peminjaman', PeminjamanController::class)
         ->only(['index', 'store', 'edit', 'update', 'destroy']);
 
+    Route::put('peminjaman/{peminjaman}/approve', [PeminjamanController::class, 'approve'])
+        ->name('peminjaman.approve');
+    Route::put('peminjaman/{peminjaman}/reject', [PeminjamanController::class, 'reject'])
+        ->name('peminjaman.reject');
+    Route::put('peminjaman/{peminjaman}/confirm-return', [PeminjamanController::class, 'confirmReturn'])
+        ->name('peminjaman.confirm-return');
+
     Route::get('anggota', [AnggotaController::class, 'index'])->name('anggota.index');
     Route::get('anggota/create', [AnggotaController::class, 'create'])->name('anggota.create');
     Route::post('anggota', [AnggotaController::class, 'store'])->name('anggota.store');
@@ -97,6 +103,7 @@ $portalSharedRoutes = function () {
     Route::get('ubah-password', [ProfileAnggotaController::class, 'ubahPassword'])->name('ubah.password');
     Route::post('store-password', [ProfileAnggotaController::class, 'storePassword'])->name('store.password');
     Route::get('riwayat-peminjaman', [ProfileAnggotaController::class, 'riwayatPeminjaman'])->name('riwayat.peminjaman');
+    Route::post('pinjam', [ProfileAnggotaController::class, 'borrow'])->name('pinjam.store');
     Route::post('pengembalian/{bookrent}', [ProfileAnggotaController::class, 'returnBook'])->name('pengembalian.store');
 };
 
@@ -108,8 +115,4 @@ Route::prefix('anggota')->name('anggota.')->middleware(['auth', 'role:0'])->grou
 Route::prefix('guru')->name('guru.')->middleware(['auth', 'role:2'])->group(function () use ($portalSharedRoutes) {
     Route::get('beranda', [BerandaGuruController::class, 'berandaGuru'])->name('beranda');
     $portalSharedRoutes();
-});
-
-Route::prefix('kepala')->name('kepala.')->middleware(['auth', 'role:3'])->group(function () {
-    Route::get('beranda', [BerandaKepalaSekolahController::class, 'berandaKepala'])->name('beranda');
 });

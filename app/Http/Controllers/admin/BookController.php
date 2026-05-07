@@ -51,6 +51,8 @@ class BookController extends Controller
         ]);
 
         $data = $request->only(['category_id','book_code','title','author','publisher','year','cover','description','stock']);
+        // pastikan kolom non-nullable seperti `description` diisi (gunakan string kosong jika tidak ada)
+        $data['description'] = $request->input('description', '');
 
         if ($request->hasFile('cover')) {
             $data['cover'] = $request->file('cover')->store('covers', 'public');

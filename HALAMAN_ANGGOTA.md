@@ -58,6 +58,8 @@ Lokasi: `/anggota` (dengan middleware auth)
 - **Riwayat Peminjaman** (`resources/views/anggota/riwayat-peminjaman.blade.php`)
   - Menampilkan daftar semua peminjaman anggota
   - Informasi: Nama Buku, Tanggal Pinjam, Tanggal Kembali, Status, Denda
+  - Aksi pengembalian buku untuk siswa dan guru
+  - Status mengikuti alur approval admin (Menunggu ACC → Dipinjam → Proses Pengembalian → Sudah Dikembalikan)
 
 #### Routes (Anggota):
 ```
@@ -67,6 +69,15 @@ PUT    /anggota/profil                 - anggota.update.profil      (Simpan edit
 GET    /anggota/ubah-password          - anggota.ubah.password      (Form ubah password)
 PUT    /anggota/ubah-password          - anggota.store.password     (Simpan password)
 GET    /anggota/riwayat-peminjaman     - anggota.riwayat.peminjaman (Riwayat peminjaman)
+POST   /anggota/pinjam/{book}          - anggota.pinjam             (Ajukan peminjaman)
+POST   /anggota/pengembalian/{bookrent} - anggota.pengembalian.store (Ajukan pengembalian)
+```
+
+#### Routes (Admin Approval):
+```
+PUT    /admin/peminjaman/{peminjaman}/approve        - admin.peminjaman.approve (ACC peminjaman)
+PUT    /admin/peminjaman/{peminjaman}/reject         - admin.peminjaman.reject (Tolak peminjaman)
+PUT    /admin/peminjaman/{peminjaman}/confirm-return - admin.peminjaman.confirm-return (Konfirmasi pengembalian)
 ```
 
 ---
@@ -89,6 +100,8 @@ GET    /anggota/riwayat-peminjaman     - anggota.riwayat.peminjaman (Riwayat pem
 - `ubahPassword()` - Tampilkan form ubah password
 - `storePassword()` - Update password anggota
 - `riwayatPeminjaman()` - Tampilkan riwayat peminjaman
+- `borrow()` - Mengajukan peminjaman buku (status awal `menunggu_acc`)
+- `returnBook()` - Mengajukan pengembalian buku (status `proses_kembali`)
 
 ---
 
