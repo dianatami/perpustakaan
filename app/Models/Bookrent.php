@@ -46,4 +46,9 @@ class Bookrent extends Model
 
         return $this->created_at->copy()->addHours(72);
     }
+
+    public function details()
+    {
+    return $this->hasMany(DetailBookrent::class);
+    }
 }

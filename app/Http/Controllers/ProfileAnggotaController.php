@@ -49,7 +49,7 @@ class ProfileAnggotaController extends Controller
         $activeBorrowings = $bookrents->where('status', 'dipinjam')->values();
 
         // Buku yang tersedia untuk dipinjam
-        $availableBooks = Book::where('stock', '>', 0)->orderBy('title')->get();
+        $availableBooks = Book::orderBy('title')->get();
 
         return view('anggota.Profile.index', [
             'user' => $user,

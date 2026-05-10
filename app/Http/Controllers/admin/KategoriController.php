@@ -52,26 +52,37 @@ class KategoriController extends Controller
 
     public function storeBook(Request $request, $id)
     {
-        $request->validate([
-            'book_code' => 'required',
-            'title' => 'required',
-            'author' => 'required',
-            'description' => 'required',
-            'stock' => 'required|integer|min:0',
-        ]);
+    $request->validate([
+        'book_code' => 'required',
+        'title' => 'required',
+        'author' => 'required',
+        'description' => 'required',
+        'stock' => 'required|integer|min:0',
+        'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+    ]);
 
-        Book::create([
-            'category_id' => $id,
-            'book_code' => $request->book_code,
-            'title' => $request->title,
-            'author' => $request->author,
-            'publisher' => $request->publisher,
-            'year' => $request->year,
-            'cover' => $request->cover,
-            'description' => $request->description,
-            'stock' => $request->stock,
-        ]);
+    $coverPath = null;
 
-        return redirect()->route('admin.kategori.edit', $id)->with('success', 'Buku berhasil ditambahkan');
+    if ($request->hasFile('cover')) {
+
+        $coverPath = $request->file('cover')->store('covers', 'public');
+
+    }
+
+    Book::create([
+        'category_id' => $id,
+        'book_code' => $request->book_code,
+        'title' => $request->title,
+        'author' => $request->author,
+        'publisher' => $request->publisher,
+        'year' => $request->year,
+        'cover' => $coverPath,
+        'description' => $request->description,
+        'stock' => $request->stock,
+    ]);
+
+    return redirect()
+        ->route('admin.kategori.edit', $id)
+        ->with('success', 'Buku berhasil ditambahkan');
     }
 }

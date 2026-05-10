@@ -28,6 +28,13 @@
 
             <form action="{{ route('admin.anggota.store') }}" method="POST">
                 @csrf
+                <div class="form-group">
+                    <label for="nip">Nomor Induk <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip') }}" placeholder="Contoh: 1234567890" required>
+                    @error('nip')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
 
                 <div class="form-group">
                     <label for="nama">Nama <span class="text-danger">*</span></label>
@@ -41,6 +48,18 @@
                     <label for="email">Email <span class="text-danger">*</span></label>
                     <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email') }}" required>
                     @error('email')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="role">Peran <span class="text-danger">*</span></label>
+                    <select class="form-control @error('role') is-invalid @enderror" id="role" name="role" required>
+                        <option value="">Pilih Peran</option>
+                        <option value="0" {{ old('role') == '0' ? 'selected' : '' }}>Siswa</option>
+                        <option value="2" {{ old('role') == '2' ? 'selected' : '' }}>Guru</option>
+                    </select>
+                    @error('role')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror
                 </div>

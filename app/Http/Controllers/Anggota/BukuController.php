@@ -17,7 +17,7 @@ class BukuController extends Controller
         $kategoriId = $request->query('kategori');
 
         $books = Book::with('category')
-            ->where('stock', '>', 0)
+            ->where('stock', '>=', 0)
             ->when($kategoriId, function ($query) use ($kategoriId) {
                 $query->where('category_id', $kategoriId);
             })

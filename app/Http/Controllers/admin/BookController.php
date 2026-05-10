@@ -79,6 +79,7 @@ class BookController extends Controller
             'author' => 'required',
             'stock' => 'required|integer|min:0',
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'description' => 'nullable',
         ]);
 
         $book = Book::findOrFail($id);

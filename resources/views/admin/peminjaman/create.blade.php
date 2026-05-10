@@ -1,0 +1,418 @@
+{{-- ===================================================== --}}
+{{-- resources/views/admin/peminjaman/create.blade.php --}}
+{{-- ===================================================== --}}
+
+@extends('layout.admin')
+
+@section('title','Tambah Peminjaman')
+
+@section('content')
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<div class="container mt-4">
+
+    <div class="card shadow border-0">
+
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                📚 Form Peminjaman Buku
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            {{-- ERROR --}}
+            @if(session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- VALIDATION --}}
+            @if ($errors->any())
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <form action="{{ route('admin.peminjaman.store') }}" method="POST">
+
+                @csrf
+
+                <div class="row">
+
+                    {{-- USER --}}
+                    <div class="col-md-6 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Peminjam
+                        </label>
+
+                        <select
+                            name="user_id"
+                            class="form-select select2"
+                            required
+                        >
+
+                            <option value="">
+                                Cari anggota...
+                            </option>
+
+                            @foreach ($users as $user)
+
+                                <option value="{{ $user->id }}">
+
+                                    {{ $user->nama }}
+                                    -
+                                    {{ $user->email }}
+
+                                </option>
+
+                            @endforeach
+
+                        </select>
+
+                    </div>
+
+                    {{-- TANGGAL --}}
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Tanggal Pinjam
+                        </label>
+
+                        <input
+                            type="date"
+                            name="borrow_date"
+                            class="form-control"
+                            value="{{ now()->format('Y-m-d') }}"
+                            required
+                        >
+
+                    </div>
+
+                    <div class="col-md-3 mb-3">
+
+                        <label class="form-label fw-bold">
+                            Tanggal Kembali
+                        </label>
+
+                        <input
+                            type="date"
+                            name="return_date"
+                            class="form-control"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+
+                    <h5 class="mb-0">
+                        Daftar Buku
+                    </h5>
+
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        id="add-book"
+                    >
+                        + Tambah Buku
+                    </button>
+
+                </div>
+
+                {{-- WRAPPER --}}
+                <div id="book-wrapper">
+
+                    {{-- ITEM --}}
+                    <div class="book-item row mb-3">
+
+                        {{-- SELECT BUKU --}}
+                        <div class="col-md-7">
+
+                            <select
+                                name="books[0][book_id]"
+                                class="form-select select2 book-select"
+                                required
+                            >
+
+                                <option value="">
+                                    Cari buku...
+                                </option>
+
+                                @foreach ($books as $book)
+
+                                    <option
+                                        value="{{ $book->id }}"
+                                        {{ $book->stock <= 0 ? 'disabled' : '' }}
+                                        data-stock="{{ $book->stock }}"
+                                    >
+
+                                        {{ $book->book_code }}
+                                        -
+                                        {{ $book->title }}
+                                        (stok: {{ $book->stock }})
+                                        
+
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+
+                        </div>
+
+                        {{-- QTY --}}
+                        <div class="col-md-3">
+
+                            <input
+                                type="number"
+                                name="books[0][qty]"
+                                class="form-control"
+                                placeholder="Jumlah"
+                                min="1"
+                                required
+                            >
+
+                            <small class="text-muted stock-text">
+                                Stok tersedia: -
+                            </small>
+
+                        </div>
+
+                        {{-- BUTTON --}}
+                        <div class="col-md-2">
+
+                            <button
+                                type="button"
+                                class="btn btn-danger remove-book w-100"
+                            >
+                                Hapus
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <hr>
+
+                <button type="submit" class="btn btn-success">
+
+                    <i class="fas fa-save"></i>
+                    Simpan Peminjaman
+
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{{-- JQUERY --}}
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js"></script>
+
+{{-- SELECT2 --}}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<script>
+
+$(document).ready(function(){
+
+    let index = 1;
+
+    // =========================================
+    // INIT SELECT2
+    // =========================================
+
+    function initSelect2(){
+
+        $('.select2').select2({
+            width: '100%',
+            placeholder: 'Cari buku...'
+        });
+
+    }
+
+    initSelect2();
+
+    // =========================================
+    // UPDATE OPTION AGAR TIDAK DUPLIKAT
+    // =========================================
+
+    function updateBookOptions(){
+
+        let selectedBooks = [];
+
+        $('.book-select').each(function(){
+
+            let value = $(this).val();
+
+            if(value){
+                selectedBooks.push(value);
+            }
+
+        });
+
+        $('.book-select').each(function(){
+
+            let currentSelect = $(this);
+
+            let currentValue = currentSelect.val();
+
+            currentSelect.find('option').each(function(){
+
+                let optionValue = $(this).val();
+
+                if(
+                    optionValue &&
+                    selectedBooks.includes(optionValue) &&
+                    optionValue !== currentValue
+                ){
+                    $(this).prop('disabled', true);
+                } else {
+                    $(this).prop('disabled', false);
+                }
+
+            });
+
+        });
+
+    }
+
+    // =========================================
+    // TAMBAH BUKU
+    // =========================================
+
+    $('#add-book').click(function(){
+
+        let html = `
+            <div class="book-item row mb-3">
+
+                <div class="col-md-7">
+
+                    <select
+                        name="books[${index}][book_id]"
+                        class="form-select select2 book-select"
+                        required
+                    >
+
+                        <option value="">
+                            Cari buku...
+                        </option>
+
+                        @foreach ($books as $book)
+
+                            <option
+                                value="{{ $book->id }}"
+                                data-stock="{{ $book->stock }}"
+                            >
+
+                                {{ $book->book_code }}
+                                -
+                                {{ $book->title }}
+                                (stok: {{ $book->stock }})
+
+                            </option>
+
+                        @endforeach
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <input
+                        type="number"
+                        name="books[${index}][qty]"
+                        class="form-control qty-input"
+                        placeholder="Jumlah"
+                        min="1"
+                        required
+                    >
+
+                    <small class="text-muted stock-text">
+                        Stok tersedia: -
+                    </small>
+
+                </div>
+
+                <div class="col-md-2">
+
+                    <button
+                        type="button"
+                        class="btn btn-danger remove-book w-100"
+                    >
+                        Hapus
+                    </button>
+
+                </div>
+
+            </div>
+        `;
+
+        $('#book-wrapper').append(html);
+
+        initSelect2();
+
+        updateBookOptions();
+
+        index++;
+
+    });
+
+    // =========================================
+    // HAPUS
+    // =========================================
+
+    $(document).on('click', '.remove-book', function(){
+
+        if($('.book-item').length > 1){
+
+            $(this).closest('.book-item').remove();
+
+            updateBookOptions();
+
+        }
+
+    });
+
+    // =========================================
+    // CHANGE BUKU
+    // =========================================
+
+    $(document).on('change', '.book-select', function(){
+
+        updateBookOptions();
+
+        let stock = $(this)
+            .find(':selected')
+            .data('stock');
+
+        $(this)
+            .closest('.book-item')
+            .find('.stock-text')
+            .text('Stok tersedia: ' + stock);
+
+    });
+
+});
+
+</script>
+
+@endsection

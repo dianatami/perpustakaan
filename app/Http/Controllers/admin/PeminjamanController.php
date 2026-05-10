@@ -9,199 +9,285 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use App\Models\DetailBookrent;
 
 class PeminjamanController extends Controller
 {
     public function index()
     {
-        $peminjaman = Bookrent::with(['user', 'book'])->latest('created_at')->paginate(10);
+        $peminjaman = Bookrent::with(['user','details.book'])->latest('created_at')->paginate(10);
         $users = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])->get();
-        $books = Book::where('stock', '>', 0)->get();
+        $books = Book::all();
+
         return view('admin.peminjaman.index', compact('peminjaman', 'users', 'books'));
+    }
+
+    public function create()
+    {
+        $users = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])
+                    ->orderBy('nama')
+                    ->get();
+
+        $books = Book::where('stock', '>=', 0)
+                    ->orderBy('title')
+                    ->get();
+       return view('admin.peminjaman.create', compact('users', 'books'));
     }
 
     public function store(Request $request)
     {
+
         $request->validate([
-            'user_id'     => 'required|exists:user,id',
-            'book_id'     => 'required|exists:books,id',
+            'user_id' => 'required|exists:user,id',
             'borrow_date' => 'required|date',
+            'return_date' => 'required|date|after_or_equal:borrow_date',
+            'books' => 'required|array|min:1',
+            'books.*.book_id' => 'required|exists:books,id',
+            'books.*.qty' => 'required|integer|min:1',
         ]);
 
-        $jumlahDipinjam = Bookrent::where('user_id', $request->user_id)
-            ->whereIn('status', ['menunggu_acc', 'dipinjam', 'proses_kembali'])
-            ->count();
+        // =====================================================
+        // VALIDASI DUPLIKAT BUKU
+        // =====================================================
 
-        if ($jumlahDipinjam >= 3) {
-            return back()->with('error', 'Anggota sudah meminjam 3 buku.');
+        $bookIds = collect($request->books)
+                    ->pluck('book_id');
+        if($bookIds->duplicates()->count() > 0){
+            return back()
+                    ->withInput()
+                    ->with('error', 'Tidak boleh memilih buku yang sama');
         }
 
-        $cekBuku = Bookrent::where('user_id', $request->user_id)
-            ->where('book_id', $request->book_id)
-            ->whereIn('status', ['menunggu_acc', 'dipinjam', 'proses_kembali'])
-            ->exists();
+        // =====================================================
+        // VALIDASI STOK
+        // =====================================================
 
-        if ($cekBuku) {
-            return back()->with('error', 'Buku ini sudah dipinjam oleh anggota tersebut.');
+        foreach ($request->books as $item) {
+            $book = Book::findOrFail($item['book_id']);
+            if($item['qty'] > $book->stock){
+                return back()
+                    ->withInput()
+                    ->with(
+                        'error',
+                        'Stok buku '.$book->title.' hanya tersedia '.$book->stock
+                    );
+            }
         }
 
-        $book = Book::findOrFail($request->book_id);
+        // =====================================================
+        // SIMPAN PEMINJAMAN
+        // =====================================================
 
-        if ($book->stock < 1) {
-            return back()->with('error', 'Stok buku habis');
-        }
-
-        Bookrent::create([
-            'user_id'     => $request->user_id,
-            'book_id'     => $request->book_id,
+        $peminjaman = Bookrent::create([
+            'user_id' => $request->user_id,
             'borrow_date' => $request->borrow_date,
-            'status'      => 'menunggu_acc',
+            'return_date' => $request->return_date,
+            'status' => 'dipinjam',
         ]);
 
-        return redirect()->route('admin.peminjaman.index')
-            ->with('success', 'Pengajuan peminjaman berhasil dibuat. Menunggu ACC.');
+        // =====================================================
+        // DETAIL PEMINJAMAN
+        // =====================================================
+
+        foreach ($request->books as $item) {
+            DetailBookrent::create([
+                'bookrent_id' => $peminjaman->id,
+                'book_id' => $item['book_id'],
+                'qty' => $item['qty'],
+            ]);
+
+            // kurangi stok
+            $book = Book::find($item['book_id']);
+            $book->decrement('stock', $item['qty']);
+        }
+
+        return redirect()
+                ->route('admin.peminjaman.index')
+                ->with('success', 'Peminjaman berhasil ditambahkan');
     }
 
 
 
     public function edit($id)
     {
-        $peminjaman = Bookrent::findOrFail($id);
-        $users = User::all();
+        $peminjaman = Bookrent::with('details.book')->findOrFail($id);
+        $users = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])
+                    ->orderBy('nama')
+                    ->get();
         $books = Book::all();
         return view('admin.peminjaman.edit', compact('peminjaman', 'users', 'books'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            'user_id'     => 'required|exists:user,id',
-            'book_id'     => 'required|exists:books,id',
-            'borrow_date' => 'required|date',
-            'return_date' => 'nullable|date',
-            'status'      => 'required|in:menunggu_acc,dipinjam,ditolak,proses_kembali,kembali',
-            'condition'   => 'nullable|in:baik,rusak,hilang',
+   public function update(Request $request, $id)
+{
+    $request->validate([
+        'user_id' => 'required|exists:user,id',
+        'borrow_date' => 'required|date',
+        'return_date' => 'nullable|date',
+        'status' => 'required',
+    ]);
+
+    $peminjaman = Bookrent::with('details.book')
+        ->findOrFail($id);
+
+    // simpan status lama
+    $statusLama = $peminjaman->status;
+
+    // update data utama
+    $peminjaman->update([
+        'user_id' => $request->user_id,
+        'borrow_date' => $request->borrow_date,
+        'return_date' => $request->return_date,
+        'status' => $request->status,
+        'denda' => $request->denda ?? 0,
+    ]);
+
+    // update kondisi buku
+    foreach ($peminjaman->details as $detail) {
+        $condition =
+            $request->conditions[$detail->id] ?? 'baik';
+        $detail->update([
+            'condition' => $condition,
         ]);
-
-        $returnDate = $request->return_date ? Carbon::parse($request->return_date) : Carbon::today();
-        $condition = $request->input('condition', 'baik');
-
-        DB::transaction(function () use ($request, $id, $returnDate, $condition): void {
-            $peminjaman = Bookrent::with('book')->lockForUpdate()->findOrFail($id);
-
-            if ($request->status === 'kembali') {
-                // Calculate fine using consistent method
-                $denda = $this->calculateFine($peminjaman->borrow_date, $returnDate, $condition);
-
-                // Always restore stock when book is returned (status changed to 'kembali')
-                if ($peminjaman->status !== 'kembali' && $peminjaman->book) {
-                    $peminjaman->book->stock += 1;
-                    $peminjaman->book->save();
-                }
-
-                $peminjaman->return_date = $returnDate->toDateString();
-                $peminjaman->denda = $denda;
-            } else {
-                $peminjaman->return_date = $request->return_date;
-            }
-
-            $peminjaman->user_id = $request->user_id;
-            $peminjaman->book_id = $request->book_id;
-            $peminjaman->borrow_date = $request->borrow_date;
-            $peminjaman->status = $request->status;
-            $peminjaman->save();
-        });
-
-        return redirect()->route('admin.peminjaman.index')
-            ->with('success', 'Data peminjaman berhasil diperbarui.');
     }
+
+    // kembalikan stok kalau status kembali
+    if (
+        $request->status == 'kembali' &&
+        $statusLama != 'kembali'
+    ) {
+        foreach ($peminjaman->details as $detail) {
+
+            $detail->book->increment(
+                'stock',
+                $detail->qty
+            );
+        }
+    }
+    return redirect()
+        ->route('admin.peminjaman.index')
+        ->with(
+            'success',
+            'Data peminjaman berhasil diperbarui'
+        );
+}
 
     public function approve($id)
     {
         $result = DB::transaction(function () use ($id): array {
-            $peminjaman = Bookrent::with('book')->lockForUpdate()->findOrFail($id);
-
+            $peminjaman = Bookrent::with('details.book')->lockForUpdate()->findOrFail($id);
             if ($peminjaman->status !== 'menunggu_acc') {
                 return ['ok' => false, 'message' => 'Peminjaman tidak dalam status menunggu ACC.'];
             }
-
-            $book = Book::query()->lockForUpdate()->findOrFail($peminjaman->book_id);
-
+            $book = Book::query()->lockForUpdate()->findOrFail($peminjaman->details->first()->book_id);
             if ($book->stock < 1) {
                 return ['ok' => false, 'message' => 'Stok buku habis.'];
             }
-
             $book->stock -= 1;
             $book->save();
-
             $peminjaman->status = 'dipinjam';
             $peminjaman->borrow_date = Carbon::now()->toDateString();
             $peminjaman->save();
-
             return ['ok' => true, 'message' => 'Peminjaman berhasil di-ACC.'];
         });
-
         $flashType = $result['ok'] ? 'success' : 'error';
-
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
     public function reject($id)
     {
         $result = DB::transaction(function () use ($id): array {
-            $peminjaman = Bookrent::lockForUpdate()->findOrFail($id);
-
+            $peminjaman = Bookrent::with('details.book')->lockForUpdate()->findOrFail($id);
             if ($peminjaman->status !== 'menunggu_acc') {
                 return ['ok' => false, 'message' => 'Peminjaman tidak dalam status menunggu ACC.'];
             }
-
             $peminjaman->status = 'ditolak';
             $peminjaman->save();
-
             return ['ok' => true, 'message' => 'Peminjaman berhasil ditolak.'];
         });
-
         $flashType = $result['ok'] ? 'success' : 'error';
-
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
     public function confirmReturn($id)
     {
-        $result = DB::transaction(function () use ($id): array {
-            $peminjaman = Bookrent::with('book')->lockForUpdate()->findOrFail($id);
+    $result = DB::transaction(function () use ($id): array {
 
-            if ($peminjaman->status !== 'proses_kembali') {
-                return ['ok' => false, 'message' => 'Pengembalian belum diajukan oleh user.'];
+        $peminjaman = Bookrent::with('details.book')
+            ->lockForUpdate()
+            ->findOrFail($id);
+        if (
+        $peminjaman->status !== 'proses_kembali'
+        &&
+        $peminjaman->status !== 'dipinjam')  {
+            return [
+                'ok' => false,
+                'message' => 'Pengembalian belum diajukan oleh user.'
+            ];
+        }
+        $today = Carbon::today();
+        $borrowDate = Carbon::parse(
+            $peminjaman->borrow_date
+        );
+        $days = $borrowDate->diffInDays($today);
+        $denda = $days > 7
+            ? ($days - 7) * 5000
+            : 0;
+
+        // =========================================
+        // KEMBALIKAN STOK SEMUA BUKU
+        // =========================================
+
+        foreach ($peminjaman->details as $detail) {
+            if ($detail->condition == 'baik') {
+                $detail->book->increment(
+                    'stock',
+                    $detail->qty
+                );
             }
-
-            $today = Carbon::today();
-            
-            // Calculate fine using consistent method
-            $denda = $this->calculateFine($peminjaman->borrow_date, $today, 'baik');
-
-            if ($peminjaman->book) {
-                $peminjaman->book->stock += 1;
-                $peminjaman->book->save();
+            elseif ($detail->condition == 'rusak') {
+                $detail->book->increment(
+                    'damaged_stock',
+                    $detail->qty
+                );
             }
+            elseif ($detail->condition == 'hilang') {
+                $detail->book->increment(
+                    'lost_stock',
+                    $detail->qty
+                );
+            }
+        }
 
-            $peminjaman->status = 'kembali';
-            $peminjaman->return_date = $today->toDateString();
-            $peminjaman->denda = $denda;
-            $peminjaman->save();
+        // =========================================
+        // UPDATE STATUS
+        // =========================================
 
-            $message = $denda > 0
-                ? 'Pengembalian dikonfirmasi. Denda: Rp ' . number_format($denda, 0, ',', '.')
-                : 'Pengembalian dikonfirmasi.';
-
-            return ['ok' => true, 'message' => $message];
-        });
-
-        $flashType = $result['ok'] ? 'success' : 'error';
-
-        return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
-    }
-
+        $peminjaman->status = 'kembali';
+        $peminjaman->return_date =
+            $today->toDateString();
+        $peminjaman->denda = $denda;
+        $peminjaman->save();
+        $message = $denda > 0
+            ? 'Pengembalian dikonfirmasi. Denda: Rp ' .
+                number_format($denda, 0, ',', '.')
+            : 'Pengembalian dikonfirmasi.';
+        return [
+            'ok' => true,
+            'message' => $message
+        ];
+    });
+    $flashType =
+        $result['ok']
+            ? 'success'
+            : 'error';
+    return redirect()
+        ->route('admin.peminjaman.index')
+        ->with(
+            $flashType,
+            $result['message']
+        );
+}
 
     /**
      * Calculate fine based on borrow date, return date, and condition
@@ -228,7 +314,7 @@ class PeminjamanController extends Controller
 
     public function destroy($id)
     {
-        $peminjaman = Bookrent::findOrFail($id);
+        $peminjaman = Bookrent::with('details')->findOrFail($id);
         $peminjaman->delete();
         
         return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil dihapus');

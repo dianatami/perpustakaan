@@ -29,6 +29,13 @@
             <form action="{{ route('admin.anggota.update', $anggota->id) }}" method="POST">
                 @csrf
                 @method('PUT')
+                <div class="form-group">
+                    <label for="nip">No. Induk <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip', $anggota->nip) }}" placeholder="Contoh: 1234567890" required>
+                    @error('nip')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
 
                 <div class="form-group">
                     <label for="nama">Nama <span class="text-danger">*</span></label>

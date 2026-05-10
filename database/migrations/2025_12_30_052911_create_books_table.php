@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('publisher')->nullable();
             $table->string('year')->nullable();
             $table->string('cover')->nullable();
-            $table->string('description');
+            $table->text('description')->nullable();
             $table->integer('stock');
             $table->integer('damaged')->nullable();
             $table->integer('lost')->nullable();

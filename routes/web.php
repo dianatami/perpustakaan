@@ -74,7 +74,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
         ->name('kategori.book.store');
 
     Route::resource('peminjaman', PeminjamanController::class)
-        ->only(['index', 'store', 'edit', 'update', 'destroy']);
+        ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+    
 
     Route::put('peminjaman/{peminjaman}/approve', [PeminjamanController::class, 'approve'])
         ->name('peminjaman.approve');

@@ -36,6 +36,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>No</th>
+                                <th>No.Induk</th>
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>Nomor HP</th>
@@ -48,6 +49,7 @@
                             @forelse ($siswa as $item)
                                 <tr>
                                     <td>{{ ($siswa->currentPage() - 1) * $siswa->perPage() + $loop->iteration }}</td>
+                                    <td>{{ $item->nisn ?? '-' }}</td>
                                     <td>{{ $item->nama }}</td>
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->hp }}</td>
@@ -106,6 +108,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>No</th>
+                                <th>No. Induk</th>
                                 <th>Nama</th>
                                 <th>Email</th>
                                 <th>NIP</th>
@@ -119,6 +122,7 @@
                             @forelse ($guru as $item)
                                 <tr>
                                     <td>{{ ($guru->currentPage() - 1) * $guru->perPage() + $loop->iteration }}</td>
+                                    <td>{{ $item->nip ?? '-' }}</td>
                                     <td>{{ $item->nama }}</td>
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->nip ?? '-' }}</td>
