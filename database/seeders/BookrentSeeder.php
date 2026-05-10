@@ -35,7 +35,7 @@ class BookrentSeeder extends Seeder
                 'book_id' => $books->count() > 1 ? $books->get(1)->id : $books->first()->id,
                 'borrow_date' => now()->subDays(10),
                 'return_date' => now()->subDays(3),
-                'status' => 'dikembalikan',
+                'status' => 'kembali',
             ],
             [
                 'user_id' => $users->count() > 2 ? $users->get(2)->id : $users->first()->id,

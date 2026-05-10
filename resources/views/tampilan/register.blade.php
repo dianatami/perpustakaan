@@ -16,11 +16,6 @@
 
         <div class="pointer-events-none absolute -left-24 top-8 h-80 w-80 rounded-full bg-shelf-gold/42 blur-3xl animate-float-soft"></div>
         <div class="pointer-events-none absolute -right-20 top-20 h-96 w-96 rounded-full bg-shelf-teal/28 blur-3xl animate-float-soft [animation-delay:1.8s]"></div>
-        <div class="pointer-events-none absolute left-[7%] top-[24%] h-3 w-3 rounded-full bg-shelf-coral/75 animate-pulse"></div>
-        <div class="pointer-events-none absolute left-[13%] top-[67%] h-2.5 w-2.5 rounded-full bg-shelf-ocean/70 animate-pulse [animation-delay:.45s]"></div>
-        <div class="pointer-events-none absolute right-[11%] top-[31%] h-3 w-3 rounded-full bg-shelf-teal/74 animate-pulse [animation-delay:.7s]"></div>
-        <div class="pointer-events-none absolute right-[16%] top-[74%] h-2 w-2 rounded-full bg-shelf-gold/86 animate-pulse [animation-delay:1.1s]"></div>
-
         <header class="relative z-20">
             <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
                 <div>
@@ -45,9 +40,6 @@
             <section class="grid w-full items-stretch gap-6 lg:grid-cols-[0.95fr_1.05fr]">
                 <aside class="reveal-item glass-card relative hidden overflow-hidden rounded-[2rem] p-8 lg:block" data-reveal>
                     <div class="absolute -right-16 -top-16 h-44 w-44 rounded-full border border-white/90"></div>
-                    <div class="absolute right-10 top-10 h-8 w-8 rounded-full bg-shelf-gold/85"></div>
-                    <div class="absolute left-8 top-24 h-3 w-3 rounded-full bg-shelf-coral/80 animate-pulse"></div>
-
                     <p class="font-mono inline-flex items-center gap-2 rounded-full border border-shelf-ocean/30 bg-white/80 px-3 py-1 text-[11px] uppercase tracking-[0.16em] text-shelf-ink/76">
                         <span class="h-1.5 w-1.5 rounded-full bg-shelf-ocean"></span>
                         New Member Access
@@ -76,8 +68,6 @@
 
                 <div class="reveal-item glass-card relative overflow-hidden rounded-[2rem] p-6 sm:p-8" data-reveal style="transition-delay:120ms;">
                     <div class="absolute -right-12 top-4 h-24 w-24 rounded-full border border-white/90"></div>
-                    <div class="absolute left-3 top-3 h-2.5 w-2.5 rounded-full bg-shelf-gold/85 animate-pulse"></div>
-                    <div class="absolute right-9 top-14 h-2 w-2 rounded-full bg-shelf-coral/80 animate-pulse [animation-delay:.35s]"></div>
 
                     <div class="relative">
                         <p class="font-mono text-xs uppercase tracking-[0.16em] text-shelf-ink/62">Create Account</p>

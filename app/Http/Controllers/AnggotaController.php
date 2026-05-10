@@ -33,7 +33,7 @@ class AnggotaController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:user,email',
-            'hp' => 'required|string|max:13',
+            'hp' => 'required|digits_between:10,13',
             'password' => 'required|string|min:6',
         ]);
 
@@ -68,7 +68,7 @@ class AnggotaController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:user,email,' . $id,
-            'hp' => 'required|string|max:13',
+            'hp' => 'required|digits_between:10,13',
         ]);
 
         $anggota->update([

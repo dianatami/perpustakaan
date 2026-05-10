@@ -27,7 +27,7 @@ class RegisterController extends Controller
                     return;
                 }
 
-                if (! User::isValidNip($identifier) && ! User::isValidNisn($identifier)) {
+                if (!User::isValidNip($identifier) && !User::isValidNisn($identifier)) {
                     $fail('Format NIP/NISN tidak valid.');
                 }
             }, 'unique:user,nip'],
@@ -42,14 +42,29 @@ class RegisterController extends Controller
         }
 
         $user = DB::transaction(function () use ($request, $identifier) {
+            $nip = null;
+            $nisn = null;
+            $role = User::ROLE_ANGGOTA;
+
+            if ($identifier !== '') {
+                if (User::isValidNip($identifier)) {
+                    $nip = $identifier;
+                    $role = User::ROLE_GURU;
+                } elseif (User::isValidNisn($identifier)) {
+                    $nisn = $identifier;
+                    $role = User::ROLE_ANGGOTA;
+                }
+            }
+
             return User::create([
                 'nama' => trim((string) $request->input('nama')),
                 'email' => trim((string) $request->input('email')),
-                'nip' => $identifier !== '' ? $identifier : null,
+                'nip' => $nip,
+                'nisn' => $nisn,
                 'password' => bcrypt($request->input('password')),
                 'hp' => trim((string) $request->input('hp')),
                 'status' => 1,
-                'role' => User::resolveRegistrationRole($identifier),
+                'role' => $role,
             ]);
         });
 

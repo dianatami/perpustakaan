@@ -92,24 +92,38 @@ class ProfileAnggotaController extends Controller
             return back()->with('error', 'Pengajuan atau peminjaman buku ini masih aktif.');
         }
 
-        $book = Book::findOrFail($bookId);
+        try {
+            $result = DB::transaction(function () use ($user, $bookId, $request) {
+                $book = Book::where('id', $bookId)
+                    ->lockForUpdate()
+                    ->first();
 
-        if ($book->stock < 1) {
-            return back()->with('error', 'Stok buku habis.');
+                if (!$book) {
+                    throw new \Exception('Buku tidak ditemukan.');
+                }
+
+                if ($book->stock < 1) {
+                    throw new \Exception('Stok buku habis.');
+                }
+
+                $borrowDate = $request->borrow_date
+                    ? Carbon::parse($request->borrow_date)->toDateString()
+                    : Carbon::now()->toDateString();
+
+                Bookrent::create([
+                    'user_id' => $user->id,
+                    'book_id' => $bookId,
+                    'borrow_date' => $borrowDate,
+                    'status' => 'menunggu_acc',
+                ]);
+
+                return true;
+            });
+
+            return back()->with('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin.');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
-
-        $borrowDate = $request->borrow_date
-            ? Carbon::parse($request->borrow_date)->toDateString()
-            : Carbon::now()->toDateString();
-
-        Bookrent::create([
-            'user_id' => $user->id,
-            'book_id' => $bookId,
-            'borrow_date' => $borrowDate,
-            'status' => 'menunggu_acc',
-        ]);
-
-        return back()->with('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin.');
     }
 
     /**
@@ -165,7 +179,7 @@ class ProfileAnggotaController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'email' => 'required|email|unique:user,email,' . Auth::id(),
-            'hp' => 'required|string|max:13',
+            'hp' => 'required|digits_between:10,13',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);

@@ -22,95 +22,26 @@
         </div>
     @endif
 
-    <!-- Form Tambah Peminjaman -->
-    <div class="card mb-4 shadow-sm">
-        <div class="card-header bg-success text-white">
-            <h5 class="mb-0"><i class="fas fa-plus-circle"></i> Form Peminjaman Buku Baru</h5>
-        </div>
-        <div class="card-body">
-            @if ($errors->any())
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <strong>Terjadi Kesalahan!</strong>
-                    <ul class="mb-0 mt-2">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                </div>
-            @endif
-
-            <form action="{{ route('admin.peminjaman.store') }}" method="POST">
-                @csrf
-                <div class="row">
-                    <div class="col-md-3">
-                        <label for="user_id" class="form-label">Nama Peminjam *</label>
-                        <select class="form-select @error('user_id') is-invalid @enderror" id="user_id" name="user_id" required>
-                            <option value="">-- Pilih Peminjam --</option>
-                            @if (isset($users))
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" @selected(old('user_id') == $user->id)>
-                                        {{ $user->nama }}
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                        @error('user_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-3">
-                        <label for="book_id" class="form-label">Judul Buku *</label>
-                        <select class="form-select @error('book_id') is-invalid @enderror" id="book_id" name="book_id" required>
-                            <option value="">-- Pilih Buku --</option>
-                            @if (isset($books))
-                                @foreach ($books as $book)
-                                    <option value="{{ $book->id }}" @selected(old('book_id') == $book->id)>
-                                        {{ $book->title }} (Stok: {{ $book->stock }})
-                                    </option>
-                                @endforeach
-                            @endif
-                        </select>
-                        @error('book_id')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-2">
-                        <label for="borrow_date" class="form-label">Tanggal Pinjam *</label>
-                        <input type="date" class="form-control @error('borrow_date') is-invalid @enderror" 
-                               id="borrow_date" name="borrow_date" value="{{ old('borrow_date', now()->format('Y-m-d')) }}" required>
-                        @error('borrow_date')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-2">
-                        <label for="return_date" class="form-label">Tanggal Kembali</label>
-                        <input type="date" class="form-control @error('return_date') is-invalid @enderror" 
-                               id="return_date" name="return_date" value="{{ old('return_date') }}">
-                        @error('return_date')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-success w-100">
-                            <i class="fas fa-check"></i> Ajukan
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Tabel Data Peminjaman -->
     <div class="card shadow-sm">
         <div class="card-header bg-primary text-white">
             <h5 class="mb-0"><i class="fas fa-list"></i> Daftar Peminjaman</h5>
         </div>
         <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="peminjam_search" class="form-label">Cari Nama Peminjam</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="peminjam_search" placeholder="Ketik nama peminjam">
+                        <button class="btn btn-outline-primary" type="button" id="peminjam_search_button">
+                            <i class="fas fa-search"></i> Cari
+                        </button>
+                        <button class="btn btn-outline-secondary" type="button" id="peminjam_clear_button">
+                            <i class="fas fa-times"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="table-responsive">
         @if ($peminjaman->count() > 0)
             <table class="table table-striped table-hover">
@@ -130,7 +61,7 @@
                     @foreach ($peminjaman as $item)
                         <tr>
                             <td>{{ ($peminjaman->currentPage() - 1) * $peminjaman->perPage() + $loop->iteration }}</td>
-                            <td>
+                            <td class="peminjam-nama">
                                 <strong>{{ $item->user->nama ?? 'N/A' }}</strong>
                             </td>
                             <td>{{ $item->book->title ?? 'N/A' }}</td>
@@ -220,4 +151,34 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('peminjam_search');
+        const searchButton = document.getElementById('peminjam_search_button');
+        const clearButton = document.getElementById('peminjam_clear_button');
+        const rows = Array.from(document.querySelectorAll('table tbody tr'));
+
+        if (!searchInput || rows.length === 0) {
+            return;
+        }
+
+        const filterRows = () => {
+            const query = searchInput.value.toLowerCase().trim();
+
+            rows.forEach((row) => {
+                const nameCell = row.querySelector('.peminjam-nama');
+                const nameText = nameCell ? nameCell.textContent.toLowerCase() : '';
+                const isMatch = query === '' || nameText.includes(query);
+                row.style.display = isMatch ? '' : 'none';
+            });
+        };
+
+        searchInput.addEventListener('input', filterRows);
+        searchButton.addEventListener('click', filterRows);
+        clearButton.addEventListener('click', function () {
+            searchInput.value = '';
+            filterRows();
+        });
+    });
+</script>
 @endsection

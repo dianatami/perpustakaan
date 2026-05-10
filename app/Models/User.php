@@ -28,6 +28,7 @@ class User extends Authenticatable
         'nama',
         'email',
         'nip',
+        'nisn',
         'password',
         'hp',
         'status',
@@ -71,6 +72,25 @@ class User extends Authenticatable
     public function bookrent()
     {
         return $this->hasMany(Bookrent::class, 'user_id');
+    }
+
+    /**
+     * Leaderboard peminjam terbanyak (non-admin).
+     */
+    public static function leaderboardPeminjam(int $limit = 10)
+    {
+        return self::query()
+            ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
+            ->selectRaw('user.id, user.nama, COUNT(bookrent.id) as total_peminjaman')
+            ->where(function ($query): void {
+                $query->whereNull('user.role')
+                    ->orWhere('user.role', '!=', self::ROLE_ADMIN);
+            })
+            ->groupBy('user.id', 'user.nama')
+            ->orderByDesc('total_peminjaman')
+            ->orderBy('user.nama')
+            ->limit($limit)
+            ->get();
     }
 
     /**

@@ -6,6 +6,7 @@ use App\Http\Controllers\BerandaController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\AnggotaController;
+use App\Http\Controllers\LeaderboardController;
 use App\Models\User;
 use App\Http\Controllers\ProfileAnggotaController;
 use App\Http\Controllers\Anggota\AnggotaKategoriController;
@@ -56,6 +57,9 @@ Route::middleware('guest')->group(function () {
 Route::post('tampilan/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('tampilan.logout');
+
+Route::middleware('auth')->get('leaderboard/live', [LeaderboardController::class, 'live'])
+    ->name('leaderboard.live');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(function () {
     Route::get('beranda', [BerandaController::class, 'berandaAdmin'])->name('beranda');

@@ -88,19 +88,13 @@ class PeminjamanController extends Controller
 
         DB::transaction(function () use ($request, $id, $returnDate, $condition): void {
             $peminjaman = Bookrent::with('book')->lockForUpdate()->findOrFail($id);
-            $denda = $peminjaman->denda ?? 0;
 
             if ($request->status === 'kembali') {
-                $borrowDate = Carbon::parse($peminjaman->borrow_date);
-                $days = $borrowDate->diffInDays($returnDate);
+                // Calculate fine using consistent method
+                $denda = $this->calculateFine($peminjaman->borrow_date, $returnDate, $condition);
 
-                $denda = $days > 7 ? ($days - 7) * 5000 : 0;
-
-                if ($condition === 'rusak' || $condition === 'hilang') {
-                    $denda += 50000;
-                }
-
-                if ($peminjaman->status !== 'kembali' && $condition === 'baik' && $peminjaman->book) {
+                // Always restore stock when book is returned (status changed to 'kembali')
+                if ($peminjaman->status !== 'kembali' && $peminjaman->book) {
                     $peminjaman->book->stock += 1;
                     $peminjaman->book->save();
                 }
@@ -182,9 +176,9 @@ class PeminjamanController extends Controller
             }
 
             $today = Carbon::today();
-            $borrowDate = Carbon::parse($peminjaman->borrow_date);
-            $days = $borrowDate->diffInDays($today);
-            $denda = $days > 7 ? ($days - 7) * 5000 : 0;
+            
+            // Calculate fine using consistent method
+            $denda = $this->calculateFine($peminjaman->borrow_date, $today, 'baik');
 
             if ($peminjaman->book) {
                 $peminjaman->book->stock += 1;
@@ -208,6 +202,29 @@ class PeminjamanController extends Controller
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
+
+    /**
+     * Calculate fine based on borrow date, return date, and condition
+     * 
+     * Business rules:
+     * - Grace period: 7 days
+     * - Late fee: Rp 5,000 per day after grace period
+     * - Damage/Loss fee: Rp 50,000
+     */
+    private function calculateFine(string|Carbon $borrowDate, string|Carbon $returnDate, string $condition = 'baik'): int
+    {
+        $borrow = $borrowDate instanceof Carbon ? $borrowDate : Carbon::parse($borrowDate);
+        $return = $returnDate instanceof Carbon ? $returnDate : Carbon::parse($returnDate);
+
+        $days = $borrow->diffInDays($return);
+        $denda = $days > 7 ? ($days - 7) * 5000 : 0;
+
+        if ($condition === 'rusak' || $condition === 'hilang') {
+            $denda += 50000;
+        }
+
+        return $denda;
+    }
 
     public function destroy($id)
     {

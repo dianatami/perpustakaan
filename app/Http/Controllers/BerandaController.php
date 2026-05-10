@@ -15,8 +15,32 @@ class BerandaController extends Controller
 {
     $totalBuku     = Book::count();
     $totalKategori = Kategori::count();
-    $totalAnggota  = User::where('role', User::ROLE_ANGGOTA)->count();
-    $totalGuru     = User::where('role', User::ROLE_GURU)->count();
+    $totalAnggota  = User::query()
+        ->where(function ($query): void {
+            $query->where('role', User::ROLE_ANGGOTA)
+                ->orWhere(function ($subQuery): void {
+                    $subQuery->whereNull('role')
+                        ->whereNotNull('nisn');
+                })
+                ->orWhere(function ($subQuery): void {
+                    $subQuery->whereNotNull('nisn')
+                        ->whereNotIn('role', [User::ROLE_GURU, User::ROLE_ADMIN]);
+                });
+        })
+        ->count();
+    $totalGuru     = User::query()
+        ->where(function ($query): void {
+            $query->where('role', User::ROLE_GURU)
+                ->orWhere(function ($subQuery): void {
+                    $subQuery->whereNull('role')
+                        ->whereNotNull('nip');
+                })
+                ->orWhere(function ($subQuery): void {
+                    $subQuery->whereNotNull('nip')
+                        ->where('role', '!=', User::ROLE_ADMIN);
+                });
+        })
+        ->count();
     $totalPinjam   = Bookrent::count();
     $stokTersedia  = Book::where('stock', '>', 0)->count();
     $dipinjam      = Bookrent::whereNull('return_date')->count();
@@ -25,15 +49,7 @@ class BerandaController extends Controller
         ->orWhere('lost', '>', 0)
         ->count(); 
 
-    $leaderboardSiswa = User::query()
-        ->where('role', User::ROLE_ANGGOTA)
-        ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
-        ->selectRaw('user.id, user.nama, COUNT(bookrent.id) as total_peminjaman')
-        ->groupBy('user.id', 'user.nama')
-        ->orderByDesc('total_peminjaman')
-        ->orderBy('user.nama')
-        ->take(10)
-        ->get();
+    $leaderboardSiswa = User::leaderboardPeminjam(10);
 
     return view(
         'admin.dashboard',

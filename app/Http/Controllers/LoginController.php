@@ -23,16 +23,25 @@ class LoginController extends Controller
 
         $identifier = trim($credentials['identifier']);
         if (! User::isValidLoginIdentifier($identifier)) {
-            return back()->with('error', 'Format NIP/NISN tidak valid.');
+            return back()->with('error', 'Format NIP/NISN/Email tidak valid.');
         }
 
+        $user = null;
+
         if (filter_var($identifier, FILTER_VALIDATE_EMAIL) !== false) {
+            // Login dengan email
             $user = User::query()
                 ->where('email', $identifier)
                 ->first();
-        } else {
+        } elseif (User::isValidNip($identifier)) {
+            // Login dengan NIP
             $user = User::query()
                 ->where('nip', $identifier)
+                ->first();
+        } elseif (User::isValidNisn($identifier)) {
+            // Login dengan NISN
+            $user = User::query()
+                ->where('nisn', $identifier)
                 ->first();
         }
 
