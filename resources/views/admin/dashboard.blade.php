@@ -520,6 +520,6 @@
         </article>
     </section>
 
-    @include('partials.leaderboard-siswa')
+    @include('partials.leaderboard-peminjam')
 </div>
 @endsection
