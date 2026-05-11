@@ -9,10 +9,20 @@ use App\Models\Book;
 
 class KategoriController extends Controller
 {
-     public function index()
+     public function index(Request $request)
     {
-        $kategori = Kategori::all();
-        return view('admin.kategori.index', compact('kategori'));
+        $search = $request->query('search');
+        $perPage = (int) $request->query('per_page', 10);
+        $perPage = in_array($perPage, [5, 10, 20, 50]) ? $perPage : 10;
+
+        $kategori = Kategori::when($search, function ($query, $search) {
+                $query->where('name_category', 'like', "%{$search}%");
+            })
+            ->orderByDesc('created_at')
+            ->paginate($perPage)
+            ->withQueryString();
+
+        return view('admin.kategori.index', compact('kategori', 'search', 'perPage'));
     }
 
     public function store(Request $request)

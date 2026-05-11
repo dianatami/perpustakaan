@@ -304,6 +304,54 @@
             background: rgba(255, 255, 255, 0.64);
         }
 
+        .pagination {
+            margin: 0;
+            gap: 0.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .pagination .page-item {
+            border-radius: 14px;
+        }
+
+        .pagination .page-link {
+            min-width: 42px;
+            min-height: 42px;
+            border: 1px solid rgba(17, 50, 57, 0.12);
+            border-radius: 14px;
+            color: #415055;
+            background-color: #ffffff;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            padding: 0.6rem 0.85rem;
+        }
+
+        .pagination .page-link:hover,
+        .pagination .page-link:focus {
+            background-color: #f3faf8;
+            color: #0f8c80;
+            border-color: rgba(15, 140, 128, 0.18);
+        }
+
+        .pagination .page-item.active .page-link {
+            background-color: #0f8c80;
+            border-color: #0f8c80;
+            color: #ffffff;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+        }
+
+        .pagination .page-item.disabled .page-link {
+            color: rgba(65, 80, 85, 0.35);
+            background-color: #f8faf9;
+            border-color: rgba(17, 50, 57, 0.08);
+        }
+
         @keyframes riseIn {
             from {
                 opacity: 0;

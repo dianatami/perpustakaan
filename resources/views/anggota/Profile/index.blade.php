@@ -9,39 +9,11 @@
     }
 
     .profile-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         position: relative;
         overflow: hidden;
-        border-radius: 25px;
-    }
-
-    .profile-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 400px;
-        height: 400px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: float 6s ease-in-out infinite;
-    }
-
-    .profile-header::after {
-        content: '';
-        position: absolute;
-        bottom: -30%;
-        left: -5%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 50%;
-        animation: float 8s ease-in-out infinite reverse;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(20px); }
+        border-radius: 15px;
+        padding: 3rem;
     }
 
     .profile-content {
@@ -50,16 +22,10 @@
     }
 
     .profile-photo {
-        width: 200px;
-        height: 200px;
+        width: 150px;
+        height: 150px;
         margin: 0 auto;
         position: relative;
-        animation: photoFloat 3s ease-in-out infinite;
-    }
-
-    @keyframes photoFloat {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(10px); }
     }
 
     .profile-photo img {
@@ -67,8 +33,8 @@
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
-        border: 6px solid white;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        border: 5px solid white;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
 
     .profile-info {
@@ -76,36 +42,34 @@
     }
 
     .profile-name {
-        font-size: 2.5rem;
-        font-weight: 800;
+        font-size: 2rem;
+        font-weight: 700;
         margin-bottom: 5px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
     }
 
     .profile-member-since {
-        font-size: 1rem;
+        font-size: 0.95rem;
         opacity: 0.9;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
 
     .info-box {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 15px;
-        padding: 15px 20px;
-        margin-bottom: 12px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        padding: 12px 18px;
+        margin-bottom: 10px;
     }
 
     .info-label {
-        font-size: 0.85rem;
-        opacity: 0.85;
+        font-size: 0.8rem;
+        opacity: 0.8;
         display: block;
-        margin-bottom: 5px;
+        margin-bottom: 4px;
     }
 
     .info-value {
-        font-size: 1.1rem;
+        font-size: 1rem;
         font-weight: 600;
     }
 
@@ -114,10 +78,10 @@
         color: #667eea;
         border: none;
         border-radius: 50px;
-        padding: 10px 25px;
+        padding: 8px 20px;
         font-weight: 600;
-        transition: all 0.3s ease;
-        margin-top: 15px;
+        font-size: 0.9rem;
+        margin-top: 12px;
     }
 
     .edit-btn:hover {
@@ -708,12 +672,13 @@
     }
 
     .card {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        border: none;
     }
 
     .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     }
 
     .badge {
@@ -749,12 +714,13 @@
     }
 
     @media (max-width: 768px) {
-        .col-md-3 {
-            margin-bottom: 1rem;
+        .profile-name {
+            font-size: 1.5rem;
         }
 
-        .profile-name {
-            font-size: 1.8rem;
+        .profile-photo {
+            width: 120px;
+            height: 120px;
         }
     }
 </style>
