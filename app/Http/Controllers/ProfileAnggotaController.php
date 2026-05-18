@@ -8,6 +8,7 @@ use App\Models\Bookrent;
 use App\Models\DetailBookrent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Carbon\Carbon;
@@ -78,15 +79,19 @@ class ProfileAnggotaController extends Controller
             return back()->with('error', 'Tidak boleh memilih buku yang sama lebih dari sekali.');
         }
 
+        $activeStatuses = ['menunggu_acc', 'dipinjam', 'proses_kembali'];
+
         $activeCount = Bookrent::where('user_id', $user->id)
-            ->where('status', 'dipinjam')
+            ->whereIn('status', $activeStatuses)
             ->count();
 
         if ($activeCount >= 3) {
             return back()->with('error', 'Anda sudah meminjam 3 buku. Kembalikan dulu sebelum meminjam lagi.');
         }
 
-        $activeRentIds = $user->bookrent()->where('status', 'dipinjam')->pluck('id');
+        $activeRentIds = $user->bookrent()
+            ->whereIn('status', $activeStatuses)
+            ->pluck('id');
 
         foreach ($request->books as $item) {
             if (DetailBookrent::whereIn('bookrent_id', $activeRentIds)->where('book_id', $item['book_id'])->exists()) {
@@ -105,7 +110,7 @@ class ProfileAnggotaController extends Controller
         $bookrent = Bookrent::create([
             'user_id' => $user->id,
             'borrow_date' => $borrowDate,
-            'status' => 'dipinjam',
+            'status' => 'menunggu_acc',
         ]);
 
         foreach ($request->books as $item) {
@@ -115,11 +120,9 @@ class ProfileAnggotaController extends Controller
                 'qty' => $item['qty'],
             ]);
 
-            $book = Book::findOrFail($item['book_id']);
-            $book->decrement('stock', $item['qty']);
         }
 
-        return back()->with('success', 'Buku berhasil dipinjam.');
+        return back()->with('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin.');
     }
 
     /**
@@ -248,11 +251,48 @@ class ProfileAnggotaController extends Controller
     {
         $peminjaman = Auth::user()
             ->bookrent()
-            ->with('book')
+            ->with('details.book')
             ->latest('created_at')
             ->get();
 
         return view('anggota.riwayat-peminjaman', compact('peminjaman'));
+    }
+
+    /**
+     * Handle return request from anggota/guru history page.
+     */
+    public function returnBook(Request $request, int $bookrentId)
+    {
+        $user = Auth::user();
+
+        $bookrent = Bookrent::query()
+            ->where('id', $bookrentId)
+            ->where('user_id', $user->id)
+            ->first();
+
+        if (! $bookrent) {
+            return back()->with('error', 'Data peminjaman tidak ditemukan.');
+        }
+
+        if ($bookrent->status !== 'dipinjam') {
+            return back()->with('error', 'Pengembalian hanya bisa diajukan untuk buku yang sedang dipinjam.');
+        }
+
+        DB::transaction(function () use ($bookrent): void {
+            $lockedBookrent = Bookrent::query()
+                ->where('id', $bookrent->id)
+                ->lockForUpdate()
+                ->first();
+
+            if (! $lockedBookrent || $lockedBookrent->status !== 'dipinjam') {
+                return;
+            }
+
+            $lockedBookrent->status = 'proses_kembali';
+            $lockedBookrent->save();
+        });
+
+        return back()->with('success', 'Permintaan pengembalian berhasil dikirim. Menunggu konfirmasi admin.');
     }
 
     /**

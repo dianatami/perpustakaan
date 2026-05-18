@@ -301,6 +301,11 @@
         color: #0c2d6b;
     }
 
+    .status-returning {
+        background: #fde68a;
+        color: #92400e;
+    }
+
     .status-returned {
         background: #c6f6d5;
         color: #22543d;
@@ -366,6 +371,24 @@
     .btn-edit:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 20px rgba(255, 122, 89, 0.3);
+        color: white;
+    }
+
+    .btn-return {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.1rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
+
+    .btn-return:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
         color: white;
     }
 
@@ -607,6 +630,8 @@
                                         <span class="status-badge status-borrowed">Disetujui</span>
                                     @elseif($item->status == 'ditolak')
                                         <span class="status-badge status-rejected">Ditolak</span>
+                                    @elseif($item->status == 'proses_kembali')
+                                        <span class="status-badge status-returning">Proses Kembali</span>
                                     @elseif($item->status == 'kembali')
                                         <span class="status-badge status-returned">Kembali</span>
                                     @else
@@ -624,6 +649,14 @@
                                                 @method('POST')
                                                 <button type="submit" class="btn-reject" onclick="return confirm('Yakin ingin menolak pengajuan ini?')">
                                                     <i class="bi bi-x-circle"></i> Tolak
+                                                </button>
+                                            </form>
+                                        @elseif($item->status == 'proses_kembali')
+                                            <form action="{{ route('admin.peminjaman.confirm-return', $item->id) }}" method="POST" style="margin: 0;">
+                                                @csrf
+                                                @method('PUT')
+                                                <button type="submit" class="btn-return" onclick="return confirm('Konfirmasi buku sudah diterima dari peminjam?')">
+                                                    <i class="bi bi-box-arrow-in-down"></i> Terima Pengembalian
                                                 </button>
                                             </form>
                                         @else

@@ -572,6 +572,7 @@
                                     <th>Tanggal Pinjam</th>
                                     <th>Tanggal Kembali</th>
                                     <th>Status</th>
+                                    <th>Aksi</th>
                                 </tr>
                             </thead>
 
@@ -631,6 +632,12 @@
                                                     Dikembalikan
                                                 </span>
 
+                                            @elseif($rent->status == 'proses_kembali')
+
+                                                <span class="badge bg-warning text-dark">
+                                                    Proses Pengembalian
+                                                </span>
+
                                             @elseif($rent->status == 'ditolak')
 
                                                 <span class="badge bg-danger">
@@ -645,6 +652,21 @@
 
                                             @endif
 
+                                        </td>
+
+                                        <td>
+                                            @if($rent->status == 'dipinjam')
+                                                <form action="{{ route($portalPrefix . '.pengembalian.store', $rent->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mengembalikan buku ini?')">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-sm btn-success">
+                                                        <i class="bi bi-arrow-return-left"></i> Kembalikan
+                                                    </button>
+                                                </form>
+                                            @elseif($rent->status == 'proses_kembali')
+                                                <span class="badge bg-warning text-dark">Menunggu Konfirmasi</span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
                                         </td>
 
                                     </tr>

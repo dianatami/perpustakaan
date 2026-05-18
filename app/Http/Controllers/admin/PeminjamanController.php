@@ -233,10 +233,7 @@ class PeminjamanController extends Controller
         $peminjaman = Bookrent::with('details.book')
             ->lockForUpdate()
             ->findOrFail($id);
-        if (
-        $peminjaman->status !== 'proses_kembali'
-        &&
-        $peminjaman->status !== 'dipinjam')  {
+        if ($peminjaman->status !== 'proses_kembali') {
             return [
                 'ok' => false,
                 'message' => 'Pengembalian belum diajukan oleh user.'
@@ -256,24 +253,19 @@ class PeminjamanController extends Controller
         // =========================================
 
         foreach ($peminjaman->details as $detail) {
-            if ($detail->condition == 'baik') {
-                $detail->book->increment(
-                    'stock',
-                    $detail->qty
-                );
+            $condition = $detail->condition ?? 'baik';
+
+            if ($condition === 'rusak') {
+                $detail->book->increment('damaged', $detail->qty);
+                continue;
             }
-            elseif ($detail->condition == 'rusak') {
-                $detail->book->increment(
-                    'damaged_stock',
-                    $detail->qty
-                );
+
+            if ($condition === 'hilang') {
+                $detail->book->increment('lost', $detail->qty);
+                continue;
             }
-            elseif ($detail->condition == 'hilang') {
-                $detail->book->increment(
-                    'lost_stock',
-                    $detail->qty
-                );
-            }
+
+            $detail->book->increment('stock', $detail->qty);
         }
 
         // =========================================

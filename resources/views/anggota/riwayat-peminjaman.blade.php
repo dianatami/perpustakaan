@@ -82,7 +82,18 @@
                 <tbody>
                     @forelse($peminjaman as $item)
                         <tr>
-                            <td>{{ $item->book->title ?? '-' }}</td>
+                            <td>
+                                @if($item->details && $item->details->count() > 0)
+                                    @foreach($item->details as $detail)
+                                        <div class="mb-1">
+                                            <span class="fw-semibold">{{ $detail->book->title ?? '-' }}</span>
+                                            <span class="badge bg-secondary">Qty: {{ $detail->qty }}</span>
+                                        </div>
+                                    @endforeach
+                                @else
+                                    <span class="text-muted">-</span>
+                                @endif
+                            </td>
                             <td>{{ $item->borrow_date ?? '-' }}</td>
                             <td>{{ $item->return_date ?? '-' }}</td>
                             <td>

@@ -14,6 +14,7 @@ class DetailBookrent extends Model
         'bookrent_id',
         'book_id',
         'qty',
+        'condition',
     ];
 
     public function bookrent()
