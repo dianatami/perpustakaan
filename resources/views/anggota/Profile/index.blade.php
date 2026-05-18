@@ -571,6 +571,7 @@
                                     <th>Judul Buku</th>
                                     <th>Tanggal Pinjam</th>
                                     <th>Tanggal Kembali</th>
+                                    <th>Denda</th>
                                     <th>Status</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -583,21 +584,23 @@
                                     <tr>
 
                                             <td>
-                                            @foreach($rent->details as $detail)
-
-                                                <div class="mb-1">
-
-                                                    <span class="fw-bold">
-                                                        {{ $detail->book->title }}
-                                                    </span>
-
-                                                    <span class="badge bg-secondary">
-                                                        Qty: {{ $detail->qty }}
-                                                    </span>
-
-                                                </div>
-
-                                            @endforeach
+                                            <div class="d-flex flex-column gap-1">
+                                                @foreach($rent->details as $detail)
+                                                    <div class="d-flex justify-content-between align-items-start" style="min-width:0;">
+                                                        <div style="min-width:0;">
+                                                            <div class="fw-semibold text-truncate" style="max-width:420px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="{{ $detail->book->title }}">
+                                                                {{ $detail->book->title }}
+                                                            </div>
+                                                            @if(!empty($detail->book->book_code))
+                                                                <small class="text-muted">Kode: {{ $detail->book->book_code }}</small>
+                                                            @endif
+                                                        </div>
+                                                        <div class="text-end ms-2">
+                                                            <span class="badge bg-secondary">Qty: {{ $detail->qty }}</span>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
                                         </td>
 
                                         <td>
@@ -610,6 +613,14 @@
                                             {{ $rent->return_date
                                                 ? \Carbon\Carbon::parse($rent->return_date)->format('d M Y')
                                                 : '-' }}
+                                        </td>
+
+                                        <td>
+                                            @if(isset($rent->denda) && (int)$rent->denda > 0)
+                                                <span class="fw-bold">Rp {{ number_format($rent->denda, 0, ',', '.') }}</span>
+                                            @else
+                                                <span class="text-muted">-</span>
+                                            @endif
                                         </td>
 
                                         <td>
