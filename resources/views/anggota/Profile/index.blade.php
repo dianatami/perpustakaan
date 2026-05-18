@@ -1,19 +1,45 @@
 @extends('layout.anggota')
-@section('title', 'Profil Saya')
+@section('title', request()->routeIs('anggota.*') ? 'Profil Murid' : 'Profil Saya')
 
 @section('content')
 @php($portalPrefix = $portalPrefix ?? (request()->routeIs('guru.*') ? 'guru' : 'anggota'))
 <style>
     * {
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
     }
 
     .profile-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: linear-gradient(120deg, rgba(16, 23, 46, 0.94) 0%, rgba(29, 79, 120, 0.9) 42%, rgba(255, 122, 89, 0.88) 100%);
         position: relative;
         overflow: hidden;
-        border-radius: 15px;
-        padding: 3rem;
+        border-radius: 25px;
+        padding: 3rem 2rem;
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.08);
+    }
+
+    .profile-header::before,
+    .profile-header::after {
+        content: '';
+        position: absolute;
+        border-radius: 50%;
+        opacity: 0.24;
+        filter: blur(15px);
+    }
+
+    .profile-header::before {
+        top: -30%;
+        right: -15%;
+        width: 260px;
+        height: 260px;
+        background: rgba(255, 201, 92, 0.24);
+    }
+
+    .profile-header::after {
+        bottom: -30%;
+        left: -10%;
+        width: 220px;
+        height: 220px;
+        background: rgba(23, 143, 120, 0.3);
     }
 
     .profile-content {
@@ -22,10 +48,16 @@
     }
 
     .profile-photo {
-        width: 150px;
-        height: 150px;
+        width: 190px;
+        height: 190px;
         margin: 0 auto;
         position: relative;
+        animation: photoFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes photoFloat {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-10px); }
     }
 
     .profile-photo img {
@@ -33,8 +65,8 @@
         height: 100%;
         object-fit: cover;
         border-radius: 50%;
-        border: 5px solid white;
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        border: 6px solid rgba(255, 255, 255, 0.85);
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.18);
     }
 
     .profile-info {
@@ -42,52 +74,134 @@
     }
 
     .profile-name {
-        font-size: 2rem;
-        font-weight: 700;
-        margin-bottom: 5px;
+        font-size: 2.4rem;
+        font-weight: 800;
+        margin-bottom: 10px;
+        text-shadow: 0 12px 30px rgba(15, 23, 42, 0.2);
+    }
+
+    .profile-role-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        background: rgba(255, 255, 255, 0.18);
+        border: 1px solid rgba(255, 255, 255, 0.35);
+        border-radius: 999px;
+        padding: 0.55rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 0.9rem;
+    }
+
+    .profile-motto {
+        font-size: 1rem;
+        opacity: 0.95;
+        line-height: 1.8;
+        max-width: 580px;
+        margin-bottom: 1.4rem;
     }
 
     .profile-member-since {
         font-size: 0.95rem;
-        opacity: 0.9;
-        margin-bottom: 20px;
+        opacity: 0.85;
+        margin-bottom: 25px;
     }
 
     .info-box {
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 10px;
-        padding: 12px 18px;
-        margin-bottom: 10px;
+        background: rgba(247, 242, 232, 0.14);
+        border: 1px solid rgba(247, 242, 232, 0.32);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        padding: 18px 22px;
+        margin-bottom: 12px;
     }
 
     .info-label {
         font-size: 0.8rem;
-        opacity: 0.8;
+        opacity: 0.85;
         display: block;
-        margin-bottom: 4px;
+        margin-bottom: 6px;
     }
 
     .info-value {
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: 1.05rem;
+        font-weight: 700;
     }
 
     .edit-btn {
-        background: white;
-        color: #667eea;
+        background: #f7f2e8;
+        color: #0f172a;
         border: none;
-        border-radius: 50px;
-        padding: 8px 20px;
-        font-weight: 600;
-        font-size: 0.9rem;
-        margin-top: 12px;
+        border-radius: 999px;
+        padding: 10px 24px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+        letter-spacing: 0.02em;
     }
 
     .edit-btn:hover {
-        background: #f0f0f0;
+        background: rgba(255, 255, 255, 0.95);
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 16px 35px rgba(15, 23, 42, 0.16);
+    }
+
+    .card {
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+        border: none;
+        transition: all 0.25s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.1);
+    }
+
+    .badge {
+        font-size: 0.83rem;
+        padding: 0.55rem 0.9rem;
+    }
+
+    .rounded-4 {
+        border-radius: 1.2rem;
+    }
+
+    .rounded-3 {
+        border-radius: 0.9rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f4f8ff;
+    }
+
+    .alert-success {
+        animation: slideInDown 0.45s ease-out;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .profile-name {
+            font-size: 1.8rem;
+        }
+
+        .profile-photo {
+            width: 140px;
+            height: 140px;
+        }
+
+        .profile-header {
+            padding: 2rem 1.2rem;
+        }
     }
 </style>
 
@@ -121,10 +235,17 @@
                         <!-- Info Profil -->
                         <div class="col-md-8 profile-info">
                             <h2 class="profile-name">{{ $user->nama ?? 'User' }}</h2>
+                            <div class="profile-role-badge">
+                                <i class="bi bi-star-fill"></i>
+                                {{ request()->routeIs('anggota.*') ? 'Murid Aktif' : 'Anggota' }}
+                            </div>
+                            <p class="profile-motto">
+                                Selamat datang di ruang profil siswa. Temukan buku inspiratif, cek riwayat pinjaman, dan jaga semangat belajarmu setiap hari.
+                            </p>
                             <p class="profile-member-since">
                                 <i class="bi bi-calendar-event"></i> Member sejak {{ optional($user->created_at)->format('d F Y') ?? '-' }}
                             </p>
-                            
+
                             <div class="row g-3">
                                 <div class="col-md-4">
                                     <div class="info-box">
@@ -168,10 +289,10 @@
         <div class="card border-0 shadow-sm h-100 rounded-4" style="overflow: hidden; background: white;">
 
             <div class="card-header border-0 pt-4 pb-3"
-                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                style="background: linear-gradient(130deg, #1d4f78, #ff7a59);">
 
                 <h5 class="card-title fw-bold mb-0 text-white">
-                    <i class="bi bi-person-vcard"></i> Informasi Pribadi
+                    <i class="bi bi-person-vcard"></i> Informasi Murid
                 </h5>
             </div>
 
@@ -226,14 +347,14 @@
 
                 <!-- Button -->
                 <div class="pt-3 border-top">
-                    <a href="{{ route($portalPrefix . '.edit.infopribadi') }}"
+                    <a href="{{ route($portalPrefix . '.edit.profil') }}"
                         class="btn btn-sm w-100 rounded-3"
-                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        style="background: linear-gradient(135deg, #3b82f6 0%, #38bdf8 100%);
                                color: white;
                                border: none;
                                font-weight: 600;">
 
-                        <i class="bi bi-pencil"></i> Ubah Informasi
+                        <i class="bi bi-pencil"></i> Sunting Data Murid
                     </a>
                 </div>
 
@@ -247,7 +368,7 @@
         <div class="card border-0 shadow-sm rounded-4" style="overflow: hidden;">
 
             <div class="card-header border-0 pt-4 pb-3"
-                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                style="background: linear-gradient(130deg, #1d4f78, #ff7a59);">
 
                 <h5 class="card-title fw-bold mb-0 text-white">
                     <i class="bi bi-book"></i> Riwayat Peminjaman
@@ -548,183 +669,6 @@
         </div>
     </div>
 </div>
-<style>
-    * {
-        transition: all 0.3s ease;
-    }
-
-    .profile-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
-        position: relative;
-        overflow: hidden;
-        border-radius: 25px;
-    }
-
-    .profile-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 400px;
-        height: 400px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-        animation: float 6s ease-in-out infinite;
-    }
-
-    .profile-header::after {
-        content: '';
-        position: absolute;
-        bottom: -30%;
-        left: -5%;
-        width: 300px;
-        height: 300px;
-        background: rgba(255, 255, 255, 0.08);
-        border-radius: 50%;
-        animation: float 8s ease-in-out infinite reverse;
-    }
-
-    @keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(20px); }
-    }
-
-    .profile-content {
-        position: relative;
-        z-index: 1;
-    }
-
-    .profile-photo {
-        width: 200px;
-        height: 200px;
-        margin: 0 auto;
-        position: relative;
-        animation: photoFloat 3s ease-in-out infinite;
-    }
-
-    @keyframes photoFloat {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(10px); }
-    }
-
-    .profile-photo img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        border-radius: 50%;
-        border: 6px solid white;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    }
-
-    .profile-info {
-        color: white;
-    }
-
-    .profile-name {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 5px;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
-    .profile-member-since {
-        font-size: 1rem;
-        opacity: 0.9;
-        margin-bottom: 25px;
-    }
-
-    .info-box {
-        background: rgba(255, 255, 255, 0.15);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 15px;
-        padding: 15px 20px;
-        margin-bottom: 12px;
-    }
-
-    .info-label {
-        font-size: 0.85rem;
-        opacity: 0.85;
-        display: block;
-        margin-bottom: 5px;
-    }
-
-    .info-value {
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-
-    .edit-btn {
-        background: white;
-        color: #667eea;
-        border: none;
-        border-radius: 50px;
-        padding: 10px 25px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        margin-top: 15px;
-    }
-
-    .edit-btn:hover {
-        background: #f0f0f0;
-        transform: translateY(-2px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-    }
-
-    .card {
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
-        border: none;
-    }
-
-    .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-    }
-
-    .badge {
-        font-size: 0.85rem;
-        padding: 0.5rem 0.75rem;
-    }
-
-    .rounded-4 {
-        border-radius: 1rem;
-    }
-
-    .rounded-3 {
-        border-radius: 0.75rem;
-    }
-
-    .table-hover tbody tr:hover {
-        background-color: #f8f9fa;
-    }
-
-    .alert-success {
-        animation: slideInDown 0.5s ease-out;
-    }
-
-    @keyframes slideInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    @media (max-width: 768px) {
-        .profile-name {
-            font-size: 1.5rem;
-        }
-
-        .profile-photo {
-            width: 120px;
-            height: 120px;
-        }
-    }
-</style>
-
 <script>
     // Auto close success alert setelah 5 detik
     document.addEventListener('DOMContentLoaded', function() {

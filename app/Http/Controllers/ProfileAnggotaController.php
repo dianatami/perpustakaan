@@ -5,12 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Book;
 use App\Models\Bookrent;
-use Carbon\Carbon;
+use App\Models\DetailBookrent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class ProfileAnggotaController extends Controller
 {
@@ -39,17 +39,16 @@ class ProfileAnggotaController extends Controller
     {
         $user = Auth::user();
         
-        // Debug: Cek apakah user login
         if (!$user) {
             return redirect()->route('tampilan.login')->with('error', 'Silakan login terlebih dahulu');
         }
 
-        // Eager load relationship untuk menghindari N+1 query
-        $bookrents = $user->bookrent()->with('book')->get();
+        // Eager load relationship untuk menampilkan detail buku di riwayat
+        $bookrents = $user->bookrent()->with('details.book')->get();
         $activeBorrowings = $bookrents->where('status', 'dipinjam')->values();
 
         // Buku yang tersedia untuk dipinjam
-        $availableBooks = Book::orderBy('title')->get();
+        $availableBooks = Book::where('stock', '>', 0)->orderBy('title')->get();
 
         return view('anggota.Profile.index', [
             'user' => $user,
@@ -68,97 +67,59 @@ class ProfileAnggotaController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'book_id' => 'required|exists:books,id',
+            'books' => 'required|array|min:1',
+            'books.*.book_id' => 'required|exists:books,id',
+            'books.*.qty' => 'required|integer|min:1',
             'borrow_date' => 'nullable|date',
         ]);
 
-        $bookId = $request->book_id;
-        $activeStatuses = ['menunggu_acc', 'dipinjam', 'proses_kembali'];
+        $bookIds = collect($request->books)->pluck('book_id');
+        if ($bookIds->duplicates()->count() > 0) {
+            return back()->with('error', 'Tidak boleh memilih buku yang sama lebih dari sekali.');
+        }
 
         $activeCount = Bookrent::where('user_id', $user->id)
-            ->whereIn('status', $activeStatuses)
+            ->where('status', 'dipinjam')
             ->count();
 
         if ($activeCount >= 3) {
-            return back()->with('error', 'Anda sudah memiliki 3 pengajuan atau peminjaman aktif.');
+            return back()->with('error', 'Anda sudah meminjam 3 buku. Kembalikan dulu sebelum meminjam lagi.');
         }
 
-        $already = Bookrent::where('user_id', $user->id)
-            ->where('book_id', $bookId)
-            ->whereIn('status', $activeStatuses)
-            ->exists();
+        $activeRentIds = $user->bookrent()->where('status', 'dipinjam')->pluck('id');
 
-        if ($already) {
-            return back()->with('error', 'Pengajuan atau peminjaman buku ini masih aktif.');
-        }
-
-        try {
-            $result = DB::transaction(function () use ($user, $bookId, $request) {
-                $book = Book::where('id', $bookId)
-                    ->lockForUpdate()
-                    ->first();
-
-                if (!$book) {
-                    throw new \Exception('Buku tidak ditemukan.');
-                }
-
-                if ($book->stock < 1) {
-                    throw new \Exception('Stok buku habis.');
-                }
-
-                $borrowDate = $request->borrow_date
-                    ? Carbon::parse($request->borrow_date)->toDateString()
-                    : Carbon::now()->toDateString();
-
-                Bookrent::create([
-                    'user_id' => $user->id,
-                    'book_id' => $bookId,
-                    'borrow_date' => $borrowDate,
-                    'status' => 'menunggu_acc',
-                ]);
-
-                return true;
-            });
-
-            return back()->with('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin.');
-        } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
-        }
-    }
-
-    /**
-     * Handle return request from anggota/guru history page
-     */
-    public function returnBook(Request $request, int $bookrentId)
-    {
-        $user = Auth::user();
-
-        $bookrent = Bookrent::query()
-            ->where('id', $bookrentId)
-            ->where('user_id', $user->id)
-            ->with('book')
-            ->first();
-
-        if (! $bookrent) {
-            return back()->with('error', 'Data peminjaman tidak ditemukan.');
-        }
-
-        if ($bookrent->status !== 'dipinjam') {
-            return back()->with('error', 'Pengembalian hanya bisa diajukan untuk buku yang sedang dipinjam.');
-        }
-
-        DB::transaction(function () use ($bookrent): void {
-            $lockedBookrent = Bookrent::query()->where('id', $bookrent->id)->lockForUpdate()->first();
-
-            if (! $lockedBookrent || $lockedBookrent->status !== 'dipinjam') {
-                return;
+        foreach ($request->books as $item) {
+            if (DetailBookrent::whereIn('bookrent_id', $activeRentIds)->where('book_id', $item['book_id'])->exists()) {
+                $book = Book::find($item['book_id']);
+                return back()->with('error', 'Anda sudah meminjam buku ' . ($book?->title ?? '') . '.');
             }
 
-            $lockedBookrent->status = 'proses_kembali';
-            $lockedBookrent->save();
-        });
+            $book = Book::findOrFail($item['book_id']);
+            if ($item['qty'] > $book->stock) {
+                return back()->with('error', 'Stok buku ' . $book->title . ' hanya tersedia ' . $book->stock . '.');
+            }
+        }
 
-        return back()->with('success', 'Permintaan pengembalian berhasil dikirim. Menunggu konfirmasi admin.');
+        $borrowDate = $request->borrow_date ? Carbon::parse($request->borrow_date)->toDateString() : Carbon::now()->toDateString();
+
+        $bookrent = Bookrent::create([
+            'user_id' => $user->id,
+            'borrow_date' => $borrowDate,
+            'status' => 'dipinjam',
+        ]);
+
+        foreach ($request->books as $item) {
+            DetailBookrent::create([
+                'bookrent_id' => $bookrent->id,
+                'book_id' => $item['book_id'],
+                'qty' => $item['qty'],
+            ]);
+
+            $book = Book::findOrFail($item['book_id']);
+            $book->decrement('stock', $item['qty']);
+        }
+
+        return back()->with('success', 'Buku berhasil dipinjam.');
     }
 
     /**
@@ -178,10 +139,20 @@ class ProfileAnggotaController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:user,email,' . Auth::id(),
-            'hp' => 'required|digits_between:10,13',
+            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'hp' => 'required|string|max:13',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'tempat_lahir' => 'nullable|string|max:255',
+            'tanggal_lahir' => ['nullable','date_format:Y-m-d', function ($attribute, $value, $fail) {
+                if (!
+                    \DateTimeImmutable::createFromFormat('Y-m-d', $value)
+                    || \DateTimeImmutable::createFromFormat('Y-m-d', $value)->format('Y-m-d') !== $value
+                ) {
+                    $fail('Format tanggal lahir tidak valid.');
+                }
+            }],
+            'alamat' => 'nullable|string|max:500',
         ]);
 
         $user = Auth::user();
@@ -189,8 +160,10 @@ class ProfileAnggotaController extends Controller
         $user->email = $request->email;
         $user->hp = $request->hp;
         $user->jenis_kelamin = $request->jenis_kelamin;
+        $user->tempat_lahir = $request->tempat_lahir;
+        $user->tanggal_lahir = $request->tanggal_lahir;
+        $user->alamat = $request->alamat;
 
-        // Handle foto upload
         if ($request->hasFile('foto')) {
             if ($user->foto) {
                 Storage::disk('public')->delete($user->foto);

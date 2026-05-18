@@ -77,9 +77,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
         ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     
 
-    Route::put('peminjaman/{peminjaman}/approve', [PeminjamanController::class, 'approve'])
+    Route::post('peminjaman/{peminjaman}/approve', [PeminjamanController::class, 'approve'])
         ->name('peminjaman.approve');
-    Route::put('peminjaman/{peminjaman}/reject', [PeminjamanController::class, 'reject'])
+    Route::post('peminjaman/{peminjaman}/reject', [PeminjamanController::class, 'reject'])
         ->name('peminjaman.reject');
     Route::put('peminjaman/{peminjaman}/confirm-return', [PeminjamanController::class, 'confirmReturn'])
         ->name('peminjaman.confirm-return');

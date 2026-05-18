@@ -7,195 +7,264 @@
     .kategori-container {
         margin-top: 20px;
     }
-    
-    .kategori-card {
-        background: white;
-        border-radius: 12px;
+
+    .page-hero-kategori {
+        border-radius: 28px;
+        background: linear-gradient(120deg, rgba(16, 23, 46, 0.94) 0%, rgba(29, 79, 120, 0.9) 42%, rgba(255, 122, 89, 0.88) 100%);
+        color: #f7f2e8;
+        padding: 32px;
+        position: relative;
         overflow: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 25px 50px rgba(15, 23, 42, 0.18);
+        margin-bottom: 30px;
+    }
+
+    .page-hero-kategori::before,
+    .page-hero-kategori::after {
+        content: '';
+        position: absolute;
+        border-radius: 999px;
+        opacity: 0.3;
+    }
+
+    .page-hero-kategori::before {
+        width: 220px;
+        height: 220px;
+        right: -90px;
+        top: -90px;
+        background: rgba(255, 201, 92, 0.25);
+    }
+
+    .page-hero-kategori::after {
+        width: 170px;
+        height: 170px;
+        left: -70px;
+        bottom: -70px;
+        background: rgba(23, 143, 120, 0.24);
+    }
+
+    .header-title {
+        margin: 0;
+        font-size: 2.4rem;
+        line-height: 1.05;
+        font-weight: 800;
+    }
+
+    .header-subtitle {
+        margin: 16px 0 0;
+        color: rgba(247, 242, 232, 0.9);
+        max-width: 720px;
+        font-size: 1.05rem;
+    }
+
+    .page-badge-kategori {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 22px;
+        padding: 0.9rem 1.3rem;
+        border-radius: 999px;
+        background: rgba(247, 242, 232, 0.18);
+        border: 1px solid rgba(247, 242, 232, 0.28);
+        color: #f7f2e8;
+        font-weight: 700;
+    }
+
+    .kategori-card {
+        background: #ffffff;
+        border-radius: 24px;
+        overflow: hidden;
+        transition: all 0.35s ease;
+        box-shadow: 0 20px 44px rgba(15, 23, 42, 0.08);
         height: 100%;
         display: flex;
         flex-direction: column;
         cursor: pointer;
     }
-    
+
     .kategori-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 24px rgba(102, 126, 234, 0.25);
+        transform: translateY(-6px);
+        box-shadow: 0 24px 56px rgba(15, 23, 42, 0.12);
     }
-    
+
     .kategori-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 30px;
+        padding: 34px 20px;
         text-align: center;
         flex-shrink: 0;
         position: relative;
         overflow: hidden;
+        color: #fff;
+        min-height: 165px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
     }
 
-    .kategori-header::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -10%;
-        width: 150px;
-        height: 150px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 50%;
-    }
-
+    .kategori-header::before,
     .kategori-header::after {
         content: '';
         position: absolute;
-        bottom: -30%;
-        left: -10%;
+        border-radius: 50%;
+        opacity: 0.24;
+    }
+
+    .kategori-header::before {
+        width: 140px;
+        height: 140px;
+        right: -30px;
+        top: -35px;
+        background: rgba(255, 255, 255, 0.16);
+    }
+
+    .kategori-header::after {
         width: 100px;
         height: 100px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 50%;
+        left: 15px;
+        bottom: -20px;
+        background: rgba(255, 255, 255, 0.1);
     }
-    
+
     .kategori-icon {
-        font-size: 2.5rem;
-        margin-bottom: 10px;
-        display: block;
+        font-size: 2.3rem;
+        margin-bottom: 12px;
         position: relative;
         z-index: 1;
     }
-    
+
     .kategori-title {
-        font-size: 1.3rem;
-        font-weight: 600;
+        font-size: 1.35rem;
+        font-weight: 800;
         margin: 0;
         position: relative;
         z-index: 1;
     }
-    
+
     .kategori-body {
-        padding: 20px;
+        padding: 24px;
         flex: 1;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
     }
-    
+
     .kategori-count {
         display: flex;
         align-items: center;
         justify-content: center;
-        margin: 15px 0;
-        gap: 10px;
+        gap: 12px;
+        margin: 18px 0;
     }
-    
+
     .count-badge {
-        background: #667eea;
-        color: white;
+        background: linear-gradient(140deg, #ff7a59, #ffc95c);
+        color: #10172e;
         border-radius: 50%;
-        width: 50px;
-        height: 50px;
+        width: 55px;
+        height: 55px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-weight: bold;
-        font-size: 1.2rem;
-    }
-    
-    .kategori-info {
-        text-align: center;
-        color: #666;
-        font-size: 0.95rem;
-    }
-    
-    .btn-kategori {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 6px;
-        transition: all 0.3s;
-        width: 100%;
-        margin-top: 15px;
-        font-weight: 500;
-    }
-    
-    .btn-kategori:hover {
-        color: white;
-        transform: scale(1.02);
-    }
-    
-    .header-section {
-        margin-bottom: 30px;
-    }
-    
-    .header-title {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 10px;
-    }
-    
-    .header-subtitle {
-        color: #666;
-        font-size: 1.05rem;
-    }
-    
-    .search-box {
-        margin-bottom: 30px;
-    }
-    
-    .search-box input {
-        border-radius: 8px;
-        border: 2px solid #e0e0e0;
-        padding: 12px 20px;
-        font-size: 1rem;
-        transition: all 0.3s;
-    }
-    
-    .search-box input:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 60px 20px;
-    }
-    
-    .empty-icon {
-        font-size: 3rem;
-        color: #ccc;
-        margin-bottom: 20px;
-    }
-    
-    .empty-text {
-        color: #999;
-        font-size: 1.1rem;
-    }
-    
-    .icon-map {
-        font-size: 2rem;
+        font-weight: 800;
+        font-size: 1.15rem;
     }
 
-    /* Gradient variations untuk kategori */
-    .header-gradient-1 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    .header-gradient-2 { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-    .header-gradient-3 { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-    .header-gradient-4 { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-    .header-gradient-5 { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-    .header-gradient-6 { background: linear-gradient(135deg, #30cfd0 0%, #330867 100%); }
-    .header-gradient-7 { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
-    .header-gradient-8 { background: linear-gradient(135deg, #ff9a56 0%, #ff6a88 100%); }
+    .kategori-info {
+        text-align: center;
+        color: #5b6687;
+        font-size: 0.95rem;
+    }
+
+    .btn-kategori {
+        background: linear-gradient(130deg, #f7f2e8 0%, #ffe7c5 100%);
+        color: #10172e;
+        border: none;
+        padding: 12px 18px;
+        border-radius: 999px;
+        transition: all 0.25s ease;
+        width: 100%;
+        margin-top: 15px;
+        font-weight: 700;
+    }
+
+    .btn-kategori:hover {
+        color: #10172e;
+        transform: translateY(-2px);
+        box-shadow: 0 16px 28px rgba(15, 23, 42, 0.08);
+    }
+
+    .search-box {
+        margin-bottom: 28px;
+        max-width: 460px;
+    }
+
+    .search-box input {
+        border-radius: 14px;
+        border: 1px solid rgba(19, 33, 64, 0.12);
+        padding: 16px 20px;
+        font-size: 1rem;
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.04);
+    }
+
+    .search-box input:focus {
+        border-color: #ff7a59;
+        box-shadow: 0 0 0 4px rgba(255, 122, 89, 0.12);
+        outline: none;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 72px 20px;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        color: #a3b5d5;
+        margin-bottom: 20px;
+    }
+
+    .empty-text {
+        color: #5b6687;
+        font-size: 1.1rem;
+    }
+
+    .header-muted {
+        color: rgba(247, 242, 232, 0.9);
+    }
+
+    .header-gradient-1 { background: linear-gradient(135deg, #1d4f78 0%, #ff7a59 100%); }
+    .header-gradient-2 { background: linear-gradient(135deg, #1d4f78 0%, #ffc95c 100%); }
+    .header-gradient-3 { background: linear-gradient(135deg, #303d7a 0%, #8de4d1 100%); }
+    .header-gradient-4 { background: linear-gradient(135deg, #4d5ea9 0%, #ff9a56 100%); }
+    .header-gradient-5 { background: linear-gradient(135deg, #178f78 0%, #ff7a59 100%); }
+    .header-gradient-6 { background: linear-gradient(135deg, #283d66 0%, #8de4d1 100%); }
+    .header-gradient-7 { background: linear-gradient(135deg, #133553 0%, #ff7a59 100%); }
+    .header-gradient-8 { background: linear-gradient(135deg, #1d4f78 0%, #ff6a88 100%); }
+
+    @media (max-width: 767px) {
+        .page-hero-kategori {
+            padding: 24px;
+            border-radius: 20px;
+        }
+
+        .header-title {
+            font-size: 2rem;
+        }
+    }
 </style>
 
 <div class="container-fluid py-5">
-    <!-- Header Section -->
-    <div class="header-section mb-5">
-        <h1 class="header-title">
-            <i class="bi bi-tag"></i> Kategori Buku
-        </h1>
-        <p class="header-subtitle">Jelajahi berbagai kategori buku yang tersedia di perpustakaan kami</p>
+    <div class="page-hero-kategori">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+            <div>
+                <p class="text-uppercase small fw-bold mb-2" style="letter-spacing:0.15em; color: rgba(247, 242, 232, 0.8);">Kategori Buku</p>
+                <h1 class="header-title">Temukan kategori bacaan favoritmu</h1>
+                <p class="header-subtitle">Filter buku berdasarkan genre, tema, dan mood agar pengalaman mencari tetap cepat dan menyenangkan.</p>
+            </div>
+            <div class="page-badge-kategori">
+                <i class="bi bi-book-half"></i>
+                {{ $kategori->count() }} Kategori tersedia
+            </div>
+        </div>
     </div>
 
     @if($kategori->count() > 0)

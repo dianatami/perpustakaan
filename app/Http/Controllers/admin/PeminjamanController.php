@@ -172,24 +172,41 @@ class PeminjamanController extends Controller
         );
 }
 
-    public function approve($id)
+    public function approve(Request $request, $id)
     {
-        $result = DB::transaction(function () use ($id): array {
+        $request->validate([
+            'borrow_duration' => 'required|integer|min:1|max:30',
+        ]);
+
+        $result = DB::transaction(function () use ($request, $id): array {
             $peminjaman = Bookrent::with('details.book')->lockForUpdate()->findOrFail($id);
             if ($peminjaman->status !== 'menunggu_acc') {
                 return ['ok' => false, 'message' => 'Peminjaman tidak dalam status menunggu ACC.'];
             }
-            $book = Book::query()->lockForUpdate()->findOrFail($peminjaman->details->first()->book_id);
-            if ($book->stock < 1) {
-                return ['ok' => false, 'message' => 'Stok buku habis.'];
+
+            // Validate stock for all books
+            foreach ($peminjaman->details as $detail) {
+                if ($detail->book->stock < $detail->qty) {
+                    return ['ok' => false, 'message' => 'Stok buku ' . $detail->book->title . ' tidak cukup.'];
+                }
             }
-            $book->stock -= 1;
-            $book->save();
+
+            // Decrease stock for each book
+            foreach ($peminjaman->details as $detail) {
+                $detail->book->decrement('stock', $detail->qty);
+            }
+
+            $borrowDate = Carbon::now()->toDateString();
+            $returnDate = Carbon::now()->addDays($request->borrow_duration)->toDateString();
+
             $peminjaman->status = 'dipinjam';
-            $peminjaman->borrow_date = Carbon::now()->toDateString();
+            $peminjaman->borrow_date = $borrowDate;
+            $peminjaman->return_date = $returnDate;
             $peminjaman->save();
-            return ['ok' => true, 'message' => 'Peminjaman berhasil di-ACC.'];
+
+            return ['ok' => true, 'message' => 'Pengajuan peminjaman berhasil disetujui. Murid diminta datang ke perpustakaan untuk mengambil buku.'];
         });
+
         $flashType = $result['ok'] ? 'success' : 'error';
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
