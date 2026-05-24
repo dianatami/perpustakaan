@@ -1,17 +1,19 @@
 {
-    "private": true,
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build"
-    },
-    "devDependencies": {
-        "@tailwindcss/postcss": "^4.2.4",
-        "axios": "^1.1.2",
-        "laravel-vite-plugin": "^3.0.1",
-        "tailwindcss": "^4.2.4",
-        "vite": "^8.0.10"
-    },
-    "dependencies": {
-        "@supabase/supabase-js": "^2.104.1"
-    }
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@types/node": "^25.9.1",
+    "axios": "^1.1.2",
+    "laravel-vite-plugin": "^3.0.1",
+    "tailwindcss": "^4.2.4",
+    "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.104.1"
+  }
 }
