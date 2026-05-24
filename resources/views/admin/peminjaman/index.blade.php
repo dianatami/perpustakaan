@@ -595,6 +595,7 @@
                             <th width="120">Jumlah</th>
                             <th width="120">Tgl Ajuan</th>
                             <th width="100">Status</th>
+                            <th width="120">Denda</th>
                             <th width="200">Aksi</th>
                         </tr>
                     </thead>
@@ -639,6 +640,13 @@
                                     @endif
                                 </td>
                                 <td>
+                                    @if($item->denda && (int)$item->denda > 0)
+                                        <div class="fw-bold">Rp {{ number_format($item->denda, 0, ',', '.') }}</div>
+                                    @else
+                                        <span class="text-muted">-</span>
+                                    @endif
+                                </td>
+                                <td>
                                     <div class="action-buttons">
                                         @if($item->status == 'menunggu_acc')
                                             <button class="btn-approve" onclick="showApproveModal({{ $item->id }}, '{{ $item->user->nama }}')">
@@ -652,13 +660,9 @@
                                                 </button>
                                             </form>
                                         @elseif($item->status == 'proses_kembali')
-                                            <form action="{{ route('admin.peminjaman.confirm-return', $item->id) }}" method="POST" style="margin: 0;">
-                                                @csrf
-                                                @method('PUT')
-                                                <button type="submit" class="btn-return" onclick="return confirm('Konfirmasi buku sudah diterima dari peminjam?')">
-                                                    <i class="bi bi-box-arrow-in-down"></i> Terima Pengembalian
-                                                </button>
-                                            </form>
+                                            <a href="{{ route('admin.peminjaman.process-return', $item->id) }}" class="btn-return">
+                                                <i class="bi bi-box-arrow-in-down"></i> Terima Pengembalian
+                                            </a>
                                         @else
                                             <a href="{{ route('admin.peminjaman.edit', $item->id) }}" class="btn-edit">
                                                 <i class="bi bi-pencil"></i> Edit

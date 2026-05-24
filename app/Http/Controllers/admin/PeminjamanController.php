@@ -144,26 +144,72 @@ class PeminjamanController extends Controller
 
     // update kondisi buku
     foreach ($peminjaman->details as $detail) {
-        $condition =
-            $request->conditions[$detail->id] ?? 'baik';
-        $detail->update([
-            'condition' => $condition,
-        ]);
+
+    $condition = $request->conditions[$detail->id] ?? 'baik';
+
+    if ($condition == 'rusak') {
+
+        $detail->book->increment('damaged', $detail->qty);
+
     }
+
+    if ($condition == 'hilang') {
+
+        $detail->book->increment('lost', $detail->qty);
+
+    }
+
+}
 
     // kembalikan stok kalau status kembali
     if (
-        $request->status == 'kembali' &&
-        $statusLama != 'kembali'
-    ) {
-        foreach ($peminjaman->details as $detail) {
+    $request->status == 'kembali' &&
+    $statusLama != 'kembali'
+) {
+
+    foreach ($peminjaman->details as $detail) {
+
+        $condition =
+            $request->conditions[$detail->id]
+            ?? 'baik';
+
+        // ======================
+        // KONDISI BAIK
+        // ======================
+
+        if ($condition == 'baik') {
 
             $detail->book->increment(
                 'stock',
                 $detail->qty
             );
         }
+
+        // ======================
+        // KONDISI RUSAK
+        // ======================
+
+        elseif ($condition == 'rusak') {
+
+            $detail->book->increment(
+                'damaged',
+                $detail->qty
+            );
+        }
+
+        // ======================
+        // KONDISI HILANG
+        // ======================
+
+        elseif ($condition == 'hilang') {
+
+            $detail->book->increment(
+                'lost',
+                $detail->qty
+            );
+        }
     }
+}
     return redirect()
         ->route('admin.peminjaman.index')
         ->with(
@@ -226,9 +272,9 @@ class PeminjamanController extends Controller
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
-    public function confirmReturn($id)
+    public function confirmReturn(Request $request, $id)
     {
-    $result = DB::transaction(function () use ($id): array {
+    $result = DB::transaction(function () use ($request, $id): array {
 
         $peminjaman = Bookrent::with('details.book')
             ->lockForUpdate()
@@ -240,20 +286,36 @@ class PeminjamanController extends Controller
             ];
         }
         $today = Carbon::today();
-        $borrowDate = Carbon::parse(
-            $peminjaman->borrow_date
-        );
-        $days = $borrowDate->diffInDays($today);
-        $denda = $days > 7
-            ? ($days - 7) * 5000
-            : 0;
+        $borrowDate = Carbon::parse($peminjaman->borrow_date);
+
+        // If admin supplied a denda explicitly, use it
+        if ($request->filled('denda')) {
+            $denda = (int) $request->input('denda');
+        } else {
+            // compute late fee
+            $days = $borrowDate->diffInDays($today);
+            $late = $days > 7 ? ($days - 7) * 5000 : 0;
+
+            // compute damage/loss fees based on provided conditions or existing
+            $conditions = $request->input('conditions', []);
+            $damageLoss = 0;
+            foreach ($peminjaman->details as $detail) {
+                $cond = $conditions[$detail->id] ?? ($detail->condition ?? 'baik');
+                if (in_array($cond, ['rusak', 'hilang'])) {
+                    $damageLoss += 50000 * ($detail->qty ?? 1);
+                }
+            }
+
+            $denda = $late + $damageLoss;
+        }
 
         // =========================================
         // KEMBALIKAN STOK SEMUA BUKU
         // =========================================
 
         foreach ($peminjaman->details as $detail) {
-            $condition = $detail->condition ?? 'baik';
+            // use submitted condition if available
+            $condition = $request->input('conditions.' . $detail->id) ?? ($detail->condition ?? 'baik');
 
             if ($condition === 'rusak') {
                 $detail->book->increment('damaged', $detail->qty);
@@ -273,8 +335,7 @@ class PeminjamanController extends Controller
         // =========================================
 
         $peminjaman->status = 'kembali';
-        $peminjaman->return_date =
-            $today->toDateString();
+        $peminjaman->return_date = $today->toDateString();
         $peminjaman->denda = $denda;
         $peminjaman->save();
         $message = $denda > 0
@@ -327,5 +388,47 @@ class PeminjamanController extends Controller
         $peminjaman->delete();
         
         return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil dihapus');
+    }
+
+    public function processReturn($id)
+    {
+        $peminjaman = Bookrent::with('details.book','user')->findOrFail($id);
+        return view('admin.peminjaman.return', compact('peminjaman'));
+    }
+
+    /**
+     * AJAX: calculate fine for given return date and conditions
+     */
+    public function calculateFineAjax(Request $request, $id)
+    {
+        $request->validate([
+            'return_date' => 'required|date',
+            'conditions' => 'sometimes|array',
+        ]);
+
+        $peminjaman = Bookrent::with('details')->findOrFail($id);
+
+        $borrowDate = Carbon::parse($peminjaman->borrow_date);
+        $returnDate = Carbon::parse($request->return_date);
+
+        $days = $borrowDate->diffInDays($returnDate);
+        $late = $days > 7 ? ($days - 7) * 5000 : 0;
+
+        $conditions = $request->input('conditions', []);
+        $damageLoss = 0;
+
+        foreach ($peminjaman->details as $detail) {
+            $cond = $conditions[$detail->id] ?? ($detail->condition ?? 'baik');
+            if (in_array($cond, ['rusak', 'hilang'])) {
+                $damageLoss += 50000 * ($detail->qty ?? 1);
+            }
+        }
+
+        $total = $late + $damageLoss;
+
+        return response()->json([
+            'denda' => $total,
+            'formatted' => 'Rp ' . number_format($total, 0, ',', '.'),
+        ]);
     }
 }

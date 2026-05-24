@@ -250,6 +250,30 @@ $(document).ready(function(){
 
     initSelect2();
 
+    // Set return_date to 7 days after borrow_date
+    function formatDateYMD(date) {
+        const y = date.getFullYear();
+        const m = String(date.getMonth() + 1).padStart(2, '0');
+        const d = String(date.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+    }
+
+    function setReturnDateFromBorrow() {
+        const borrowVal = $('input[name="borrow_date"]').val();
+        if (!borrowVal) return;
+        const b = new Date(borrowVal + 'T00:00:00');
+        b.setDate(b.getDate() + 7);
+        $('input[name="return_date"]').val(formatDateYMD(b));
+    }
+
+    // initialize return date on load
+    setReturnDateFromBorrow();
+
+    // update when borrow date changes
+    $(document).on('change', 'input[name="borrow_date"]', function(){
+        setReturnDateFromBorrow();
+    });
+
     // =========================================
     // UPDATE OPTION AGAR TIDAK DUPLIKAT
     // =========================================

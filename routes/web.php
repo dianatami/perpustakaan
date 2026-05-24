@@ -83,6 +83,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
         ->name('peminjaman.reject');
     Route::put('peminjaman/{peminjaman}/confirm-return', [PeminjamanController::class, 'confirmReturn'])
         ->name('peminjaman.confirm-return');
+    Route::post('peminjaman/{peminjaman}/calculate-fine', [PeminjamanController::class, 'calculateFineAjax'])
+        ->name('peminjaman.calculate-fine');
+    Route::get('peminjaman/{peminjaman}/process-return', [PeminjamanController::class, 'processReturn'])
+        ->name('peminjaman.process-return');
 
     Route::get('anggota', [AnggotaController::class, 'index'])->name('anggota.index');
     Route::get('anggota/create', [AnggotaController::class, 'create'])->name('anggota.create');

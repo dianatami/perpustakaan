@@ -75,6 +75,7 @@
                         <th>Buku</th>
                         <th>Tanggal Pinjam</th>
                         <th>Tanggal Kembali</th>
+                        <th>Denda</th>
                         <th>Status</th>
                         <th>Aksi</th>
                     </tr>
@@ -96,6 +97,13 @@
                             </td>
                             <td>{{ $item->borrow_date ?? '-' }}</td>
                             <td>{{ $item->return_date ?? '-' }}</td>
+                            <td>
+                                @if(isset($item->denda) && (int)$item->denda > 0)
+                                    Rp {{ number_format($item->denda, 0, ',', '.') }}
+                                @else
+                                    -
+                                @endif
+                            </td>
                             <td>
                                 @if(($item->status ?? null) === 'menunggu_acc')
                                     Menunggu ACC
