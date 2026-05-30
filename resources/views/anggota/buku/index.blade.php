@@ -78,6 +78,35 @@
         gap: 24px;
     }
 
+    .filter-panel {
+        background: #ffffff;
+        border-radius: 18px;
+        border: 1px solid rgba(16, 23, 46, 0.08);
+        box-shadow: 0 16px 32px rgba(15, 23, 42, 0.08);
+        padding: 18px;
+        margin-bottom: 26px;
+    }
+
+    .filter-panel .form-select,
+    .filter-panel .form-control {
+        border-radius: 12px;
+        border: 1px solid rgba(16, 23, 46, 0.12);
+        padding: 10px 14px;
+    }
+
+    .rack-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.4rem 0.75rem;
+        border-radius: 999px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        background: rgba(255, 122, 89, 0.14);
+        color: #b94b2f;
+        margin-bottom: 10px;
+    }
+
     .book-card {
         border-radius: 24px;
         border: 1px solid rgba(16, 23, 46, 0.08);
@@ -202,9 +231,35 @@
             </div>
             <div class="book-count-badge">
                 <i class="bi bi-collection-fill"></i>
-                {{ $books->count() }} Buku tersedia
+                {{ $bookCount ?? 0 }} Buku tersedia
             </div>
         </div>
+    </div>
+
+    <div class="filter-panel">
+        <form action="{{ route($portalPrefix . '.buku.index') }}" method="GET" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Filter Kategori</label>
+                <select name="kategori" class="form-select">
+                    <option value="">Semua Kategori</option>
+                    @foreach($categories ?? [] as $cat)
+                        <option value="{{ $cat->id }}" {{ (string) $kategoriId === (string) $cat->id ? 'selected' : '' }}>{{ $cat->name_category }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold">Filter Rak</label>
+                <select name="rack" class="form-select">
+                    <option value="">Semua Rak</option>
+                    @foreach($racks ?? [] as $rack)
+                        <option value="{{ $rack->id }}" {{ (string) $rackId === (string) $rack->id ? 'selected' : '' }}>{{ $rack->code }} - {{ $rack->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-4 d-grid">
+                <button class="btn btn-primary">Terapkan Filter</button>
+            </div>
+        </form>
     </div>
 
     <div class="book-list">
@@ -222,6 +277,9 @@
                     <h3 class="book-title">{{ $book->title }}</h3>
                     <p class="book-author">{{ $book->author }}</p>
                     <span class="book-tag">{{ $book->category->name_category ?? 'Tanpa Kategori' }}</span>
+                    @if($book->rack)
+                        <span class="rack-tag"><i class="bi bi-archive"></i> {{ $book->rack->code }}</span>
+                    @endif
                     <p class="book-meta">Stok tersedia: <strong>{{ $book->stock }}</strong></p>
                     <a href="{{ route($portalPrefix . '.buku.show', $book->id) }}" class="btn-detail text-center w-100">
                         Lihat Detail

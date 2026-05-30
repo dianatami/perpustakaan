@@ -142,7 +142,7 @@ class ProfileAnggotaController extends Controller
     {
         $request->validate([
             'nama' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . Auth::id(),
+            'email' => 'required|email|unique:user,email,' . Auth::id(),
             'hp' => 'required|string|max:13',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',

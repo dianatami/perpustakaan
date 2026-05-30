@@ -32,8 +32,9 @@
             font-family: 'Manrope', sans-serif;
             color: var(--kepala-ink);
             background:
-                radial-gradient(circle at 12% -5%, rgba(199, 154, 63, 0.22), transparent 28%),
-                radial-gradient(circle at 100% 10%, rgba(14, 107, 105, 0.16), transparent 35%),
+                radial-gradient(circle at 12% -5%, rgba(199, 154, 63, 0.2), transparent 30%),
+                radial-gradient(circle at 100% 12%, rgba(14, 107, 105, 0.14), transparent 38%),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.85), rgba(248, 246, 242, 0.95)),
                 var(--kepala-bg);
         }
 
@@ -127,6 +128,41 @@
             flex: 1;
             width: min(1280px, calc(100% - 32px));
             margin: 20px auto;
+        }
+
+        .kepala-main .card,
+        .kepala-main .table-responsive,
+        .kepala-main .alert,
+        .kepala-main .list-group {
+            border-radius: 18px;
+            border: 1px solid var(--kepala-border);
+            box-shadow: 0 18px 40px rgba(19, 44, 44, 0.1);
+            background: #ffffff;
+        }
+
+        .kepala-main .table thead th {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--kepala-muted);
+            background: rgba(15, 68, 66, 0.05);
+            border-bottom: 1px solid var(--kepala-border);
+        }
+
+        .kepala-main .form-control,
+        .kepala-main .form-select,
+        .kepala-main textarea {
+            border-radius: 12px;
+            border: 1px solid var(--kepala-border);
+            padding: 10px 14px;
+        }
+
+        .kepala-main .btn-primary {
+            border: 0;
+            border-radius: 12px;
+            font-weight: 700;
+            background: linear-gradient(150deg, var(--kepala-primary), var(--kepala-primary-dark));
+            box-shadow: 0 14px 28px rgba(14, 74, 73, 0.18);
         }
 
         .kepala-main > * {

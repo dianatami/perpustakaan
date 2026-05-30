@@ -15,6 +15,7 @@ use App\Http\Controllers\Anggota\BukuController;
 use App\Http\Controllers\Guru\BerandaGuruController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\BookController;
+use App\Http\Controllers\Admin\RackController;
 use App\Http\Controllers\Admin\PeminjamanController;
 
 /*
@@ -66,6 +67,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
 
     Route::resource('books', BookController::class)
         ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
+
+    Route::resource('racks', RackController::class)
+        ->only(['index', 'store', 'edit', 'update', 'destroy']);
 
     Route::resource('kategori', KategoriController::class)
         ->only(['index', 'store', 'edit', 'update', 'destroy']);

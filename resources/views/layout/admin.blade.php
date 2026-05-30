@@ -35,10 +35,12 @@
             min-height: 100vh;
             font-family: 'Nunito Sans', sans-serif;
             background:
-                radial-gradient(circle at 5% -5%, rgba(15, 140, 128, 0.16), transparent 30%),
-                radial-gradient(circle at 110% 10%, rgba(255, 138, 61, 0.14), transparent 35%),
+                radial-gradient(circle at 5% -5%, rgba(15, 140, 128, 0.14), transparent 32%),
+                radial-gradient(circle at 110% 12%, rgba(255, 138, 61, 0.12), transparent 38%),
+                linear-gradient(130deg, rgba(255, 255, 255, 0.8), rgba(245, 250, 249, 0.92)),
                 var(--admin-bg);
             color: var(--admin-ink);
+            letter-spacing: 0.1px;
         }
 
         .admin-shell {
@@ -288,6 +290,9 @@
 
         .admin-content {
             padding: 28px;
+            width: 100%;
+            max-width: 1320px;
+            margin: 0 auto;
             flex: 1;
         }
 
@@ -302,6 +307,58 @@
             padding: 14px;
             font-size: 0.86rem;
             background: rgba(255, 255, 255, 0.64);
+        }
+
+        .admin-content .card,
+        .admin-content .table-responsive,
+        .admin-content .alert,
+        .admin-content .list-group {
+            border-radius: 18px;
+            border: 1px solid rgba(17, 50, 57, 0.12);
+            box-shadow: 0 16px 36px rgba(16, 23, 46, 0.08);
+            background: #ffffff;
+        }
+
+        .admin-content .table {
+            margin-bottom: 0;
+        }
+
+        .admin-content .table thead th {
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            letter-spacing: 0.09em;
+            color: #6b7f85;
+            background: #f2f7f7;
+            border-bottom: 1px solid rgba(17, 50, 57, 0.1);
+        }
+
+        .admin-content .form-control,
+        .admin-content .form-select,
+        .admin-content textarea {
+            border-radius: 12px;
+            border: 1px solid rgba(17, 50, 57, 0.14);
+            padding: 10px 14px;
+            box-shadow: none;
+        }
+
+        .admin-content .btn-primary {
+            border: 0;
+            border-radius: 12px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0f8c80, #116b64);
+            box-shadow: 0 14px 28px rgba(17, 56, 55, 0.16);
+        }
+
+        .admin-content .btn-outline-primary {
+            border-radius: 12px;
+            font-weight: 700;
+            border-color: rgba(15, 140, 128, 0.35);
+            color: #0f8c80;
+        }
+
+        .admin-content .btn-outline-secondary {
+            border-radius: 12px;
+            font-weight: 700;
         }
 
         .pagination {
@@ -391,6 +448,7 @@
         $adminMenu = [
             ['route' => 'admin.beranda', 'active' => 'admin.beranda', 'icon' => 'bi-grid-1x2-fill', 'label' => 'Ringkasan'],
             ['route' => 'admin.books.index', 'active' => 'admin.books.*', 'icon' => 'bi-journal-bookmark-fill', 'label' => 'Data Buku'],
+            ['route' => 'admin.racks.index', 'active' => 'admin.racks.*', 'icon' => 'bi-archive-fill', 'label' => 'Rak Buku'],
             ['route' => 'admin.kategori.index', 'active' => 'admin.kategori.*', 'icon' => 'bi-tags-fill', 'label' => 'Kategori'],
             ['route' => 'admin.anggota.index', 'active' => 'admin.anggota.*', 'icon' => 'bi-people-fill', 'label' => 'Manajemen Anggota'],
             ['route' => 'admin.peminjaman.index', 'active' => 'admin.peminjaman.*', 'icon' => 'bi-arrow-repeat', 'label' => 'Peminjaman'],

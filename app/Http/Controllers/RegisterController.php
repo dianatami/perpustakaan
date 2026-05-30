@@ -29,8 +29,20 @@ class RegisterController extends Controller
 
                 if (!User::isValidNip($identifier) && !User::isValidNisn($identifier)) {
                     $fail('Format NIP/NISN tidak valid.');
+                    return;
                 }
-            }, 'unique:user,nip'],
+
+                if (User::isValidNip($identifier)) {
+                    if (User::query()->where('nip', $identifier)->exists()) {
+                        $fail('NIP sudah digunakan.');
+                    }
+                    return;
+                }
+
+                if (User::query()->where('nisn', $identifier)->exists()) {
+                    $fail('NISN sudah digunakan.');
+                }
+            }],
             'password' => 'required|min:6',
             'hp' => 'required|digits_between:10,13',
         ]);

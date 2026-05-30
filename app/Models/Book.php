@@ -13,6 +13,7 @@ class Book extends Model
 
     protected $fillable = [
         'category_id',
+        'rack_id',
         'book_code',
         'title',
         'author',
@@ -28,5 +29,10 @@ class Book extends Model
     public function category()
     {
         return $this->belongsTo(Kategori::class, 'category_id');
+    }
+
+    public function rack()
+    {
+        return $this->belongsTo(Rack::class, 'rack_id');
     }
 }

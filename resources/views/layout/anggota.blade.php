@@ -134,18 +134,11 @@
             margin-top: 8px;
             padding-top: 8px;
             border-top: 1px solid var(--portal-border);
-            font-size: 1.25rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: var(--portal-primary);
-            letter-spacing: 0.05em;
-        }
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid var(--portal-border);
-            font-size: 0.77rem;
-            font-weight: 600;
-            color: var(--portal-primary);
-            letter-spacing: 0.05em;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
         }
 
         .portal-actions {
@@ -240,6 +233,59 @@
             padding: 12px;
             border-top: 1px solid var(--portal-border);
             background: rgba(255, 255, 255, 0.7);
+        }
+
+        .portal-main .card,
+        .portal-main .table-responsive,
+        .portal-main .alert,
+        .portal-main .list-group {
+            border-radius: 18px;
+            border: 1px solid color-mix(in srgb, var(--portal-primary) 12%, transparent);
+            box-shadow: 0 18px 40px rgba(17, 56, 55, 0.08);
+            background: #ffffff;
+        }
+
+        .portal-main .table {
+            margin-bottom: 0;
+        }
+
+        .portal-main .table thead th {
+            font-size: 0.78rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--portal-muted);
+            background: rgba(17, 56, 55, 0.05);
+            border-bottom: 1px solid var(--portal-border);
+        }
+
+        .portal-main .form-control,
+        .portal-main .form-select,
+        .portal-main textarea {
+            border-radius: 12px;
+            border: 1px solid var(--portal-border);
+            padding: 10px 14px;
+            box-shadow: none;
+        }
+
+        .portal-main .btn-primary {
+            border: 0;
+            border-radius: 12px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--portal-primary), var(--portal-primary-dark));
+            box-shadow: 0 14px 28px rgba(17, 56, 55, 0.16);
+        }
+
+        .portal-main .btn-outline-primary {
+            border-radius: 12px;
+            font-weight: 700;
+            border-color: color-mix(in srgb, var(--portal-primary) 40%, transparent);
+            color: var(--portal-primary);
+        }
+
+        .portal-main .badge {
+            border-radius: 999px;
+            padding: 6px 10px;
+            font-weight: 700;
         }
 
         @keyframes showUp {

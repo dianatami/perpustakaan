@@ -14,7 +14,6 @@ class Bookrent extends Model
 
     protected $fillable = [
         'user_id',
-        'book_id',
         'borrow_date',
         'return_date',
         'status',
@@ -33,11 +32,6 @@ class Bookrent extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
-    public function book()
-    {
-        return $this->belongsTo(Book::class, 'book_id');
-    }
-
     public function getDueAtAttribute(): ?Carbon
     {
         if (!$this->created_at) {
@@ -49,6 +43,6 @@ class Bookrent extends Model
 
     public function details()
     {
-    return $this->hasMany(DetailBookrent::class);
+        return $this->hasMany(DetailBookrent::class, 'bookrent_id');
     }
 }

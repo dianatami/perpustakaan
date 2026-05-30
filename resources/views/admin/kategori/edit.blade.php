@@ -43,6 +43,13 @@
                             <input type="text" name="author" class="form-control" placeholder="Pengarang" required>
                             <input type="text" name="publisher" class="form-control" placeholder="Penerbit">
                             <input type="text" name="year" class="form-control" placeholder="Tahun">
+
+                            <select name="rack_id" class="form-select">
+                                <option value="">Pilih Rak</option>
+                                @foreach($racks ?? [] as $rack)
+                                    <option value="{{ $rack->id }}">{{ $rack->code }} - {{ $rack->name }}</option>
+                                @endforeach
+                            </select>
                             
                             <div class="mb-2">
                                 <label class="form-label small text-muted mb-1">Upload Cover Buku (File Gambar)</label>
@@ -73,6 +80,7 @@
                                         <th>Cover</th>
                                         <th>Kode</th>
                                         <th>Judul</th>
+                                        <th>Rak</th>
                                         <th>Stok</th>
                                     </tr>
                                 </thead>
@@ -89,6 +97,7 @@
                                         </td>
                                         <td class="small">{{ $b->book_code }}</td>
                                         <td class="fw-semibold">{{ $b->title }}</td>
+                                        <td class="small text-muted">{{ $b->rack->code ?? '-' }}</td>
                                         <td><span class="badge bg-info text-dark">{{ $b->stock }}</span></td>
                                     </tr>
                                     @empty

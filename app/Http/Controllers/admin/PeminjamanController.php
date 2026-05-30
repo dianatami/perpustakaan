@@ -118,105 +118,69 @@ class PeminjamanController extends Controller
         return view('admin.peminjaman.edit', compact('peminjaman', 'users', 'books'));
     }
 
-   public function update(Request $request, $id)
-{
-    $request->validate([
-        'user_id' => 'required|exists:user,id',
-        'borrow_date' => 'required|date',
-        'return_date' => 'nullable|date',
-        'status' => 'required',
-    ]);
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'user_id' => 'required|exists:user,id',
+            'borrow_date' => 'required|date',
+            'return_date' => 'nullable|date',
+            'status' => 'required',
+            'conditions' => 'sometimes|array',
+            'conditions.*' => 'in:baik,rusak,hilang',
+        ]);
 
-    $peminjaman = Bookrent::with('details.book')
-        ->findOrFail($id);
+        $peminjaman = Bookrent::with('details.book')
+            ->findOrFail($id);
 
-    // simpan status lama
-    $statusLama = $peminjaman->status;
+        // simpan status lama
+        $statusLama = $peminjaman->status;
 
-    // update data utama
-    $peminjaman->update([
-        'user_id' => $request->user_id,
-        'borrow_date' => $request->borrow_date,
-        'return_date' => $request->return_date,
-        'status' => $request->status,
-        'denda' => $request->denda ?? 0,
-    ]);
+        // update data utama
+        $peminjaman->update([
+            'user_id' => $request->user_id,
+            'borrow_date' => $request->borrow_date,
+            'return_date' => $request->return_date,
+            'status' => $request->status,
+            'denda' => $request->denda ?? 0,
+        ]);
 
-    // update kondisi buku
-    foreach ($peminjaman->details as $detail) {
+        // simpan kondisi buku per detail
+        foreach ($peminjaman->details as $detail) {
+            $condition = $request->input('conditions.' . $detail->id)
+                ?? ($detail->condition ?? 'baik');
 
-    $condition = $request->conditions[$detail->id] ?? 'baik';
-
-    if ($condition == 'rusak') {
-
-        $detail->book->increment('damaged', $detail->qty);
-
-    }
-
-    if ($condition == 'hilang') {
-
-        $detail->book->increment('lost', $detail->qty);
-
-    }
-
-}
-
-    // kembalikan stok kalau status kembali
-    if (
-    $request->status == 'kembali' &&
-    $statusLama != 'kembali'
-) {
-
-    foreach ($peminjaman->details as $detail) {
-
-        $condition =
-            $request->conditions[$detail->id]
-            ?? 'baik';
-
-        // ======================
-        // KONDISI BAIK
-        // ======================
-
-        if ($condition == 'baik') {
-
-            $detail->book->increment(
-                'stock',
-                $detail->qty
-            );
+            if ($detail->condition !== $condition) {
+                $detail->condition = $condition;
+                $detail->save();
+            }
         }
 
-        // ======================
-        // KONDISI RUSAK
-        // ======================
+        // kembalikan stok kalau status berubah ke kembali
+        if ($request->status === 'kembali' && $statusLama !== 'kembali') {
+            foreach ($peminjaman->details as $detail) {
+                $condition = $detail->condition ?? 'baik';
 
-        elseif ($condition == 'rusak') {
+                if ($condition === 'rusak') {
+                    $detail->book->increment('damaged', $detail->qty);
+                    continue;
+                }
 
-            $detail->book->increment(
-                'damaged',
-                $detail->qty
-            );
+                if ($condition === 'hilang') {
+                    $detail->book->increment('lost', $detail->qty);
+                    continue;
+                }
+
+                $detail->book->increment('stock', $detail->qty);
+            }
         }
 
-        // ======================
-        // KONDISI HILANG
-        // ======================
-
-        elseif ($condition == 'hilang') {
-
-            $detail->book->increment(
-                'lost',
-                $detail->qty
+        return redirect()
+            ->route('admin.peminjaman.index')
+            ->with(
+                'success',
+                'Data peminjaman berhasil diperbarui'
             );
-        }
     }
-}
-    return redirect()
-        ->route('admin.peminjaman.index')
-        ->with(
-            'success',
-            'Data peminjaman berhasil diperbarui'
-        );
-}
 
     public function approve(Request $request, $id)
     {
@@ -274,90 +238,98 @@ class PeminjamanController extends Controller
 
     public function confirmReturn(Request $request, $id)
     {
-    $result = DB::transaction(function () use ($request, $id): array {
+        $request->validate([
+            'return_date' => 'required|date',
+            'denda' => 'nullable|integer|min:0',
+            'conditions' => 'sometimes|array',
+            'conditions.*' => 'in:baik,rusak,hilang',
+        ]);
 
-        $peminjaman = Bookrent::with('details.book')
-            ->lockForUpdate()
-            ->findOrFail($id);
-        if ($peminjaman->status !== 'proses_kembali') {
-            return [
-                'ok' => false,
-                'message' => 'Pengembalian belum diajukan oleh user.'
-            ];
-        }
-        $today = Carbon::today();
-        $borrowDate = Carbon::parse($peminjaman->borrow_date);
+        $result = DB::transaction(function () use ($request, $id): array {
+            $peminjaman = Bookrent::with('details.book')
+                ->lockForUpdate()
+                ->findOrFail($id);
+            if ($peminjaman->status !== 'proses_kembali') {
+                return [
+                    'ok' => false,
+                    'message' => 'Pengembalian belum diajukan oleh user.'
+                ];
+            }
 
-        // If admin supplied a denda explicitly, use it
-        if ($request->filled('denda')) {
-            $denda = (int) $request->input('denda');
-        } else {
-            // compute late fee
-            $days = $borrowDate->diffInDays($today);
-            $late = $days > 7 ? ($days - 7) * 5000 : 0;
+            $borrowDate = Carbon::parse($peminjaman->borrow_date);
+            $returnDate = Carbon::parse($request->input('return_date'));
 
-            // compute damage/loss fees based on provided conditions or existing
+            // simpan kondisi buku per detail
             $conditions = $request->input('conditions', []);
             $damageLoss = 0;
             foreach ($peminjaman->details as $detail) {
                 $cond = $conditions[$detail->id] ?? ($detail->condition ?? 'baik');
-                if (in_array($cond, ['rusak', 'hilang'])) {
+                $detail->condition = $cond;
+                $detail->save();
+
+                if (in_array($cond, ['rusak', 'hilang'], true)) {
                     $damageLoss += 50000 * ($detail->qty ?? 1);
                 }
             }
 
-            $denda = $late + $damageLoss;
-        }
-
-        // =========================================
-        // KEMBALIKAN STOK SEMUA BUKU
-        // =========================================
-
-        foreach ($peminjaman->details as $detail) {
-            // use submitted condition if available
-            $condition = $request->input('conditions.' . $detail->id) ?? ($detail->condition ?? 'baik');
-
-            if ($condition === 'rusak') {
-                $detail->book->increment('damaged', $detail->qty);
-                continue;
+            // If admin supplied a denda explicitly, use it
+            if ($request->filled('denda')) {
+                $denda = (int) $request->input('denda');
+            } else {
+                // compute late fee
+                $days = $borrowDate->diffInDays($returnDate);
+                $late = $days > 7 ? ($days - 7) * 5000 : 0;
+                $denda = $late + $damageLoss;
             }
 
-            if ($condition === 'hilang') {
-                $detail->book->increment('lost', $detail->qty);
-                continue;
+            // =========================================
+            // KEMBALIKAN STOK SEMUA BUKU
+            // =========================================
+
+            foreach ($peminjaman->details as $detail) {
+                $condition = $detail->condition ?? 'baik';
+
+                if ($condition === 'rusak') {
+                    $detail->book->increment('damaged', $detail->qty);
+                    continue;
+                }
+
+                if ($condition === 'hilang') {
+                    $detail->book->increment('lost', $detail->qty);
+                    continue;
+                }
+
+                $detail->book->increment('stock', $detail->qty);
             }
 
-            $detail->book->increment('stock', $detail->qty);
-        }
+            // =========================================
+            // UPDATE STATUS
+            // =========================================
 
-        // =========================================
-        // UPDATE STATUS
-        // =========================================
-
-        $peminjaman->status = 'kembali';
-        $peminjaman->return_date = $today->toDateString();
-        $peminjaman->denda = $denda;
-        $peminjaman->save();
-        $message = $denda > 0
-            ? 'Pengembalian dikonfirmasi. Denda: Rp ' .
-                number_format($denda, 0, ',', '.')
-            : 'Pengembalian dikonfirmasi.';
-        return [
-            'ok' => true,
-            'message' => $message
-        ];
-    });
-    $flashType =
-        $result['ok']
-            ? 'success'
-            : 'error';
-    return redirect()
-        ->route('admin.peminjaman.index')
-        ->with(
-            $flashType,
-            $result['message']
-        );
-}
+            $peminjaman->status = 'kembali';
+            $peminjaman->return_date = $returnDate->toDateString();
+            $peminjaman->denda = $denda;
+            $peminjaman->save();
+            $message = $denda > 0
+                ? 'Pengembalian dikonfirmasi. Denda: Rp ' .
+                    number_format($denda, 0, ',', '.')
+                : 'Pengembalian dikonfirmasi.';
+            return [
+                'ok' => true,
+                'message' => $message
+            ];
+        });
+        $flashType =
+            $result['ok']
+                ? 'success'
+                : 'error';
+        return redirect()
+            ->route('admin.peminjaman.index')
+            ->with(
+                $flashType,
+                $result['message']
+            );
+    }
 
     /**
      * Calculate fine based on borrow date, return date, and condition

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Kategori;
 use App\Models\Book;
+use App\Models\Rack;
 
 class KategoriController extends Controller
 {
@@ -44,8 +45,9 @@ class KategoriController extends Controller
 
     public function edit($id)
     {
-        $kategori = Kategori::with('books')->findOrFail($id);
-        return view('admin.kategori.edit', compact('kategori'));
+        $kategori = Kategori::with('books.rack')->findOrFail($id);
+        $racks = Rack::orderBy('code')->get();
+        return view('admin.kategori.edit', compact('kategori', 'racks'));
     }
 
     public function update(Request $request, $id)
@@ -68,6 +70,7 @@ class KategoriController extends Controller
         'author' => 'required',
         'description' => 'required',
         'stock' => 'required|integer|min:0',
+        'rack_id' => 'nullable|exists:racks,id',
         'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
     ]);
 
@@ -81,6 +84,7 @@ class KategoriController extends Controller
 
     Book::create([
         'category_id' => $id,
+        'rack_id' => $request->rack_id,
         'book_code' => $request->book_code,
         'title' => $request->title,
         'author' => $request->author,

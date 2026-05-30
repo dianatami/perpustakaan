@@ -1,8 +1,38 @@
 @extends('layout.admin')
 @section('title','Tambah Buku')
 @section('content')
+<style>
+    .book-form-shell {
+        max-width: 960px;
+        margin: 0 auto;
+    }
 
-<h3>Tambah Buku</h3>
+    .book-form-card {
+        border-radius: 20px;
+        border: 1px solid rgba(16, 42, 50, 0.12);
+        box-shadow: 0 16px 32px rgba(16, 42, 50, 0.12);
+        background: #ffffff;
+    }
+
+    .book-form-card .form-control,
+    .book-form-card .form-select,
+    .book-form-card textarea {
+        border-radius: 12px;
+        border: 1px solid rgba(16, 42, 50, 0.12);
+        padding: 10px 14px;
+    }
+</style>
+
+<div class="book-form-shell">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h3 class="mb-1 fw-bold">Tambah Buku</h3>
+            <div class="text-muted">Lengkapi detail buku dan pilih rak penyimpanan.</div>
+        </div>
+        <a href="{{ route('admin.books.index') }}" class="btn btn-outline-secondary">Kembali</a>
+    </div>
+
+    <div class="book-form-card p-4">
 
 @if ($errors->any())
     <div class="alert alert-danger">
@@ -18,8 +48,8 @@
     @csrf
 
     <div class="form-group">
-        <label>Kategori</label>
-        <select name="category_id" class="form-control">
+        <label class="fw-semibold">Kategori</label>
+        <select name="category_id" class="form-select">
             <option value="">Pilih Kategori</option>
             @isset($categories)
                 @foreach($categories as $cat)
@@ -30,32 +60,44 @@
     </div>
 
     <div class="form-group">
-        <label>Kode Buku</label>
+        <label class="fw-semibold">Rak Buku</label>
+        <select name="rack_id" class="form-select">
+            <option value="">Pilih Rak</option>
+            @isset($racks)
+                @foreach($racks as $rack)
+                    <option value="{{ $rack->id }}" {{ old('rack_id') == $rack->id ? 'selected' : '' }}>{{ $rack->code }} - {{ $rack->name }}</option>
+                @endforeach
+            @endisset
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label class="fw-semibold">Kode Buku</label>
         <input type="text" name="book_code" class="form-control" value="{{ old('book_code') }}" required>
     </div>
 
     <div class="form-group">
-        <label>Judul</label>
+        <label class="fw-semibold">Judul</label>
         <input type="text" name="title" class="form-control" value="{{ old('title') }}" required>
     </div>
 
     <div class="form-group">
-        <label>Pengarang</label>
+        <label class="fw-semibold">Pengarang</label>
         <input type="text" name="author" class="form-control" value="{{ old('author') }}" required>
     </div>
 
     <div class="form-group">
-        <label>Penerbit</label>
+        <label class="fw-semibold">Penerbit</label>
         <input type="text" name="publisher" class="form-control" value="{{ old('publisher') }}">
     </div>
 
     <div class="form-group">
-        <label>Tahun</label>
+        <label class="fw-semibold">Tahun</label>
         <input type="number" name="year" class="form-control" value="{{ old('year') }}">
     </div>
 
     <div class="form-group">
-        <label>Cover (opsional)</label>
+        <label class="fw-semibold">Cover (opsional)</label>
         <div id="cover-dropzone" class="border rounded p-4 text-center bg-light" style="cursor:pointer; border-style:dashed !important;">
             <input type="file" name="cover" id="cover-input" class="d-none" accept="image/*">
             <div id="cover-dropzone-text">
@@ -68,18 +110,21 @@
     </div>
 
     <div class="form-group">
-        <label>Deskripsi</label>
+        <label class="fw-semibold">Deskripsi</label>
         <textarea name="description" class="form-control" rows="4">{{ old('description') }}</textarea>
     </div>
 
     <div class="form-group">
-        <label>Stok</label>
+        <label class="fw-semibold">Stok</label>
         <input type="number" name="stock" class="form-control" value="{{ old('stock', 0) }}" required min="0">
     </div>
 
     <button class="btn btn-primary">Simpan</button>
     <a href="{{ route('admin.books.index') }}" class="btn btn-secondary">Batal</a>
 </form>
+
+    </div>
+</div>
 
 <script>
 (function () {

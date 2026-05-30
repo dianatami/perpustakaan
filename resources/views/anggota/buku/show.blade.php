@@ -47,6 +47,15 @@
                         </span>
                     </p>
 
+                    <p class="mb-1">
+                        <strong>Rak:</strong>
+                        @if($book->rack)
+                            <span class="badge bg-warning text-dark">{{ $book->rack->code }} - {{ $book->rack->name }}</span>
+                        @else
+                            <span class="text-muted">Belum ditentukan</span>
+                        @endif
+                    </p>
+
                     <p class="mb-2">
                         <strong>Stok:</strong> {{ $book->stock }}
                     </p>
