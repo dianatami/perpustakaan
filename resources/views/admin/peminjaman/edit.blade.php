@@ -47,19 +47,19 @@
 
                         {{-- PEMINJAM --}}
                         <div class="mb-4">
-                            <label for="user_id" class="form-label fw-semibold">Nama Peminjam</label>
-                            <select id="user_id" name="user_id" class="form-select @error('user_id') is-invalid @enderror" required aria-describedby="userHelp">
-                                <option value="">-- Pilih Peminjam --</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" @selected($peminjaman->user_id == $user->id)>
-                                        {{ $user->nama }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('user_id')
-                                <div class="invalid-feedback d-block">{{ $message }}</div>
-                            @enderror
-                            <div id="userHelp" class="form-text">Pilih anggota yang meminjam buku.</div>
+                         <label for="user_id" class="form-label fw-semibold">Nama Peminjam</label>
+                            <input
+                            type="text"
+                            class="form-control"
+                            value="{{ $peminjaman->user->nama }}"
+                            readonly
+                            >
+
+                        <input
+                            type="hidden"
+                            name="user_id"
+                            value="{{ $peminjaman->user_id }}"
+                        >
                         </div>
 
                         {{-- DAFTAR BUKU --}}

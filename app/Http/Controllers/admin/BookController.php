@@ -31,7 +31,7 @@ class BookController extends Controller
         if ($request->filled('rack')) {
             $query->where('rack_id', $request->get('rack'));
         }
-
+        
         $books = $query->orderBy('title')->paginate(10)->withQueryString();
         $categories = Kategori::all();
         $racks = Rack::orderBy('code')->get();
@@ -55,6 +55,7 @@ class BookController extends Controller
             'book_code' => 'required',
             'title' => 'required',
             'author' => 'required',
+            'year' => 'nullable|digits:4',
             'stock' => 'required|integer|min:0',
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -88,6 +89,7 @@ class BookController extends Controller
             'book_code' => 'required',
             'title' => 'required',
             'author' => 'required',
+            'year' => 'nullable|digits:4',
             'stock' => 'required|integer|min:0',
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable',

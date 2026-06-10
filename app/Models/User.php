@@ -7,10 +7,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     public const ROLE_ANGGOTA = 0;
     public const ROLE_ADMIN = 1;
@@ -79,18 +80,20 @@ class User extends Authenticatable
      */
     public static function leaderboardPeminjam(int $limit = 10)
     {
-        return self::query()
-            ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
-            ->selectRaw('user.id, user.nama, COUNT(bookrent.id) as total_peminjaman')
-            ->where(function ($query): void {
-                $query->whereNull('user.role')
-                    ->orWhere('user.role', '!=', self::ROLE_ADMIN);
-            })
-            ->groupBy('user.id', 'user.nama')
-            ->orderByDesc('total_peminjaman')
-            ->orderBy('user.nama')
-            ->limit($limit)
-            ->get();
+    return self::query()
+        ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
+        ->selectRaw('
+            user.id,
+            user.nama,
+            user.role,
+            COUNT(bookrent.id) as total_peminjaman
+        ')
+        ->whereIn('user.role', ['0', '2']) // hanya murid & guru
+        ->groupBy('user.id', 'user.nama', 'user.role')
+        ->orderByDesc('total_peminjaman')
+        ->orderBy('user.nama')
+        ->limit($limit)
+        ->get();
     }
 
     /**

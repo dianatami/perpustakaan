@@ -65,11 +65,15 @@
 
                             @foreach ($users as $user)
 
-                                <option value="{{ $user->id }}">
-
-                                    {{ $user->nama }}
-                                    -
-                                    {{ $user->email }}
+                                <option
+                                value="{{ $user->id }}"
+                                {{ $user->status == 0 ? 'disabled' : '' }}
+                                >
+                                {{ $user->nama }}
+                                -
+                                {{ $user->email }}
+                                {{ $user->status == 0 ? '(Nonaktif)' : '' }}
+                                    
 
                                 </option>
 

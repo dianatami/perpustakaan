@@ -109,14 +109,26 @@ class PeminjamanController extends Controller
 
 
     public function edit($id)
-    {
-        $peminjaman = Bookrent::with('details.book')->findOrFail($id);
-        $users = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])
-                    ->orderBy('nama')
-                    ->get();
-        $books = Book::all();
-        return view('admin.peminjaman.edit', compact('peminjaman', 'users', 'books'));
+{
+    $peminjaman = Bookrent::with('details.book')->findOrFail($id);
+
+    if ($peminjaman->status === 'kembali') {
+        return redirect()
+            ->route('admin.peminjaman.index')
+            ->with('error', 'Peminjaman yang sudah dikembalikan tidak dapat diedit.');
     }
+
+    $users = User::whereIn('role', [
+                (string) User::ROLE_ANGGOTA,
+                (string) User::ROLE_GURU
+            ])
+            ->orderBy('nama')
+            ->get();
+
+    $books = Book::all();
+
+    return view('admin.peminjaman.edit', compact('peminjaman', 'users', 'books'));
+}
 
     public function update(Request $request, $id)
     {
@@ -137,7 +149,6 @@ class PeminjamanController extends Controller
 
         // update data utama
         $peminjaman->update([
-            'user_id' => $request->user_id,
             'borrow_date' => $request->borrow_date,
             'return_date' => $request->return_date,
             'status' => $request->status,
@@ -159,18 +170,20 @@ class PeminjamanController extends Controller
         if ($request->status === 'kembali' && $statusLama !== 'kembali') {
             foreach ($peminjaman->details as $detail) {
                 $condition = $detail->condition ?? 'baik';
-
                 if ($condition === 'rusak') {
-                    $detail->book->increment('damaged', $detail->qty);
-                    continue;
+                 Book::where('id', $detail->book_id)
+                    ->increment('damaged', $detail->qty);
+                continue;
                 }
 
                 if ($condition === 'hilang') {
-                    $detail->book->increment('lost', $detail->qty);
+                    Book::where('id', $detail->book_id)
+                        ->increment('lost', $detail->qty);
                     continue;
                 }
 
                 $detail->book->increment('stock', $detail->qty);
+                
             }
         }
 
@@ -290,16 +303,19 @@ class PeminjamanController extends Controller
                 $condition = $detail->condition ?? 'baik';
 
                 if ($condition === 'rusak') {
-                    $detail->book->increment('damaged', $detail->qty);
-                    continue;
+                Book::where('id', $detail->book_id)
+                    ->increment('damaged', $detail->qty);
+                continue;
                 }
 
                 if ($condition === 'hilang') {
-                    $detail->book->increment('lost', $detail->qty);
-                    continue;
+                Book::where('id', $detail->book_id)
+                    ->increment('lost', $detail->qty);
+                continue;
                 }
 
-                $detail->book->increment('stock', $detail->qty);
+                Book::where('id', $detail->book_id)
+                        ->increment('stock', $detail->qty);
             }
 
             // =========================================

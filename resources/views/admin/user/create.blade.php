@@ -29,7 +29,7 @@
             <form action="{{ route('admin.anggota.store') }}" method="POST">
                 @csrf
                 <div class="form-group">
-                    <label for="nip">Nomor Induk <span class="text-danger">*</span></label>
+                    <label for="nip">NIP/NISN <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip') }}" placeholder="Contoh: 1234567890" required>
                     @error('nip')
                         <span class="invalid-feedback">{{ $message }}</span>
