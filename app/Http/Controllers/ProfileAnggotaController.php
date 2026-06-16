@@ -79,47 +79,52 @@ class ProfileAnggotaController extends Controller
             return back()->with('error', 'Tidak boleh memilih buku yang sama lebih dari sekali.');
         }
 
-        $activeStatuses = ['menunggu_acc', 'dipinjam', 'proses_kembali'];
+        try {
+            DB::transaction(function () use ($request, $user): void {
+                $activeStatuses = ['menunggu_acc', 'dipinjam', 'proses_kembali'];
 
-        $activeCount = Bookrent::where('user_id', $user->id)
-            ->whereIn('status', $activeStatuses)
-            ->count();
+                $activeCount = Bookrent::where('user_id', $user->id)
+                    ->whereIn('status', $activeStatuses)
+                    ->count();
 
-        if ($activeCount >= 3) {
-            return back()->with('error', 'Anda sudah meminjam 3 buku. Kembalikan dulu sebelum meminjam lagi.');
-        }
+                if ($activeCount >= 3) {
+                    throw new \Exception('Anda sudah meminjam 3 buku. Kembalikan dulu sebelum meminjam lagi.');
+                }
 
-        $activeRentIds = $user->bookrent()
-            ->whereIn('status', $activeStatuses)
-            ->pluck('id');
+                $activeRentIds = $user->bookrent()
+                    ->whereIn('status', $activeStatuses)
+                    ->pluck('id');
 
-        foreach ($request->books as $item) {
-            if (DetailBookrent::whereIn('bookrent_id', $activeRentIds)->where('book_id', $item['book_id'])->exists()) {
-                $book = Book::find($item['book_id']);
-                return back()->with('error', 'Anda sudah meminjam buku ' . ($book?->title ?? '') . '.');
-            }
+                foreach ($request->books as $item) {
+                    if (DetailBookrent::whereIn('bookrent_id', $activeRentIds)->where('book_id', $item['book_id'])->exists()) {
+                        $book = Book::find($item['book_id']);
+                        throw new \Exception('Anda sudah meminjam buku ' . ($book?->title ?? '') . '.');
+                    }
 
-            $book = Book::findOrFail($item['book_id']);
-            if ($item['qty'] > $book->stock) {
-                return back()->with('error', 'Stok buku ' . $book->title . ' hanya tersedia ' . $book->stock . '.');
-            }
-        }
+                    $book = Book::where('id', $item['book_id'])->lockForUpdate()->firstOrFail();
+                    if ($item['qty'] > $book->stock) {
+                        throw new \Exception('Stok buku ' . $book->title . ' hanya tersedia ' . $book->stock . '.');
+                    }
+                }
 
-        $borrowDate = $request->borrow_date ? Carbon::parse($request->borrow_date)->toDateString() : Carbon::now()->toDateString();
+                $borrowDate = $request->borrow_date ? Carbon::parse($request->borrow_date)->toDateString() : Carbon::now()->toDateString();
 
-        $bookrent = Bookrent::create([
-            'user_id' => $user->id,
-            'borrow_date' => $borrowDate,
-            'status' => 'menunggu_acc',
-        ]);
+                $bookrent = Bookrent::create([
+                    'user_id' => $user->id,
+                    'borrow_date' => $borrowDate,
+                    'status' => 'menunggu_acc',
+                ]);
 
-        foreach ($request->books as $item) {
-            DetailBookrent::create([
-                'bookrent_id' => $bookrent->id,
-                'book_id' => $item['book_id'],
-                'qty' => $item['qty'],
-            ]);
-
+                foreach ($request->books as $item) {
+                    DetailBookrent::create([
+                        'bookrent_id' => $bookrent->id,
+                        'book_id' => $item['book_id'],
+                        'qty' => $item['qty'],
+                    ]);
+                }
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
         }
 
         return back()->with('success', 'Pengajuan peminjaman berhasil dikirim. Menunggu persetujuan admin.');
@@ -141,9 +146,9 @@ class ProfileAnggotaController extends Controller
     public function updateProfil(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|regex:/^[a-zA-Z\s\.\-\']+$/i',
             'email' => 'required|email|unique:user,email,' . Auth::id(),
-            'hp' => 'required|string|max:13',
+            'hp' => 'required|digits_between:10,13',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'tempat_lahir' => 'nullable|string|max:255',

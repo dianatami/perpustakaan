@@ -10,7 +10,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        DB::statement("ALTER TABLE user MODIFY role ENUM('0','1','2','3') NOT NULL DEFAULT '0'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE user MODIFY role ENUM('0','1','2','3') NOT NULL DEFAULT '0'");
+        }
     }
 
     /**
@@ -19,6 +21,8 @@ return new class extends Migration
     public function down(): void
     {
         DB::statement("UPDATE user SET role = '0' WHERE role IN ('2','3')");
-        DB::statement("ALTER TABLE user MODIFY role ENUM('0','1') NOT NULL DEFAULT '0'");
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::statement("ALTER TABLE user MODIFY role ENUM('0','1') NOT NULL DEFAULT '0'");
+        }
     }
 };

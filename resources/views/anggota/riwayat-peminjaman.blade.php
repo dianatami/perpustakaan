@@ -134,7 +134,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-muted">Belum ada riwayat peminjaman.</td>
+                            <td colspan="6" class="text-muted">Belum ada riwayat peminjaman.</td>
                         </tr>
                     @endforelse
                 </tbody>

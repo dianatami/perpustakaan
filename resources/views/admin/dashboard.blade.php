@@ -424,7 +424,7 @@
         <p class="hero-kicker">Ruang Kendali Perpustakaan</p>
         <h2 class="hero-title">Selamat datang, {{ Auth::user()->nama }}.</h2>
         <p class="hero-subtitle">
-            Semua metrik utama perpustakaan ada di sini. Pantau koleksi, pengguna, dan transaksi harian dalam satu kanvas kerja dengan nuansa visual yang konsisten.
+            Semua matrik utama perpustakaan ada di sini. Pantau koleksi, pengguna, dan transaksi harian dalam satu kanvas kerja dengan nuansa visual yang konsisten.
         </p>
 
         <div class="hero-actions">

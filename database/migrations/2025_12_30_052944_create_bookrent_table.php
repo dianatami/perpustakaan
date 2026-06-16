@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -14,7 +15,9 @@ return new class extends Migration
         Schema::create('bookrent', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('user')->cascadeOnDelete();
-            $table->foreignId('book_id')->constrained()->cascadeOnDelete();
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->foreignId('book_id')->constrained()->cascadeOnDelete();
+            }
             $table->date('borrow_date');
             $table->date('return_date')->nullable();
             $table->enum('status', ['dipinjam', 'dikembalikan']);

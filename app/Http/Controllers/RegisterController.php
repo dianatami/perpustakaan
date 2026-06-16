@@ -18,7 +18,7 @@ class RegisterController extends Controller
     public function registerProcess(Request $request)
     {
         $request->validate([
-            'nama' => 'required|string|max:255',
+            'nama' => 'required|string|max:255|regex:/^[a-zA-Z\s\.\-\']+$/i',
             'email' => 'required|email|unique:user,email',
             'nip' => ['nullable', 'string', function (string $attribute, mixed $value, \Closure $fail): void {
                 $identifier = trim((string) $value);

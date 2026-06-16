@@ -33,7 +33,7 @@ class AnggotaController extends Controller
 {
     $request->validate([
         'nip' => 'nullable|string|max:20',
-        'nama' => 'required|string|max:255',
+        'nama' => 'required|string|max:255|regex:/^[a-zA-Z\s\.\-\']+$/i',
         'email' => 'required|email|unique:user,email',
         'hp' => 'required|digits_between:10,13',
         'password' => 'required|string|min:6',
@@ -103,7 +103,7 @@ class AnggotaController extends Controller
     $request->validate([
         'nama' => 'required|string|max:255',
         'email' => 'required|email|unique:user,email,' . $id,
-        'hp' => 'required|string|max:13',
+        'hp' => 'required|digits_between:10,13',
         'nip' => 'nullable|string|max:20',
         'password' => 'nullable|string|min:6',
     ]);

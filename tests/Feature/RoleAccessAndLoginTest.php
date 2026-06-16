@@ -3,22 +3,30 @@
 namespace Tests\Feature;
 
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class RoleAccessAndLoginTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
-    private function makeUser(int $role, string $email, bool $active = true, ?string $nip = null): User
+    private function makeUser(int $role, string $email, bool $active = true, ?string $identifier = null): User
     {
-        $nip = $nip ?? ($role === User::ROLE_GURU ? '198704122010011001' : null);
+        $nip = null;
+        $nisn = null;
+
+        if ($role === User::ROLE_GURU) {
+            $nip = $identifier ?? '198704122010011001';
+        } elseif ($role === User::ROLE_ANGGOTA) {
+            $nisn = $identifier ?? '1234567890';
+        }
 
         return User::create([
             'nama' => 'User ' . $role,
             'email' => $email,
             'nip' => $nip,
+            'nisn' => $nisn,
             'password' => Hash::make('secret123'),
             'hp' => '081234567890',
             'status' => $active,
@@ -103,7 +111,7 @@ class RoleAccessAndLoginTest extends TestCase
         $this->post(route('tampilan.login.process'), [
             'identifier' => '1234567',
             'password' => 'secret123',
-        ])->assertSessionHas('error', 'Format NIP/NISN tidak valid.');
+        ])->assertSessionHas('error', 'Format NIP/NISN/Email tidak valid.');
 
         $this->assertGuest();
     }
@@ -113,7 +121,7 @@ class RoleAccessAndLoginTest extends TestCase
         $this->post(route('tampilan.login.process'), [
             'identifier' => '123456789',
             'password' => 'secret123',
-        ])->assertSessionHas('error', 'Format NIP/NISN tidak valid.');
+        ])->assertSessionHas('error', 'Format NIP/NISN/Email tidak valid.');
 
         $this->assertGuest();
     }
@@ -123,7 +131,7 @@ class RoleAccessAndLoginTest extends TestCase
         $this->post(route('tampilan.login.process'), [
             'identifier' => '198713122010011001',
             'password' => 'secret123',
-        ])->assertSessionHas('error', 'Format NIP/NISN tidak valid.');
+        ])->assertSessionHas('error', 'Format NIP/NISN/Email tidak valid.');
 
         $this->assertGuest();
     }

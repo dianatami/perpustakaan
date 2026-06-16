@@ -5,21 +5,32 @@ namespace Tests\Feature;
 use App\Models\Book;
 use App\Models\Bookrent;
 use App\Models\Kategori;
+use App\Models\DetailBookrent;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class BookReturnFeatureTest extends TestCase
 {
-    use DatabaseTransactions;
+    use RefreshDatabase;
 
-    private function makeUser(int $role, string $email, ?string $nip = null): User
+    private function makeUser(int $role, string $email, ?string $identifier = null): User
     {
+        $nip = null;
+        $nisn = null;
+
+        if ($role === User::ROLE_GURU) {
+            $nip = $identifier ?? '198704122010011001';
+        } elseif ($role === User::ROLE_ANGGOTA) {
+            $nisn = $identifier ?? '1234567890';
+        }
+
         return User::create([
             'nama' => 'User ' . $role,
             'email' => $email,
             'nip' => $nip,
+            'nisn' => $nisn,
             'password' => Hash::make('secret123'),
             'hp' => '081234567890',
             'status' => 1,
@@ -54,14 +65,21 @@ class BookReturnFeatureTest extends TestCase
 
         $borrow = Bookrent::create([
             'user_id' => $anggota->id,
-            'book_id' => $book->id,
             'borrow_date' => now()->subDays(3)->toDateString(),
             'status' => 'dipinjam',
             'denda' => 0,
         ]);
 
+        DetailBookrent::create([
+            'bookrent_id' => $borrow->id,
+            'book_id' => $book->id,
+            'qty' => 1,
+            'condition' => 'baik',
+        ]);
+
         $response = $this->actingAs($anggota)->post(route('anggota.pengembalian.store', $borrow->id));
 
+        $response->dumpSession();
         $response->assertSessionHas('success');
         $response->assertStatus(302);
 
@@ -84,10 +102,16 @@ class BookReturnFeatureTest extends TestCase
 
         $borrow = Bookrent::create([
             'user_id' => $guru->id,
-            'book_id' => $book->id,
             'borrow_date' => now()->subDays(9)->toDateString(),
             'status' => 'dipinjam',
             'denda' => 0,
+        ]);
+
+        DetailBookrent::create([
+            'bookrent_id' => $borrow->id,
+            'book_id' => $book->id,
+            'qty' => 1,
+            'condition' => 'baik',
         ]);
 
         $response = $this->actingAs($guru)->post(route('guru.pengembalian.store', $borrow->id));
@@ -106,7 +130,9 @@ class BookReturnFeatureTest extends TestCase
             'stock' => 2,
         ]);
 
-        $confirm = $this->actingAs($admin)->put(route('admin.peminjaman.confirm-return', $borrow->id));
+        $confirm = $this->actingAs($admin)->put(route('admin.peminjaman.confirm-return', $borrow->id), [
+            'return_date' => now()->toDateString(),
+        ]);
         $confirm->assertSessionHas('success');
 
         $this->assertDatabaseHas('bookrent', [
@@ -129,10 +155,16 @@ class BookReturnFeatureTest extends TestCase
 
         $borrow = Bookrent::create([
             'user_id' => $owner->id,
-            'book_id' => $book->id,
             'borrow_date' => now()->subDays(2)->toDateString(),
             'status' => 'dipinjam',
             'denda' => 0,
+        ]);
+
+        DetailBookrent::create([
+            'bookrent_id' => $borrow->id,
+            'book_id' => $book->id,
+            'qty' => 1,
+            'condition' => 'baik',
         ]);
 
         $response = $this->actingAs($other)->post(route('anggota.pengembalian.store', $borrow->id));
