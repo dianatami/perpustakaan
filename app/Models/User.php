@@ -127,6 +127,19 @@ class User extends Authenticatable
         };
     }
 
+    /**
+     * Validasi format NIP (Nomor Induk Pegawai) - 18 digit
+     * Struktur NIP:
+     * - Digit 1-4: Tahun lahir (YYYY)
+     * - Digit 5-6: Bulan lahir (MM)
+     * - Digit 7-8: Tanggal lahir (DD)
+     * - Digit 9-12: Tahun keterima sebagai PNS (YYYY)
+     * - Digit 13-14: Bulan keterima sebagai PNS (MM)
+     * - Digit 15: Gender (1=Pria, 2=Wanita)
+     * - Digit 16-18: Nomor urutan (000-999)
+     *
+     * Persyaratan: Tahun keterima PNS harus tepat 24 tahun setelah tahun lahir
+     */
     public static function isValidNip(string $value): bool
     {
         if (preg_match(self::NIP_REGEX, $value) !== 1) {
@@ -140,22 +153,27 @@ class User extends Authenticatable
         $appointMonth = (int) substr($value, 12, 2);
         $genderDigit = (int) substr($value, 14, 1);
 
+        // Validasi bulan lahir
         if ($birthMonth < 1 || $birthMonth > 12) {
             return false;
         }
 
+        // Validasi tanggal lahir
         if ($birthDay < 1 || $birthDay > 31) {
             return false;
         }
 
-        if ($appointYear < $birthYear) {
+        // Validasi tahun keterima PNS harus tepat 24 tahun setelah tahun lahir
+        if ($appointYear !== $birthYear + 24) {
             return false;
         }
 
+        // Validasi bulan keterima PNS
         if ($appointMonth < 1 || $appointMonth > 12) {
             return false;
         }
 
+        // Validasi gender digit (1 atau 2)
         if (! in_array($genderDigit, [1, 2], true)) {
             return false;
         }
