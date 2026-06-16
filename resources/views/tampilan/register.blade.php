@@ -123,6 +123,21 @@
                         </div>
 
                         <div>
+                            <label class="flex items-center gap-3 cursor-pointer">
+                                <input
+                                    type="checkbox"
+                                    name="has_nip"
+                                    id="has_nip"
+                                    value="1"
+                                    {{ old('has_nip') ? 'checked' : '' }}
+                                    onchange="toggleNipField()"
+                                    class="h-4 w-4 rounded border-shelf-ink/25 bg-white text-shelf-teal focus:ring-2 focus:ring-shelf-teal/50 cursor-pointer"
+                                >
+                                <span class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Saya memiliki NIP / NISN</span>
+                            </label>
+                        </div>
+
+                        <div id="nip_field" class="{{ old('has_nip') ? '' : 'hidden' }} transition-all duration-300">
                             <label for="nip" class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">NIP / NISN</label>
                             <input
                                 type="text"
@@ -135,6 +150,35 @@
                             <p class="mt-1 text-[11px] text-shelf-ink/55">Gunakan NIP 18 digit untuk guru atau NISN 10 digit untuk siswa. Jika diisi NIP, akun akan dianggap sebagai guru.</p>
                             @error('nip')
                                 <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div id="role_field" class="{{ old('has_nip') ? 'hidden' : '' }} transition-all duration-300">
+                            <label class="font-mono text-[11px] uppercase tracking-[0.14em] text-shelf-ink/66">Daftar Sebagai</label>
+                            <div class="mt-3 space-y-3">
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="{{ \App\Models\User::ROLE_ANGGOTA }}"
+                                        {{ old('role', \App\Models\User::ROLE_ANGGOTA) == \App\Models\User::ROLE_ANGGOTA ? 'checked' : '' }}
+                                        class="h-4 w-4 border-shelf-ink/25 bg-white text-shelf-teal focus:ring-2 focus:ring-shelf-teal/50 cursor-pointer"
+                                    >
+                                    <span class="text-sm text-shelf-ink">Anggota (Siswa)</span>
+                                </label>
+                                <label class="flex items-center gap-3 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="role"
+                                        value="{{ \App\Models\User::ROLE_GURU }}"
+                                        {{ old('role') == \App\Models\User::ROLE_GURU ? 'checked' : '' }}
+                                        class="h-4 w-4 border-shelf-ink/25 bg-white text-shelf-teal focus:ring-2 focus:ring-shelf-teal/50 cursor-pointer"
+                                    >
+                                    <span class="text-sm text-shelf-ink">Guru</span>
+                                </label>
+                            </div>
+                            @error('role')
+                                <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
                             @enderror
                         </div>
 
@@ -183,5 +227,25 @@
             </section>
         </main>
     </div>
+
+    <script>
+        function toggleNipField() {
+            const checkbox = document.getElementById('has_nip');
+            const nipField = document.getElementById('nip_field');
+            const roleField = document.getElementById('role_field');
+            const nipInput = document.getElementById('nip');
+            
+            if (checkbox.checked) {
+                // Checkbox dicentang: tampilkan NIP field, sembunyikan role field
+                nipField.classList.remove('hidden');
+                roleField.classList.add('hidden');
+            } else {
+                // Checkbox tidak dicentang: sembunyikan NIP field, tampilkan role field
+                nipField.classList.add('hidden');
+                roleField.classList.remove('hidden');
+                nipInput.value = '';
+            }
+        }
+    </script>
 </body>
 </html>

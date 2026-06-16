@@ -20,18 +20,23 @@ class RegisterController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255|regex:/^[a-zA-Z\s\.\-\']+$/i',
             'email' => 'required|email|unique:user,email',
+            'has_nip' => 'boolean',
+            'role' => 'sometimes|in:0,2',
             'nip' => ['nullable', 'string', function (string $attribute, mixed $value, \Closure $fail): void {
                 $identifier = trim((string) $value);
 
+                // Jika field kosong, tidak perlu validasi
                 if ($identifier === '') {
                     return;
                 }
 
+                // Jika ada input, harus valid NIP atau NISN
                 if (!User::isValidNip($identifier) && !User::isValidNisn($identifier)) {
                     $fail('Format NIP/NISN tidak valid.');
                     return;
                 }
 
+                // Cek NIP sudah digunakan
                 if (User::isValidNip($identifier)) {
                     if (User::query()->where('nip', $identifier)->exists()) {
                         $fail('NIP sudah digunakan.');
@@ -39,6 +44,7 @@ class RegisterController extends Controller
                     return;
                 }
 
+                // Cek NISN sudah digunakan
                 if (User::query()->where('nisn', $identifier)->exists()) {
                     $fail('NISN sudah digunakan.');
                 }
@@ -48,17 +54,20 @@ class RegisterController extends Controller
         ]);
 
         $identifier = trim((string) $request->input('nip'));
+        $hasNip = (bool) $request->input('has_nip');
+
         // Prevent registering with the reserved admin email
         if (strtolower(trim((string) $request->input('email'))) === 'admin@gmail.com') {
             return back()->withErrors(['email' => 'Email ini tidak dapat digunakan. Gunakan alamat email lain.'])->withInput();
         }
 
-        $user = DB::transaction(function () use ($request, $identifier) {
+        $user = DB::transaction(function () use ($request, $identifier, $hasNip) {
             $nip = null;
             $nisn = null;
             $role = User::ROLE_ANGGOTA;
 
-            if ($identifier !== '') {
+            if ($hasNip && $identifier !== '') {
+                // Jika memiliki NIP/NISN, tentukan role berdasarkan input
                 if (User::isValidNip($identifier)) {
                     $nip = $identifier;
                     $role = User::ROLE_GURU;
@@ -66,6 +75,12 @@ class RegisterController extends Controller
                     $nisn = $identifier;
                     $role = User::ROLE_ANGGOTA;
                 }
+            } else {
+                // Jika tidak memiliki NIP/NISN, gunakan role yang dipilih user
+                $selectedRole = (int) $request->input('role', User::ROLE_ANGGOTA);
+                $role = in_array($selectedRole, [User::ROLE_ANGGOTA, User::ROLE_GURU], true) 
+                    ? $selectedRole 
+                    : User::ROLE_ANGGOTA;
             }
 
             return User::create([
