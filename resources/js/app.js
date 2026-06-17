@@ -85,3 +85,39 @@ if (document.readyState === 'loading') {
 	initRevealMotion();
 	initLiveClocks();
 }
+
+// Di resources/js/app.js atau file JS yang sesuai
+
+// Fungsi untuk membersihkan modal backdrop
+function clearModalBackdrop() {
+    document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
+}
+
+// Event listener untuk tombol setujui
+document.addEventListener('DOMContentLoaded', function() {
+    // Cari semua tombol setujui
+    document.querySelectorAll('[id*="setujui"], [id*="Setujui"], .btn-setujui').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Bersihkan backdrop sebelumnya
+            clearModalBackdrop();
+            
+            // Log untuk debugging
+            console.log('Tombol setujui diklik');
+            
+            // Jika menggunakan modal Bootstrap
+            const modalId = this.getAttribute('data-target') || '#modalPersetujuan';
+            const modal = document.querySelector(modalId);
+            if (modal) {
+                // Inisialisasi modal
+                const modalInstance = new bootstrap.Modal(modal);
+                modalInstance.show();
+            }
+        });
+    });
+});

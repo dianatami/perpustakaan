@@ -81,7 +81,6 @@ class User extends Authenticatable
      */
     public static function leaderboardPeminjam(int $limit = 10)
     {
-<<<<<<< HEAD
         return self::query()
             ->leftJoin('bookrent', function ($join) {
                 $join->on('user.id', '=', 'bookrent.user_id')
@@ -98,22 +97,6 @@ class User extends Authenticatable
             ->orderBy('user.nama')
             ->limit($limit)
             ->get();
-=======
-    return self::query()
-        ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
-        ->selectRaw('
-            user.id,
-            user.nama,
-            user.role,
-            COUNT(bookrent.id) as total_peminjaman
-        ')
-        ->whereIn('user.role', ['0', '2']) // hanya murid & guru
-        ->groupBy('user.id', 'user.nama', 'user.role')
-        ->orderByDesc('total_peminjaman')
-        ->orderBy('user.nama')
-        ->limit($limit)
-        ->get();
->>>>>>> cbbefd6b35e0e83c72a0b3d186ba427bddf392ff
     }
 
     /**

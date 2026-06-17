@@ -9,6 +9,72 @@
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
+    <!-- Tambahkan script untuk menangani modal -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Function untuk membersihkan backdrop
+    function clearModalBackdrop() {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
+
+    // Event listener untuk semua tombol yang berhubungan dengan persetujuan
+    const setujuiButtons = document.querySelectorAll('.btn-setujui, [id*="setujui"], [name*="setujui"]');
+    setujuiButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            // Bersihkan backdrop sebelum aksi
+            clearModalBackdrop();
+            
+            // Log
+            console.log('Tombol persetujuan diklik:', this);
+            
+            // Jika menggunakan AJAX, tambahkan di sini
+            const form = this.closest('form');
+            if (form) {
+                // Handle form submission via AJAX
+                handleAjaxSubmit(form);
+            }
+        });
+    });
+    
+    // Fungsi untuk handle AJAX submit
+    function handleAjaxSubmit(form) {
+        const formData = new FormData(form);
+        const url = form.action || window.location.href;
+        
+        fetch(url, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            if (data.success) {
+                alert('Peminjaman berhasil disetujui!');
+                location.reload();
+            } else {
+                alert('Error: ' + data.message);
+                clearModalBackdrop();
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Terjadi kesalahan, cek console untuk detail');
+            clearModalBackdrop();
+        });
+    }
+});
+</script>
     .admin-header {
         background: linear-gradient(120deg, rgba(16, 23, 46, 0.94) 0%, rgba(29, 79, 120, 0.9) 42%, rgba(255, 122, 89, 0.88) 100%);
         color: white;
@@ -579,9 +645,21 @@
             <i class="bi bi-list-check"></i> Daftar Pengajuan Peminjaman
         </h4>
 
-        {{-- SEARCH BAR --}}
-        <div class="mb-4">
-            <input type="text" class="form-control" id="peminjam_search" placeholder="🔍 Cari nama murid, status, atau buku...">
+        {{-- FILTER & SEARCH BAR --}}
+        <div class="row g-2 mb-4">
+            <div class="col-md-8">
+                <input type="text" class="form-control" id="peminjam_search" placeholder="🔍 Cari nama murid, status, atau buku...">
+            </div>
+            <div class="col-md-4">
+                <select class="form-select" id="status_filter">
+                    <option value="">Semua Status</option>
+                    <option value="menunggu_acc">Menunggu Persetujuan</option>
+                    <option value="dipinjam">Sudah Disetujui</option>
+                    <option value="proses_kembali">Proses Pengembalian</option>
+                    <option value="kembali">Sudah Dikembalikan</option>
+                    <option value="ditolak">Ditolak</option>
+                </select>
+            </div>
         </div>
 
         @if($peminjaman->count() > 0)
@@ -741,18 +819,41 @@
     document.addEventListener('DOMContentLoaded', function() {
         // Search functionality
         const searchInput = document.getElementById('peminjam_search');
+        const statusFilter = document.getElementById('status_filter');
         const rows = document.querySelectorAll('table tbody tr');
 
-        searchInput.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
+        function filterRows() {
+            const query = searchInput.value.toLowerCase();
+            const selectedStatus = statusFilter.value;
+            
             rows.forEach(row => {
                 const text = row.textContent.toLowerCase();
-                row.style.display = text.includes(query) ? '' : 'none';
+                const statusCell = row.querySelector('td:nth-child(6)'); // Status column
+                let statusText = '';
+                
+                if (statusCell) {
+                    if (statusCell.textContent.includes('Menunggu')) statusText = 'menunggu_acc';
+                    else if (statusCell.textContent.includes('Disetujui')) statusText = 'dipinjam';
+                    else if (statusCell.textContent.includes('Ditolak')) statusText = 'ditolak';
+                    else if (statusCell.textContent.includes('Proses Kembali')) statusText = 'proses_kembali';
+                    else if (statusCell.textContent.includes('Kembali')) statusText = 'kembali';
+                }
+                
+                const matchesSearch = text.includes(query);
+                const matchesStatus = !selectedStatus || statusText === selectedStatus;
+                
+                row.style.display = (matchesSearch && matchesStatus) ? '' : 'none';
             });
-        });
+        }
+
+        searchInput.addEventListener('input', filterRows);
+        statusFilter.addEventListener('change', filterRows);
 
         // Auto-update return date when duration changes
         document.getElementById('borrowDuration').addEventListener('change', updateReturnDate);
+        
+        // Handle approve form submission with AJAX
+        document.getElementById('approveForm').addEventListener('submit', handleApproveSubmit);
     });
 
     function updateReturnDate() {
@@ -771,6 +872,74 @@
         
         const modal = new bootstrap.Modal(document.getElementById('approveModal'));
         modal.show();
+    }
+
+    function handleApproveSubmit(e) {
+        e.preventDefault();
+        
+        const form = e.target;
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.innerHTML;
+        const formData = new FormData(form);
+        const actionUrl = form.action;
+
+        // Disable submit button and show loading state
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Memproses...';
+
+        fetch(actionUrl, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(data => {
+                    throw new Error(data.message || 'Terjadi kesalahan saat memproses permintaan');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Close modal
+            bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();
+            
+            // Show success message
+            showNotification('success', 'Peminjaman berhasil disetujui!');
+            
+            // Reload page after 1.5 seconds
+            setTimeout(() => {
+                location.reload();
+            }, 1500);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showNotification('error', error.message || 'Terjadi kesalahan saat memproses permintaan. Silakan coba lagi.');
+            
+            // Re-enable submit button
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = originalBtnText;
+        });
+    }
+
+    function showNotification(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
+        alertDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; min-width: 300px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);';
+        alertDiv.innerHTML = `
+            <i class="bi bi-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+            <strong>${type === 'success' ? 'Sukses!' : 'Error!'}</strong> ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        
+        document.body.appendChild(alertDiv);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            alertDiv.remove();
+        }, 5000);
     }
 </script>
 

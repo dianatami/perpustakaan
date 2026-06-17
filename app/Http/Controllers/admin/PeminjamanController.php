@@ -13,6 +13,48 @@ use App\Models\DetailBookrent;
 
 class PeminjamanController extends Controller
 {
+    public function setujui(Request $request, $id)
+    {
+        try {
+            // Log untuk debugging
+            Log::info('Proses persetujuan peminjaman ID: ' . $id);
+            Log::info('Data request: ', $request->all());
+            
+            // Cari data peminjaman
+            $peminjaman = Bookrent::findOrFail($id);
+            
+            // Update status
+            $peminjaman->status = 'disetujui';
+            $peminjaman->tanggal_persetujuan = now();
+            $peminjaman->save();
+            
+            // Jika ada detail, update juga
+            if ($request->has('detail')) {
+                DetailBookrent::where('bookrent_id', $id)->update([
+                    'status' => 'disetujui'
+                ]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Peminjaman berhasil disetujui',
+                'data' => $peminjaman
+            ]);
+            
+        } catch (\Exception $e) {
+            Log::error('Error dalam persetujuan: ' . $e->getMessage());
+            Log::error('Stack trace: ' . $e->getTraceAsString());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+}
+
+class PeminjamanController extends Controller
+{
     public function index()
     {
         $peminjaman = Bookrent::with(['user','details.book'])->latest('created_at')->paginate(10);
@@ -232,10 +274,16 @@ class PeminjamanController extends Controller
         });
 
         $flashType = $result['ok'] ? 'success' : 'error';
+        
+        // Return JSON for AJAX requests
+        if ($request->expectsJson()) {
+            return response()->json($result, $result['ok'] ? 200 : 422);
+        }
+        
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
-    public function reject(Bookrent $peminjaman)
+    public function reject(Request $request, Bookrent $peminjaman)
     {
         $result = DB::transaction(function () use ($peminjaman): array {
             if ($peminjaman->status !== 'menunggu_acc') {
@@ -246,6 +294,12 @@ class PeminjamanController extends Controller
             return ['ok' => true, 'message' => 'Peminjaman berhasil ditolak.'];
         });
         $flashType = $result['ok'] ? 'success' : 'error';
+        
+        // Return JSON for AJAX requests
+        if ($request->expectsJson()) {
+            return response()->json($result, $result['ok'] ? 200 : 422);
+        }
+        
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
@@ -300,15 +354,15 @@ class PeminjamanController extends Controller
                 $condition = $detail->condition ?? 'baik';
 
                 if ($condition === 'rusak') {
-                Book::where('id', $detail->book_id)
-                    ->increment('damaged', $detail->qty);
-                continue;
+                    Book::where('id', $detail->book_id)
+                        ->increment('damaged', $detail->qty);
+                    continue;
                 }
 
                 if ($condition === 'hilang') {
-                Book::where('id', $detail->book_id)
-                    ->increment('lost', $detail->qty);
-                continue;
+                    Book::where('id', $detail->book_id)
+                        ->increment('lost', $detail->qty);
+                    continue;
                 }
 
                 Book::where('id', $detail->book_id)
