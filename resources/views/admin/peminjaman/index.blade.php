@@ -664,9 +664,16 @@
                                                 <i class="bi bi-box-arrow-in-down"></i> Terima Pengembalian
                                             </a>
                                         @else
-                                            <a href="{{ route('admin.peminjaman.edit', $item->id) }}" class="btn-edit">
-                                                <i class="bi bi-pencil"></i> Edit
+                                        @if($item->status != 'kembali')
+                                            <a href="{{ route('admin.peminjaman.edit', $item->id) }}"
+                                            class="btn btn-warning btn-sm">
+                                                Edit
                                             </a>
+                                        @else
+                                            <button class="btn btn-secondary btn-sm" disabled>
+                                                Selesai
+                                            </button>
+                                        @endif
                                         @endif
                                     </div>
                                 </td>

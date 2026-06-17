@@ -13,6 +13,31 @@
                 <i class="fas fa-plus"></i> Tambah Anggota
             </a>
         </div>
+        <div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ route('admin.anggota.index') }}">
+            <div class="input-group">
+                <input
+                    type="text"
+                    name="search"
+                    class="form-control"
+                    placeholder="Cari nama, email, NISN atau NIP..."
+                    value="{{ request('search') }}"
+                >
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i> Cari
+                </button>
+
+                @if(request('search'))
+                    <a href="{{ route('admin.anggota.index') }}" class="btn btn-secondary">
+                        Reset
+                    </a>
+                @endif
+            </div>
+        </form>
+    </div>
+</div>
     </div>
 
     @if ($message = Session::get('success'))

@@ -31,7 +31,13 @@
                 @method('PUT')
                 <div class="form-group">
                     <label for="nip">No. Induk <span class="text-danger">*</span></label>
-                    <input type="text" class="form-control @error('nip') is-invalid @enderror" id="nip" name="nip" value="{{ old('nip', $anggota->nip) }}" placeholder="Contoh: 1234567890" required>
+                    <input type="text"
+                    class="form-control @error('nip') is-invalid @enderror"
+                    id="nip"
+                    name="nip"
+                    value="{{ old('nip', $anggota->nip ?? $anggota->nisn) }}"
+                    placeholder="Masukkan NIP atau NISN"
+                    required>
                     @error('nip')
                         <span class="invalid-feedback">{{ $message }}</span>
                     @enderror

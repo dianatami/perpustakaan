@@ -10,12 +10,36 @@ class AnggotaController extends Controller
     /**
      * Display a listing of members
      */
-    public function index()
-    {
-        $siswa = User::where('role', (string) User::ROLE_ANGGOTA)->paginate(10, ['*'], 'siswa_page');
-        $guru = User::where('role', (string) User::ROLE_GURU)->paginate(10, ['*'], 'guru_page');
-        return view('admin.user.anggota', compact('siswa', 'guru'));
-    }
+    public function index(Request $request)
+{
+    $search = $request->search;
+
+    $siswa = User::where('role', (string) User::ROLE_ANGGOTA)
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('nisn', 'like', "%{$search}%")
+                  ->orWhere('hp', 'like', "%{$search}%");
+            });
+        })
+        ->paginate(10, ['*'], 'siswa_page')
+        ->withQueryString();
+
+    $guru = User::where('role', (string) User::ROLE_GURU)
+        ->when($search, function ($query) use ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('nama', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%")
+                  ->orWhere('hp', 'like', "%{$search}%");
+            });
+        })
+        ->paginate(10, ['*'], 'guru_page')
+        ->withQueryString();
+
+    return view('admin.user.anggota', compact('siswa', 'guru', 'search'));
+}
 
     /**
      * Show the form for creating a new member
@@ -40,6 +64,33 @@ class AnggotaController extends Controller
     ]);
 
     $identifier = trim((string) $request->nip);
+    if (User::isValidNip($identifier)) {
+
+    if (User::where('nip', $identifier)->exists()) {
+        return back()
+            ->withErrors([
+                'nip' => 'NIP sudah digunakan oleh pengguna lain.'
+            ])
+            ->withInput();
+    }
+
+    $nip = $identifier;
+    $role = User::ROLE_GURU;
+
+    } elseif (User::isValidNisn($identifier)) {
+
+    if (User::where('nisn', $identifier)->exists()) {
+        return back()
+            ->withErrors([
+                'nip' => 'NISN sudah digunakan oleh pengguna lain.'
+            ])
+            ->withInput();
+    }
+
+    $nisn = $identifier;
+    $role = User::ROLE_ANGGOTA;
+
+    }
 
     $nip = null;
     $nisn = null;

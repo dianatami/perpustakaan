@@ -123,6 +123,16 @@
         <input type="number" name="stock" class="form-control" value="{{ old('stock', $book->stock) }}" required min="0">
     </div>
 
+    <div class="form-group">
+        <label class="fw-semibold">Stok Rusak</label>
+        <input type="number" name="damaged" class="form-control" value="{{ old('damaged', $book->damaged) }}" required min="0">
+    </div>
+
+    <div class="form-group">
+        <label class="fw-semibold">Stok Hilang</label>
+        <input type="number" name="lost" class="form-control" value="{{ old('lost', $book->lost) }}" required min="0">
+    </div>
+
     <button class="btn btn-primary">Simpan Perubahan</button>
     <a href="{{ route('admin.books.index') }}" class="btn btn-secondary">Batal</a>
 </form>

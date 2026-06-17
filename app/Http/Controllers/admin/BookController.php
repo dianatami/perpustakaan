@@ -31,10 +31,11 @@ class BookController extends Controller
         if ($request->filled('rack')) {
             $query->where('rack_id', $request->get('rack'));
         }
-
+        
         $books = $query->orderBy('title')->paginate(10)->withQueryString();
         $categories = Kategori::all();
         $racks = Rack::orderBy('code')->get();
+    
 
         return view('admin.data_buku.index', compact('books', 'categories', 'racks'))
             ->with('judul', 'Data Buku');
@@ -55,6 +56,7 @@ class BookController extends Controller
             'book_code' => 'required',
             'title' => 'required',
             'author' => 'required',
+            'year' => 'nullable|digits:4',
             'stock' => 'required|integer|min:0',
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
@@ -88,6 +90,7 @@ class BookController extends Controller
             'book_code' => 'required',
             'title' => 'required',
             'author' => 'required',
+            'year' => 'nullable|digits:4',
             'stock' => 'required|integer|min:0',
             'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'description' => 'nullable',
@@ -95,7 +98,7 @@ class BookController extends Controller
 
         $book = Book::findOrFail($id);
 
-        $data = $request->only(['category_id', 'rack_id', 'book_code', 'title', 'author', 'publisher', 'year', 'description', 'stock']);
+        $data = $request->only(['category_id', 'rack_id', 'book_code', 'title', 'author', 'publisher', 'year', 'description', 'stock', 'damaged', 'lost']);
 
         if ($request->hasFile('cover')) {
             // hapus cover lama jika ada

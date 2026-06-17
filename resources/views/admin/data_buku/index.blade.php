@@ -157,6 +157,8 @@
                 <th>Rak</th>
                 <th>Pengarang</th>
                 <th>Stok</th>
+                <th>Rusak</th>
+                <th>hilang</th>
                 <th class="text-end">Aksi</th>
             </tr>
         </thead>
@@ -195,7 +197,23 @@
                         @endif
                     </td>
                     <td>{{ $book->author ?? '-' }}</td>
-                    <td class="fw-semibold">{{ $book->stock ?? 0 }}</td>
+                    <td>
+                    <span class="badge bg-success">
+                        {{ $book->stock }}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge bg-warning text-dark">
+                        {{ $book->damaged ?? 0 }}
+                    </span>
+                </td>
+
+                <td>
+                    <span class="badge bg-danger">
+                        {{ $book->lost ?? 0 }}
+                    </span>
+                </td>
                     <td class="text-end book-actions">
                         <a href="{{ route('admin.books.edit', $book->id) }}" class="btn btn-sm btn-outline-primary">Edit</a>
                         <form action="{{ route('admin.books.destroy', $book->id) }}" method="POST" class="d-inline">
