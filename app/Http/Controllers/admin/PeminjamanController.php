@@ -182,14 +182,15 @@ class PeminjamanController extends Controller
             );
     }
 
-    public function approve(Request $request, $id)
+    public function approve(Request $request, Bookrent $peminjaman)
     {
         $request->validate([
             'borrow_duration' => 'required|integer|min:1|max:30',
         ]);
 
-        $result = DB::transaction(function () use ($request, $id): array {
-            $peminjaman = Bookrent::with('details.book')->lockForUpdate()->findOrFail($id);
+        $result = DB::transaction(function () use ($request, $peminjaman): array {
+            // Re-fetch with lock for update
+            $peminjaman = Bookrent::with('details.book')->lockForUpdate()->findOrFail($peminjaman->id);
             if ($peminjaman->status !== 'menunggu_acc') {
                 return ['ok' => false, 'message' => 'Peminjaman tidak dalam status menunggu ACC.'];
             }
@@ -221,10 +222,9 @@ class PeminjamanController extends Controller
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
-    public function reject($id)
+    public function reject(Bookrent $peminjaman)
     {
-        $result = DB::transaction(function () use ($id): array {
-            $peminjaman = Bookrent::with('details.book')->lockForUpdate()->findOrFail($id);
+        $result = DB::transaction(function () use ($peminjaman): array {
             if ($peminjaman->status !== 'menunggu_acc') {
                 return ['ok' => false, 'message' => 'Peminjaman tidak dalam status menunggu ACC.'];
             }
@@ -236,7 +236,7 @@ class PeminjamanController extends Controller
         return redirect()->route('admin.peminjaman.index')->with($flashType, $result['message']);
     }
 
-    public function confirmReturn(Request $request, $id)
+    public function confirmReturn(Request $request, Bookrent $peminjaman)
     {
         $request->validate([
             'return_date' => 'required|date',
@@ -245,10 +245,7 @@ class PeminjamanController extends Controller
             'conditions.*' => 'in:baik,rusak,hilang',
         ]);
 
-        $result = DB::transaction(function () use ($request, $id): array {
-            $peminjaman = Bookrent::with('details.book')
-                ->lockForUpdate()
-                ->findOrFail($id);
+        $result = DB::transaction(function () use ($request, $peminjaman): array {
             if ($peminjaman->status !== 'proses_kembali') {
                 return [
                     'ok' => false,
@@ -362,23 +359,23 @@ class PeminjamanController extends Controller
         return redirect()->route('admin.peminjaman.index')->with('success', 'Peminjaman berhasil dihapus');
     }
 
-    public function processReturn($id)
+    public function processReturn(Bookrent $peminjaman)
     {
-        $peminjaman = Bookrent::with('details.book','user')->findOrFail($id);
+        $peminjaman->load('details.book','user');
         return view('admin.peminjaman.return', compact('peminjaman'));
     }
 
     /**
      * AJAX: calculate fine for given return date and conditions
      */
-    public function calculateFineAjax(Request $request, $id)
+    public function calculateFineAjax(Request $request, Bookrent $peminjaman)
     {
         $request->validate([
             'return_date' => 'required|date',
             'conditions' => 'sometimes|array',
         ]);
 
-        $peminjaman = Bookrent::with('details')->findOrFail($id);
+        $peminjaman->load('details');
 
         $borrowDate = Carbon::parse($peminjaman->borrow_date);
         $returnDate = Carbon::parse($request->return_date);

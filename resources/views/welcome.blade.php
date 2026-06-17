@@ -70,6 +70,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-shelf-cloud text-shelf-ink antialiased selection:bg-shelf-gold/85 selection:text-shelf-ink">
+    @include('partials.particles')
+    
     <div class="relative isolate min-h-screen overflow-x-clip bg-aurora">
         <div class="paper-grain"></div>
         <div class="pointer-events-none absolute -left-28 top-20 h-80 w-80 rounded-full bg-shelf-gold/45 blur-3xl animate-float-soft"></div>

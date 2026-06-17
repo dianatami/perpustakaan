@@ -211,6 +211,8 @@
     </style>
 </head>
 <body>
+    @include('partials.particles')
+    
     <div class="kepala-shell">
         <header class="kepala-header">
             <a href="{{ route('kepala.beranda') }}" class="kepala-brand">

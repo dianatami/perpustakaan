@@ -1,4 +1,6 @@
 import './bootstrap';
+import './particles-config';
+import './particles';
 
 const clockFormatter = new Intl.DateTimeFormat('id-ID', {
 	hour: '2-digit',

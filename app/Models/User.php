@@ -76,21 +76,44 @@ class User extends Authenticatable
 
     /**
      * Leaderboard peminjam terbanyak (non-admin).
+     * Hanya menghitung peminjaman yang berhasil (status: dipinjam atau kembali)
      */
     public static function leaderboardPeminjam(int $limit = 10)
     {
         return self::query()
-            ->leftJoin('bookrent', 'user.id', '=', 'bookrent.user_id')
-            ->selectRaw('user.id, user.nama, COUNT(bookrent.id) as total_peminjaman')
+            ->leftJoin('bookrent', function ($join) {
+                $join->on('user.id', '=', 'bookrent.user_id')
+                    ->whereIn('bookrent.status', ['dipinjam', 'kembali']);
+            })
+            ->selectRaw('user.id, user.nama, user.role, COUNT(bookrent.id) as total_peminjaman, COALESCE(SUM(CASE WHEN bookrent.status = "kembali" THEN 1 ELSE 0 END), 0) as total_dikembalikan')
             ->where(function ($query): void {
                 $query->whereNull('user.role')
                     ->orWhere('user.role', '!=', self::ROLE_ADMIN);
             })
-            ->groupBy('user.id', 'user.nama')
+            ->groupBy('user.id', 'user.nama', 'user.role')
+            ->havingRaw('COUNT(bookrent.id) > 0')
             ->orderByDesc('total_peminjaman')
             ->orderBy('user.nama')
             ->limit($limit)
             ->get();
+    }
+
+    /**
+     * Detail statistik peminjaman per user (untuk dashboard personal)
+     */
+    public function statistikPeminjaman()
+    {
+        $stats = Bookrent::where('user_id', $this->id)
+            ->selectRaw('
+                COUNT(CASE WHEN status IN ("dipinjam", "kembali") THEN 1 END) as total_berhasil,
+                COUNT(CASE WHEN status = "dipinjam" THEN 1 END) as sedang_dipinjam,
+                COUNT(CASE WHEN status = "kembali" THEN 1 END) as sudah_dikembalikan,
+                COUNT(CASE WHEN status = "ditolak" THEN 1 END) as ditolak,
+                COALESCE(SUM(denda), 0) as total_denda
+            ')
+            ->first();
+
+        return $stats;
     }
 
     /**

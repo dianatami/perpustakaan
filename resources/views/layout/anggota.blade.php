@@ -339,6 +339,8 @@
     </style>
 </head>
 <body>
+    @include('partials.particles')
+    
     <div class="portal-shell">
         <header class="portal-header">
             <div class="portal-header-top">

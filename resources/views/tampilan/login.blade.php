@@ -11,6 +11,8 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-shelf-cloud text-shelf-ink antialiased selection:bg-shelf-gold/80 selection:text-shelf-ink">
+    @include('partials.particles')
+    
     <div class="relative isolate min-h-screen overflow-hidden bg-aurora">
         <div class="paper-grain"></div>
 

@@ -444,6 +444,8 @@
     </style>
 </head>
 <body>
+    @include('partials.particles')
+    
     @php
         $adminMenu = [
             ['route' => 'admin.beranda', 'active' => 'admin.beranda', 'icon' => 'bi-grid-1x2-fill', 'label' => 'Ringkasan'],

@@ -1,0 +1,217 @@
+/* ============================================
+   PARTICLES EFFECT STYLES
+   ============================================ */
+
+/* Canvas untuk animasi partikel */
+#particles-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.6;
+}
+
+/* Kontainer partikel yang ada di belakang konten */
+.particles-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+  background: none;
+}
+
+/* Efek blur untuk partikel */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(0.5px);
+}
+
+/* Animasi partikel yang bergerak dengan slow drift */
+@keyframes particleDrift {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(var(--drift-x)) rotate(360deg);
+    opacity: 0;
+  }
+}
+
+/* Animasi partikel ukuran besar dengan gerakan float */
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) translateX(0) scale(1);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.8;
+  }
+  85% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateY(-100vh) translateX(var(--drift-x)) scale(0.3);
+    opacity: 0;
+  }
+}
+
+/* Animasi partikel diagonal */
+@keyframes particleDiagonal {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.6;
+  }
+  90% {
+    opacity: 0.6;
+  }
+  100% {
+    transform: translateY(-120vh) translateX(calc(var(--drift-x) * 1.5)) rotate(-360deg);
+    opacity: 0;
+  }
+}
+
+/* Kelas untuk animasi partikel yang berbeda */
+.particle-animation-1 {
+  animation: particleDrift linear infinite;
+}
+
+.particle-animation-2 {
+  animation: particleFloat ease-in infinite;
+}
+
+.particle-animation-3 {
+  animation: particleDiagonal ease-out infinite;
+}
+
+/* Variasi ukuran dan warna partikel */
+.particle-size-1 {
+  width: 2px;
+  height: 2px;
+}
+
+.particle-size-2 {
+  width: 4px;
+  height: 4px;
+}
+
+.particle-size-3 {
+  width: 6px;
+  height: 6px;
+}
+
+.particle-size-4 {
+  width: 8px;
+  height: 8px;
+}
+
+/* Warna-warna dari tema proyek */
+.particle-teal {
+  background: rgba(23, 143, 120, 0.7);
+  box-shadow: 0 0 8px rgba(23, 143, 120, 0.4);
+}
+
+.particle-coral {
+  background: rgba(255, 122, 89, 0.6);
+  box-shadow: 0 0 8px rgba(255, 122, 89, 0.3);
+}
+
+.particle-ocean {
+  background: rgba(29, 79, 120, 0.65);
+  box-shadow: 0 0 8px rgba(29, 79, 120, 0.35);
+}
+
+.particle-gold {
+  background: rgba(255, 201, 92, 0.5);
+  box-shadow: 0 0 8px rgba(255, 201, 92, 0.25);
+}
+
+.particle-ink {
+  background: rgba(16, 23, 46, 0.4);
+  box-shadow: 0 0 6px rgba(16, 23, 46, 0.2);
+}
+
+.particle-cloud {
+  background: rgba(247, 242, 232, 0.3);
+  box-shadow: 0 0 6px rgba(247, 242, 232, 0.15);
+}
+
+/* Efek glow pada partikel tertentu */
+.particle-glow {
+  filter: blur(0.5px) drop-shadow(0 0 3px currentColor);
+}
+
+/* Wrapper untuk canvas yang responsif */
+.canvas-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Pastikan konten berada di atas partikel */
+main,
+.admin-shell,
+.form-container,
+[role="main"] {
+  position: relative;
+  z-index: 10;
+}
+
+/* Untuk dark backgrounds, ubah opacity dan blur */
+body.dark-bg #particles-canvas {
+  opacity: 0.4;
+}
+
+body.dark-bg .particle-cloud {
+  opacity: 0.2;
+}
+
+/* Media query untuk performa di mobile */
+@media (max-width: 768px) {
+  #particles-canvas {
+    opacity: 0.4;
+  }
+
+  .particle-size-4 {
+    width: 5px;
+    height: 5px;
+  }
+
+  .particle-size-3 {
+    width: 4px;
+    height: 4px;
+  }
+}
+
+/* Freeze particles saat animasi dimulai dengan delay */
+@supports (animation-timeline: view()) {
+  .particle {
+    animation-timeline: view();
+  }
+}
+
+/* Smooth transition untuk elemen di atas partikel */
+main {
+  transition: background-color 0.3s ease;
+}

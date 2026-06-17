@@ -59,8 +59,13 @@ Route::post('tampilan/logout', [LoginController::class, 'logout'])
     ->middleware('auth')
     ->name('tampilan.logout');
 
+// Leaderboard Routes
+Route::get('leaderboard', [LeaderboardController::class, 'index'])
+    ->name('leaderboard.index');
 Route::middleware('auth')->get('leaderboard/live', [LeaderboardController::class, 'live'])
     ->name('leaderboard.live');
+Route::middleware('auth')->get('leaderboard/top3', [LeaderboardController::class, 'top3'])
+    ->name('leaderboard.top3');
 
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(function () {
     Route::get('beranda', [BerandaController::class, 'berandaAdmin'])->name('beranda');
