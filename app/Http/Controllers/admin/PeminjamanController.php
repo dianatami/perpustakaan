@@ -11,9 +11,10 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\DetailBookrent;
 
+
 class PeminjamanController extends Controller
 {
-    public function setujui(Request $request, $id)
+     public function setujui(Request $request, $id)
     {
         try {
             // Log untuk debugging
@@ -51,10 +52,6 @@ class PeminjamanController extends Controller
             ], 500);
         }
     }
-}
-
-class PeminjamanController extends Controller
-{
     public function index()
     {
         $peminjaman = Bookrent::with(['user','details.book'])->latest('created_at')->paginate(10);
