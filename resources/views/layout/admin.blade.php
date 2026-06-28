@@ -535,6 +535,8 @@
     <script>
         const toggleSidebarButton = document.getElementById('toggleSidebar');
         const adminSidebar = document.getElementById('adminSidebar');
+        const modalBackdrops = document.querySelectorAll('.modal-backdrop');
+        modalBackdrops.forEach(el => el.remove());
 
         // Hindari prompt "resubmit form" saat user refresh setelah submit.
         if (window.history && window.history.replaceState) {
@@ -545,7 +547,7 @@
             toggleSidebarButton.addEventListener('click', () => {
                 adminSidebar.classList.toggle('show');
             });
-
+        
             document.querySelectorAll('.admin-nav-link').forEach((link) => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth <= 991) {

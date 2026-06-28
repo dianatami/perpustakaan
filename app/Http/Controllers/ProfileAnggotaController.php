@@ -34,9 +34,26 @@ class ProfileAnggotaController extends Controller
     }
 
     /**
-     * Menampilkan halaman detail profil dengan riwayat peminjaman
+     * Menampilkan halaman detail profil
      */
     public function profilDetail(Request $request)
+    {
+        $user = Auth::user();
+        
+        if (!$user) {
+            return redirect()->route('tampilan.login')->with('error', 'Silakan login terlebih dahulu');
+        }
+
+        return view('anggota.Profile.index', [
+            'user' => $user,
+            'portalPrefix' => $this->portalPrefix($request),
+        ]);
+    }
+
+    /**
+     * Menampilkan halaman khusus peminjaman
+     */
+    public function peminjaman(Request $request)
     {
         $user = Auth::user();
         
@@ -51,7 +68,7 @@ class ProfileAnggotaController extends Controller
         // Buku yang tersedia untuk dipinjam
         $availableBooks = Book::where('stock', '>', 0)->orderBy('title')->get();
 
-        return view('anggota.Profile.index', [
+        return view('anggota.peminjaman.index', [
             'user' => $user,
             'bookrents' => $bookrents,
             'activeBorrowings' => $activeBorrowings,

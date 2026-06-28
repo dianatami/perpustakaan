@@ -121,6 +121,7 @@ $portalSharedRoutes = function () {
     Route::get('ubah-password', [ProfileAnggotaController::class, 'ubahPassword'])->name('ubah.password');
     Route::post('store-password', [ProfileAnggotaController::class, 'storePassword'])->name('store.password');
     Route::get('riwayat-peminjaman', [ProfileAnggotaController::class, 'riwayatPeminjaman'])->name('riwayat.peminjaman');
+    Route::get('peminjaman', [ProfileAnggotaController::class, 'peminjaman'])->name('peminjaman');
     Route::post('pinjam', [ProfileAnggotaController::class, 'borrow'])->name('pinjam.store');
     Route::post('pengembalian/{bookrent}', [ProfileAnggotaController::class, 'returnBook'])->name('pengembalian.store');
 };

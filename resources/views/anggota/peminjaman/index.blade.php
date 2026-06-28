@@ -1,0 +1,388 @@
+@extends('layout.anggota')
+@section('title', 'Peminjaman Buku')
+
+@section('content')
+@php($portalPrefix = $portalPrefix ?? (request()->routeIs('guru.*') ? 'guru' : 'anggota'))
+<style>
+    * {
+        transition: all 0.25s ease;
+    }
+
+    .card {
+        box-shadow: 0 10px 35px rgba(15, 23, 42, 0.08);
+        border: none;
+        transition: all 0.25s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.1);
+    }
+
+    .badge {
+        font-size: 0.83rem;
+        padding: 0.55rem 0.9rem;
+    }
+
+    .rounded-4 {
+        border-radius: 1.2rem;
+    }
+
+    .rounded-3 {
+        border-radius: 0.9rem;
+    }
+
+    .table-hover tbody tr:hover {
+        background-color: #f4f8ff;
+    }
+
+    .alert-success {
+        animation: slideInDown 0.45s ease-out;
+    }
+
+    @keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="container-fluid py-4">
+    <!-- Success/Error Notification -->
+    @if(session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert" 
+         style="background: linear-gradient(135deg, #4caf50 0%, #2e7d32 100%); border: none; color: white; border-radius: 10px; padding: 15px 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">
+        <i class="bi bi-check-circle"></i>
+        <strong>Berhasil!</strong> {{ session('success') }}
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" 
+         style="background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%); border: none; color: white; border-radius: 10px; padding: 15px 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);">
+        <i class="bi bi-exclamation-triangle"></i>
+        <strong>Error!</strong> {{ session('error') }}
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
+    <!-- Statistik & Peminjaman -->
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="card border-0 shadow-sm rounded-4" style="overflow: hidden;">
+                <div class="card-header border-0 pt-4 pb-3"
+                    style="background: linear-gradient(130deg, #1d4f78, #ff7a59);">
+                    <h5 class="card-title fw-bold mb-0 text-white">
+                        <i class="bi bi-book"></i> Panel Peminjaman Buku
+                    </h5>
+                </div>
+
+                <div class="card-body pb-4">
+                    <!-- FORM PINJAM BUKU -->
+                    <div class="mb-5">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold mb-0">
+                                <i class="bi bi-journal-plus"></i> Form Pinjam Buku Baru
+                            </h5>
+                            <span class="badge bg-primary">
+                                {{ $availableBooks->count() ?? 0 }} Buku Tersedia
+                            </span>
+                        </div>
+
+                        @if(isset($availableBooks) && $availableBooks->count() > 0)
+                            <form action="{{ route($portalPrefix . '.pinjam.store') }}" method="POST">
+                                @csrf
+                                <div id="book-wrapper">
+                                    <div class="row g-2 mb-2 book-item">
+                                        <div class="col-md-7">
+                                            <select name="books[0][book_id]" class="form-select" required>
+                                                <option value="">-- Pilih Buku --</option>
+                                                @foreach($availableBooks as $b)
+                                                    <option value="{{ $b->id }}" {{ $b->stock <= 0 ? 'disabled' : '' }}>
+                                                        {{ $b->title }} (stok: {{ $b->stock }}) {{ $b->stock <= 0 ? '- Stok Habis' : '' }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="number" name="books[0][qty]" class="form-control" min="1" value="1" placeholder="Qty" required>
+                                        </div>
+                                        <div class="col-md-2 d-grid">
+                                            <button type="button" class="btn btn-danger remove-book">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex gap-2 mt-3">
+                                    <button type="button" class="btn btn-outline-primary" id="add-book">
+                                        <i class="bi bi-plus-circle"></i> Tambah Buku
+                                    </button>
+                                    <button type="submit" class="btn btn-primary fw-bold">
+                                        <i class="bi bi-send"></i> Ajukan Peminjaman
+                                    </button>
+                                </div>
+                            </form>
+                            <div class="text-muted small mt-2">
+                                Pengajuan peminjaman akan diproses oleh admin perpustakaan.
+                            </div>
+                        @else
+                            <div class="alert alert-warning mb-0">
+                                Tidak ada buku tersedia untuk dipinjam saat ini.
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Statistik Peminjaman -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-4">
+                            <div class="p-4 rounded-4"
+                                style="background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); border-left: 5px solid #667eea;">
+                                <div class="text-muted small fw-bold mb-2">Total Pengajuan Peminjaman</div>
+                                <div class="fw-bold" style="color: #667eea; font-size: 2rem;">
+                                    {{ $bookrents->count() ?? 0 }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="p-4 rounded-4"
+                                style="background: linear-gradient(135deg, rgba(255, 152, 0, 0.1) 0%, rgba(255, 193, 7, 0.1) 100%); border-left: 5px solid #ff9800;">
+                                <div class="text-muted small fw-bold mb-2">Sedang Dipinjam</div>
+                                <div class="fw-bold" style="color: #f79a0e; font-size: 2rem;">
+                                    {{ $bookrents->where('status', 'dipinjam')->count() ?? 0 }}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="p-4 rounded-4"
+                                style="background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(56, 142, 60, 0.1) 100%); border-left: 5px solid #4caf50;">
+                                <div class="text-muted small fw-bold mb-2">Selesai Dipinjam</div>
+                                <div class="fw-bold" style="color: #4caf50; font-size: 2rem;">
+                                    {{ $bookrents->where('status', 'kembali')->count() ?? 0 }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabel Riwayat Peminjaman -->
+                    <h5 class="fw-bold mb-3"><i class="bi bi-clock-history"></i> Riwayat Transaksi Anda</h5>
+                    <div class="table-responsive">
+                        @if($bookrents && $bookrents->count() > 0)
+                            <table class="table table-hover align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Judul Buku</th>
+                                        <th>Tanggal Pinjam</th>
+                                        <th>Batas Kembali</th>
+                                        <th>Sisa Waktu (Countdown)</th>
+                                        <th>Denda</th>
+                                        <th>Status</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($bookrents->sortByDesc('created_at') as $rent)
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex flex-column gap-1">
+                                                    @foreach($rent->details as $detail)
+                                                        <div class="d-flex justify-content-between align-items-start" style="min-width:0;">
+                                                            <div style="min-width:0;">
+                                                                <div class="fw-semibold text-truncate" style="max-width:320px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="{{ $detail->book->title }}">
+                                                                    {{ $detail->book->title }}
+                                                                </div>
+                                                                @if(!empty($detail->book->book_code))
+                                                                    <small class="text-muted">Kode: {{ $detail->book->book_code }}</small>
+                                                                @endif
+                                                            </div>
+                                                            <div class="text-end ms-2">
+                                                                <span class="badge bg-secondary">Qty: {{ $detail->qty }}</span>
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {{ $rent->borrow_date ? \Carbon\Carbon::parse($rent->borrow_date)->format('d M Y') : '-' }}
+                                            </td>
+                                            <td>
+                                                {{ $rent->return_date ? \Carbon\Carbon::parse($rent->return_date)->format('d M Y') : '-' }}
+                                            </td>
+                                            <td>
+                                                @if(($rent->jenis_peminjam === 'murid' || $rent->user->role == 0) && $rent->status === 'dipinjam' && $rent->tgl_kembali_maksimal)
+                                                    <div class="d-flex flex-column align-items-start">
+                                                        <span class="badge bg-warning text-dark countdown-timer" 
+                                                              data-expires-at="{{ $rent->tgl_kembali_maksimal->toIso8601String() }}">
+                                                            <i class="bi bi-hourglass-split"></i> Menghitung...
+                                                        </span>
+                                                        <small class="text-muted mt-1" style="font-size:0.75rem;">
+                                                            Maksimal: {{ \Carbon\Carbon::parse($rent->tgl_kembali_maksimal)->format('d M Y H:i:s') }}
+                                                        </small>
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if(isset($rent->denda) && (int)$rent->denda > 0)
+                                                    <span class="fw-bold text-danger">Rp {{ number_format($rent->denda, 0, ',', '.') }}</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($rent->status == 'menunggu_acc')
+                                                    <span class="badge bg-warning text-dark">Menunggu ACC</span>
+                                                @elseif($rent->status == 'dipinjam')
+                                                    <span class="badge bg-primary">Dipinjam</span>
+                                                @elseif($rent->status == 'kembali')
+                                                    <span class="badge bg-success">Dikembalikan</span>
+                                                @elseif($rent->status == 'proses_kembali')
+                                                    <span class="badge bg-warning text-dark">Proses Pengembalian</span>
+                                                @elseif($rent->status == 'ditolak')
+                                                    <span class="badge bg-danger">Ditolak</span>
+                                                @else
+                                                    <span class="badge bg-secondary">{{ $rent->status }}</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($rent->status == 'dipinjam')
+                                                    <form action="{{ route($portalPrefix . '.pengembalian.store', $rent->id) }}" method="POST" onsubmit="return confirm('Yakin ingin mengembalikan buku ini?')">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-success">
+                                                            <i class="bi bi-arrow-return-left"></i> Kembalikan
+                                                        </button>
+                                                    </form>
+                                                @elseif($rent->status == 'proses_kembali')
+                                                    <span class="badge bg-light text-dark border"><i class="bi bi-clock"></i> Menunggu Konfirmasi</span>
+                                                @else
+                                                    <span class="text-muted">-</span>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @else
+                            <div class="alert alert-info mb-0">
+                                Belum ada riwayat peminjaman buku.
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-close alert notifications
+        const alertSuccess = document.querySelector('.alert-success');
+        const alertDanger = document.querySelector('.alert-danger');
+        
+        [alertSuccess, alertDanger].forEach(alertEl => {
+            if (alertEl) {
+                setTimeout(function() {
+                    const alertInstance = new bootstrap.Alert(alertEl);
+                    alertInstance.close();
+                }, 5000);
+            }
+        });
+
+        // Real-time Countdown Timer
+        const timers = Array.from(document.querySelectorAll('.countdown-timer'));
+
+        if (timers.length > 0) {
+            const formatCountdown = (totalSeconds) => {
+                const safeSeconds = Math.max(0, totalSeconds);
+                const hours = Math.floor(safeSeconds / 3600);
+                const minutes = Math.floor((safeSeconds % 3600) / 60);
+                const seconds = safeSeconds % 60;
+
+                return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+            };
+
+            const updateTimers = () => {
+                const now = Date.now();
+
+                timers.forEach((timer) => {
+                    const expiresAt = timer.getAttribute('data-expires-at');
+
+                    if (!expiresAt) {
+                        timer.innerHTML = '-';
+                        return;
+                    }
+
+                    const expiresMs = new Date(expiresAt).getTime();
+                    const remaining = Math.max(0, Math.floor((expiresMs - now) / 1000));
+
+                    if (remaining <= 0) {
+                        timer.innerHTML = '<i class="bi bi-exclamation-octagon-fill"></i> Terlambat';
+                        timer.classList.remove('bg-warning', 'text-dark');
+                        timer.classList.add('bg-danger', 'text-white');
+                        return;
+                    }
+
+                    timer.innerHTML = `<i class="bi bi-hourglass-split"></i> ${formatCountdown(remaining)}`;
+                });
+            };
+
+            updateTimers();
+            setInterval(updateTimers, 1000);
+        }
+
+        // Add/Remove Book Items in Borrow Form
+        let indexBook = 1;
+        const addBtn = document.getElementById('add-book');
+        const wrapper = document.getElementById('book-wrapper');
+
+        if (addBtn && wrapper) {
+            addBtn.addEventListener('click', function () {
+                let html = `
+                    <div class="row g-2 mb-2 book-item">
+                        <div class="col-md-7">
+                            <select name="books[${indexBook}][book_id]" class="form-select" required>
+                                <option value="">-- Pilih Buku --</option>
+                                @foreach($availableBooks as $b)
+                                    <option value="{{ $b->id }}">
+                                        {{ $b->title }} (stok: {{ $b->stock }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="number" name="books[${indexBook}][qty]" class="form-control" min="1" value="1" placeholder="Qty" required>
+                        </div>
+                        <div class="col-md-2 d-grid">
+                            <button type="button" class="btn btn-danger remove-book">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                wrapper.insertAdjacentHTML('beforeend', html);
+                indexBook++;
+            });
+        }
+
+        document.addEventListener('click', function(e) {
+            if(e.target.closest('.remove-book')) {
+                const items = document.querySelectorAll('.book-item');
+                if(items.length > 1) {
+                    e.target.closest('.book-item').remove();
+                }
+            }
+        });
+    });
+</script>
+@endsection

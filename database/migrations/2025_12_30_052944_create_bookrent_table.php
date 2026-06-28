@@ -20,7 +20,7 @@ return new class extends Migration
             }
             $table->date('borrow_date');
             $table->date('return_date')->nullable();
-            $table->enum('status', ['dipinjam', 'dikembalikan']);
+            $table->enum('status', ['menunggu_acc', 'dipinjam', 'ditolak', 'proses_kembali', 'kembali', 'dikembalikan']);
             $table->timestamps();
         });
     }

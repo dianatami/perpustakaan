@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\DetailBookrent;
+use Illuminate\Support\Facades\Log;
 
 
 class PeminjamanController extends Controller
@@ -21,25 +22,56 @@ class PeminjamanController extends Controller
             Log::info('Proses persetujuan peminjaman ID: ' . $id);
             Log::info('Data request: ', $request->all());
             
-            // Cari data peminjaman
-            $peminjaman = Bookrent::findOrFail($id);
-            
-            // Update status
-            $peminjaman->status = 'disetujui';
-            $peminjaman->tanggal_persetujuan = now();
-            $peminjaman->save();
-            
-            // Jika ada detail, update juga
-            if ($request->has('detail')) {
-                DetailBookrent::where('bookrent_id', $id)->update([
-                    'status' => 'disetujui'
-                ]);
-            }
+            $result = DB::transaction(function () use ($request, $id) {
+                // Cari data peminjaman
+                $peminjaman = Bookrent::with(['details.book', 'user'])->lockForUpdate()->findOrFail($id);
+                
+                if ($peminjaman->status !== 'menunggu_acc' && $peminjaman->status !== 'disetujui') {
+                    if (in_array($peminjaman->status, ['dipinjam', 'kembali', 'proses_kembali'], true)) {
+                        throw new \Exception('Peminjaman tidak dalam status yang dapat disetujui.');
+                    }
+                }
+
+                // Validate stock for all books
+                foreach ($peminjaman->details as $detail) {
+                    if ($detail->book->stock < $detail->qty) {
+                        throw new \Exception('Stok buku ' . $detail->book->title . ' tidak cukup.');
+                    }
+                }
+
+                // Decrease stock for each book
+                foreach ($peminjaman->details as $detail) {
+                    $detail->book->decrement('stock', $detail->qty);
+                }
+
+                $borrowDate = Carbon::now()->toDateString();
+                $duration = $request->input('borrow_duration', 7);
+                $returnDate = Carbon::now()->addDays($duration)->toDateString();
+
+                $peminjaman->status = 'dipinjam';
+                $peminjaman->borrow_date = $borrowDate;
+                $peminjaman->return_date = $returnDate;
+
+                // Detect jenis_peminjam and set di_acc_at and tgl_kembali_maksimal
+                $jenisPeminjam = $peminjaman->jenis_peminjam ?? ($peminjaman->user->role == User::ROLE_GURU ? 'guru' : 'murid');
+                $peminjaman->jenis_peminjam = $jenisPeminjam;
+
+                $peminjaman->di_acc_at = Carbon::now();
+                if ($jenisPeminjam === 'murid') {
+                    $peminjaman->tgl_kembali_maksimal = Carbon::now()->addDays(3);
+                } else {
+                    $peminjaman->tgl_kembali_maksimal = null;
+                }
+
+                $peminjaman->save();
+
+                return $peminjaman;
+            });
             
             return response()->json([
                 'success' => true,
                 'message' => 'Peminjaman berhasil disetujui',
-                'data' => $peminjaman
+                'data' => $result
             ]);
             
         } catch (\Exception $e) {
@@ -51,6 +83,13 @@ class PeminjamanController extends Controller
                 'message' => 'Terjadi kesalahan: ' . $e->getMessage()
             ], 500);
         }
+    }
+    public function saveData()
+    {
+    // Proses simpan data...
+
+    // Kirim sinyal ke browser untuk tutup modal
+    $this->dispatch('close-modal'); 
     }
     public function index()
     {
@@ -242,7 +281,7 @@ class PeminjamanController extends Controller
 
         $result = DB::transaction(function () use ($request, $peminjaman): array {
             // Re-fetch with lock for update
-            $peminjaman = Bookrent::with('details.book')->lockForUpdate()->findOrFail($peminjaman->id);
+            $peminjaman = Bookrent::with(['details.book', 'user'])->lockForUpdate()->findOrFail($peminjaman->id);
             if ($peminjaman->status !== 'menunggu_acc') {
                 return ['ok' => false, 'message' => 'Peminjaman tidak dalam status menunggu ACC.'];
             }
@@ -265,6 +304,18 @@ class PeminjamanController extends Controller
             $peminjaman->status = 'dipinjam';
             $peminjaman->borrow_date = $borrowDate;
             $peminjaman->return_date = $returnDate;
+
+            // Detect jenis_peminjam and set di_acc_at and tgl_kembali_maksimal
+            $jenisPeminjam = $peminjaman->jenis_peminjam ?? ($peminjaman->user->role == User::ROLE_GURU ? 'guru' : 'murid');
+            $peminjaman->jenis_peminjam = $jenisPeminjam;
+
+            $peminjaman->di_acc_at = Carbon::now();
+            if ($jenisPeminjam === 'murid') {
+                $peminjaman->tgl_kembali_maksimal = Carbon::now()->addDays(3);
+            } else {
+                $peminjaman->tgl_kembali_maksimal = null;
+            }
+
             $peminjaman->save();
 
             return ['ok' => true, 'message' => 'Pengajuan peminjaman berhasil disetujui. Murid diminta datang ke perpustakaan untuk mengambil buku.'];

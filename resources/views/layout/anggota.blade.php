@@ -41,6 +41,7 @@
             ['route' => $portalPrefix . '.beranda', 'active' => $portalPrefix . '.beranda', 'icon' => 'bi-house-door-fill', 'label' => 'Beranda'],
             ['route' => $portalPrefix . '.buku.index', 'active' => $portalPrefix . '.buku.*', 'icon' => 'bi-journal-text', 'label' => 'Buku'],
             ['route' => $portalPrefix . '.kategori.index', 'active' => $portalPrefix . '.kategori.*', 'icon' => 'bi-collection-fill', 'label' => 'Kategori'],
+            ['route' => $portalPrefix . '.peminjaman', 'active' => $portalPrefix . '.peminjaman*', 'icon' => 'bi-journal-bookmark-fill', 'label' => 'Peminjaman'],
             ['route' => $portalPrefix . '.profil.detail', 'active' => $portalPrefix . '.profil*', 'icon' => 'bi-person-vcard-fill', 'label' => 'Profil'],
         ];
     @endphp
