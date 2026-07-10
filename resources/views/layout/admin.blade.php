@@ -158,6 +158,15 @@
             text-align: center;
         }
 
+        .admin-nav-section {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: rgba(255, 255, 255, 0.45);
+            padding: 12px 14px 4px;
+            font-weight: 800;
+        }
+
         .admin-sidebar-footer {
             margin-top: auto;
             position: relative;
@@ -447,17 +456,6 @@
 <body>
     @include('partials.particles')
     
-    @php
-        $adminMenu = [
-            ['route' => 'admin.beranda', 'active' => 'admin.beranda', 'icon' => 'bi-grid-1x2-fill', 'label' => 'Ringkasan'],
-            ['route' => 'admin.books.index', 'active' => 'admin.books.*', 'icon' => 'bi-journal-bookmark-fill', 'label' => 'Data Buku'],
-            ['route' => 'admin.racks.index', 'active' => 'admin.racks.*', 'icon' => 'bi-archive-fill', 'label' => 'Rak Buku'],
-            ['route' => 'admin.kategori.index', 'active' => 'admin.kategori.*', 'icon' => 'bi-tags-fill', 'label' => 'Kategori'],
-            ['route' => 'admin.anggota.index', 'active' => 'admin.anggota.*', 'icon' => 'bi-people-fill', 'label' => 'Manajemen Anggota'],
-            ['route' => 'admin.peminjaman.index', 'active' => 'admin.peminjaman.*', 'icon' => 'bi-arrow-repeat', 'label' => 'Peminjaman'],
-        ];
-    @endphp
-
     <div class="admin-shell">
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="{{ route('admin.beranda') }}" class="admin-brand">
@@ -470,15 +468,52 @@
             </a>
 
             <nav class="admin-nav">
-                @foreach ($adminMenu as $menu)
-                    <a
-                        href="{{ route($menu['route']) }}"
-                        class="admin-nav-link {{ request()->routeIs($menu['active']) ? 'active' : '' }}"
-                    >
-                        <i class="{{ $menu['icon'] }}"></i>
-                        <span>{{ $menu['label'] }}</span>
-                    </a>
-                @endforeach
+                <!-- Dashboard Section -->
+                <a href="{{ route('admin.beranda') }}" class="admin-nav-link {{ request()->routeIs('admin.beranda') ? 'active' : '' }}">
+                    <i class="bi bi-grid-1x2-fill"></i>
+                    <span>Dashboard</span>
+                </a>
+
+                <!-- Master Data Section -->
+                <div class="admin-nav-section">Master Data</div>
+                <a href="{{ route('admin.books.index') }}" class="admin-nav-link {{ request()->routeIs('admin.books.*') ? 'active' : '' }}">
+                    <i class="bi bi-journal-bookmark-fill"></i>
+                    <span>Data Buku</span>
+                </a>
+                <a href="{{ route('admin.racks.index') }}" class="admin-nav-link {{ request()->routeIs('admin.racks.*') ? 'active' : '' }}">
+                    <i class="bi bi-archive-fill"></i>
+                    <span>Rak Buku</span>
+                </a>
+                <a href="{{ route('admin.kategori.index') }}" class="admin-nav-link {{ request()->routeIs('admin.kategori.*') ? 'active' : '' }}">
+                    <i class="bi bi-tags-fill"></i>
+                    <span>Kategori</span>
+                </a>
+                <a href="{{ route('admin.anggota.index') }}" class="admin-nav-link {{ request()->routeIs('admin.anggota.*') ? 'active' : '' }}">
+                    <i class="bi bi-people-fill"></i>
+                    <span>Manajemen Anggota</span>
+                </a>
+
+                <!-- Transaksi Section -->
+                <div class="admin-nav-section">Transaksi</div>
+                <a href="{{ route('admin.transaksi.pengajuan') }}" class="admin-nav-link {{ request()->routeIs('admin.transaksi.pengajuan') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-text-fill"></i>
+                    <span>Pengajuan Peminjaman</span>
+                </a>
+                <a href="{{ route('admin.transaksi.pengembalian') }}" class="admin-nav-link {{ request()->routeIs('admin.transaksi.pengembalian') ? 'active' : '' }}">
+                    <i class="bi bi-arrow-left-right"></i>
+                    <span>Pengembalian</span>
+                </a>
+                <a href="{{ route('admin.transaksi.riwayat') }}" class="admin-nav-link {{ request()->routeIs('admin.transaksi.riwayat') ? 'active' : '' }}">
+                    <i class="bi bi-clock-history"></i>
+                    <span>Riwayat Transaksi</span>
+                </a>
+
+                <!-- Laporan Section -->
+                <div class="admin-nav-section">Laporan</div>
+                <a href="{{ route('admin.laporan.utama') }}" class="admin-nav-link {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+                    <i class="bi bi-file-earmark-bar-graph-fill"></i>
+                    <span>Laporan Perpustakaan</span>
+                </a>
             </nav>
 
             <div class="admin-sidebar-footer">

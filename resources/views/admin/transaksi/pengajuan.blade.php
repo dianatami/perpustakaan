@@ -1,5 +1,5 @@
 @extends('layout.admin')
-@section('title', 'Kelola Peminjaman')
+@section('title', 'Pengajuan Peminjaman')
 
 @section('content')
 <style>
@@ -8,7 +8,6 @@
     * {
         font-family: 'Plus Jakarta Sans', sans-serif;
     }
-
 
     .admin-header {
         background: linear-gradient(120deg, rgba(16, 23, 46, 0.94) 0%, rgba(29, 79, 120, 0.9) 42%, rgba(255, 122, 89, 0.88) 100%);
@@ -69,6 +68,10 @@
         transition: all 0.25s ease;
         position: relative;
         z-index: 1;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
     }
 
     .btn-add-peminjaman:hover {
@@ -132,15 +135,6 @@
         background: #ef4444;
     }
 
-    .stat-card.total {
-        border-left-color: #ff7a59;
-        background: linear-gradient(135deg, rgba(255, 122, 89, 0.05) 0%, rgba(255, 122, 89, 0) 100%);
-    }
-
-    .stat-card.total::before {
-        background: #ff7a59;
-    }
-
     .stat-label {
         font-size: 0.8rem;
         font-weight: 700;
@@ -166,10 +160,6 @@
 
     .stat-card.rejected .stat-value {
         color: #ef4444;
-    }
-
-    .stat-card.total .stat-value {
-        color: #ff7a59;
     }
 
     .table-wrapper {
@@ -302,16 +292,6 @@
         color: #0c2d6b;
     }
 
-    .status-returning {
-        background: #fde68a;
-        color: #92400e;
-    }
-
-    .status-returned {
-        background: #c6f6d5;
-        color: #22543d;
-    }
-
     .action-buttons {
         display: flex;
         gap: 0.6rem;
@@ -351,45 +331,6 @@
     .btn-reject:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 20px rgba(239, 68, 68, 0.3);
-        color: white;
-    }
-
-    .btn-edit {
-        background: linear-gradient(135deg, #ff7a59 0%, #ffc95c 100%);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.1rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 0.8rem;
-        transition: all 0.25s ease;
-        text-decoration: none;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.4rem;
-    }
-
-    .btn-edit:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(255, 122, 89, 0.3);
-        color: white;
-    }
-
-    .btn-return {
-        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-        color: white;
-        border: none;
-        padding: 0.6rem 1.1rem;
-        border-radius: 10px;
-        font-weight: 700;
-        font-size: 0.8rem;
-        transition: all 0.25s ease;
-        cursor: pointer;
-    }
-
-    .btn-return:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 20px rgba(245, 158, 11, 0.3);
         color: white;
     }
 
@@ -510,8 +451,7 @@
         }
 
         .btn-approve,
-        .btn-reject,
-        .btn-edit {
+        .btn-reject {
             width: 100%;
             text-align: center;
             justify-content: center;
@@ -524,8 +464,8 @@
     <div class="admin-header">
         <div class="d-flex justify-content-between align-items-start">
             <div>
-                <h1><i class="bi bi-book-half"></i> Kelola Peminjaman</h1>
-                <p>Proses dan kelola pengajuan peminjaman buku dari para murid dengan mudah dan cepat</p>
+                <h1><i class="bi bi-file-earmark-text-fill"></i> Pengajuan Peminjaman</h1>
+                <p>Kelola persetujuan dan penolakan pengajuan peminjaman buku dari para murid dengan cepat.</p>
             </div>
             <a href="{{ route('admin.peminjaman.create') }}" class="btn-add-peminjaman">
                 <i class="bi bi-plus-circle"></i> Tambah Peminjaman
@@ -548,36 +488,34 @@
 
     {{-- STATISTICS SECTION --}}
     <div class="row g-3 mb-4">
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-4">
             <div class="stat-card pending">
                 <div class="stat-label">Menunggu Persetujuan</div>
                 <div class="stat-value">{{ $peminjaman->where('status', 'menunggu_acc')->count() }}</div>
             </div>
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-4">
             <div class="stat-card approved">
                 <div class="stat-label">Sudah Disetujui</div>
                 <div class="stat-value">{{ $peminjaman->where('status', 'dipinjam')->count() }}</div>
             </div>
         </div>
-        <div class="col-md-6 col-lg-3">
+        <div class="col-md-4">
             <div class="stat-card rejected">
                 <div class="stat-label">Ditolak</div>
                 <div class="stat-value">{{ $peminjaman->where('status', 'ditolak')->count() }}</div>
             </div>
         </div>
-        <div class="col-md-6 col-lg-3">
-            <div class="stat-card total">
-                <div class="stat-label">Total Peminjaman</div>
-                <div class="stat-value">{{ $peminjaman->count() }}</div>
-            </div>
-        </div>
     </div>
 
     {{-- TABLE SECTION --}}
+    @php
+        $uniqueNames = $peminjaman->unique('user.id')->pluck('user.nama');
+        $uniqueBooks = $peminjaman->pluck('details')->flatten()->unique('book.id')->pluck('book.title');
+    @endphp
     <div class="table-wrapper">
         <h4 class="table-title">
-            <i class="bi bi-list-check"></i> Daftar Pengajuan Peminjaman
+            <i class="bi bi-list-check"></i> Daftar Pengajuan
         </h4>
 
         {{-- FILTER & SEARCH BAR --}}
@@ -586,14 +524,30 @@
                 <input type="text" class="form-control" id="peminjam_search" placeholder="🔍 Cari nama murid, status, atau buku...">
             </div>
             <div class="col-md-4">
+            <div class="col-md-3">
+                <select class="form-select" id="name_filter">
+                    <option value="">Semua Nama</option>
+                    @foreach($uniqueNames as $name)
+                        <option value="{{ $name }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="book_filter">
+                    <option value="">Semua Buku</option>
+                    @foreach($uniqueBooks as $title)
+                        <option value="{{ $title }}">{{ $title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-md-2">
                 <select class="form-select" id="status_filter">
-                    <option value="">Semua Status</option>
+                    <option value="">Semua Status Pengajuan</option>
                     <option value="menunggu_acc">Menunggu Persetujuan</option>
                     <option value="dipinjam">Sudah Disetujui</option>
-                    <option value="proses_kembali">Proses Pengembalian</option>
-                    <option value="kembali">Sudah Dikembalikan</option>
                     <option value="ditolak">Ditolak</option>
                 </select>
+            </div>
             </div>
         </div>
 
@@ -608,7 +562,6 @@
                             <th width="120">Jumlah</th>
                             <th width="120">Tgl Ajuan</th>
                             <th width="100">Status</th>
-                            <th width="120">Denda</th>
                             <th width="200">Aksi</th>
                         </tr>
                     </thead>
@@ -644,48 +597,29 @@
                                         <span class="status-badge status-borrowed">Disetujui</span>
                                     @elseif($item->status == 'ditolak')
                                         <span class="status-badge status-rejected">Ditolak</span>
-                                    @elseif($item->status == 'proses_kembali')
-                                        <span class="status-badge status-returning">Proses Kembali</span>
-                                    @elseif($item->status == 'kembali')
-                                        <span class="status-badge status-returned">Kembali</span>
                                     @else
                                         <span class="status-badge">{{ $item->status }}</span>
                                     @endif
                                 </td>
                                 <td>
-                                    @if($item->denda && (int)$item->denda > 0)
-                                        <div class="fw-bold">Rp {{ number_format($item->denda, 0, ',', '.') }}</div>
+                                    <div class="action-buttons">
+                                        @if($item->status == 'menunggu_acc')
+                                        <button type="button" class="btn-approve" onclick="showApproveModal({{ $item->id }}, '{{ $item->user->nama }}')">
+                                            <i class="bi bi-check-circle"></i> Setujui
+                                        </button>
+                                        <form action="{{ route('admin.peminjaman.reject', $item->id) }}" method="POST" style="margin: 0;">
+                                            @csrf
+                                            @method('POST')
+                                            <button type="submit" class="btn-reject" onclick="return confirm('Yakin ingin menolak pengajuan ini?')">
+                                                <i class="bi bi-x-circle"></i> Tolak
+                                            </button>
+                                        </form>
                                     @else
                                         <span class="text-muted">-</span>
                                     @endif
-                                </td>
-                                <td>
-                                    <div class="action-buttons">
-                                        @if($item->status == 'menunggu_acc')
-                                            <button type="button" class="btn-approve" onclick="showApproveModal({{ $item->id }}, '{{ $item->user->nama }}')">
-                                                <i class="bi bi-check-circle"></i> Setujui
-                                            </button>
-                                            <form action="{{ route('admin.peminjaman.reject', $item->id) }}" method="POST" style="margin: 0;">
-                                                @csrf
-                                                @method('POST')
-                                                <button type="submit" class="btn-reject" onclick="return confirm('Yakin ingin menolak pengajuan ini?')">
-                                                    <i class="bi bi-x-circle"></i> Tolak
-                                                </button>
-                                            </form>
-                                        @elseif($item->status == 'proses_kembali')
-                                            <a href="{{ route('admin.peminjaman.process-return', $item->id) }}" class="btn-return">
-                                                <i class="bi bi-box-arrow-in-down"></i> Terima Pengembalian
-                                            </a>
-                                        @elseif($item->status != 'kembali')
-                                            <a href="{{ route('admin.peminjaman.edit', $item->id) }}"
-                                            class="btn btn-warning btn-sm">
-                                                Edit
-                                            </a>
-                                        @else
-                                            <button class="btn btn-secondary btn-sm" disabled>
-                                                Selesai
-                                            </button>
-                                        @endif
+                                    <button type="button" class="btn-detail" onclick="showDetailModal({{ $item->id }})" style="margin-left:0.5rem; background:#6b7280; color:white; border:none; padding:0.6rem 1.1rem; border-radius:10px; font-weight:700; font-size:0.8rem;">
+                                        <i class="bi bi-info-circle"></i> Detail
+                                    </button>
                                     </div>
                                 </td>
                             </tr>
@@ -747,10 +681,53 @@
     </div>
 </div>
 
+{{-- MODAL DETAIL --}}
+<div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true" data-bs-backdrop="false">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 18px; overflow: hidden; border: none;">
+            <div class="modal-header">
+                <h5 class="modal-title" id="detailModalLabel">📄 Detail Pengajuan Peminjaman</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 2.2rem;">
+                <p><strong>Nama Murid:</strong> <span id="detailStudentName"></span></p>
+                <p><strong>Email:</strong> <span id="detailStudentEmail"></span></p>
+                <p><strong>Tanggal Pengajuan:</strong> <span id="detailCreatedAt"></span></p>
+                <p><strong>Status:</strong> <span id="detailStatus"></span></p>
+                <hr>
+                <h6>Buku yang Diajukan:</h6>
+                <ul id="detailBookList"></ul>
+            </div>
+            <div class="modal-footer" style="padding: 1.8rem; border-top: 1px solid #e2e8f0;">
+                <button type="button" class="btn-cancel-modal" data-bs-dismiss="modal">Tutup</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 {{-- SCRIPTS --}}
 <script>
+    // Store detail data in a JS object for quick lookup
+    const detailData = {
+        @foreach($peminjaman as $item)
+        {{ $item->id }}: {
+            studentName: "{{ addslashes($item->user->nama ?? '') }}",
+            email: "{{ addslashes($item->user->email ?? '') }}",
+            createdAt: "{{ \Carbon\Carbon::parse($item->created_at)->format('d M Y') }}",
+            status: "{{ $item->status }}",
+            books: [
+                @foreach($item->details as $detail)
+                {
+                    title: "{{ addslashes($detail->book->title ?? '') }}",
+                    qty: {{ $detail->qty }}
+                }@if(!$loop->last),@endif
+                @endforeach
+            ]
+        }@if(!$loop->last),@endif
+        @endforeach
+    };
+
     document.addEventListener('DOMContentLoaded', function() {
-        // Search functionality
         const searchInput = document.getElementById('peminjam_search');
         const statusFilter = document.getElementById('status_filter');
         const rows = document.querySelectorAll('table tbody tr');
@@ -768,8 +745,6 @@
                     if (statusCell.textContent.includes('Menunggu')) statusText = 'menunggu_acc';
                     else if (statusCell.textContent.includes('Disetujui')) statusText = 'dipinjam';
                     else if (statusCell.textContent.includes('Ditolak')) statusText = 'ditolak';
-                    else if (statusCell.textContent.includes('Proses Kembali')) statusText = 'proses_kembali';
-                    else if (statusCell.textContent.includes('Kembali')) statusText = 'kembali';
                 }
                 
                 const matchesSearch = text.includes(query);
@@ -782,10 +757,7 @@
         searchInput.addEventListener('input', filterRows);
         statusFilter.addEventListener('change', filterRows);
 
-        // Auto-update return date when duration changes
         document.getElementById('borrowDuration').addEventListener('change', updateReturnDate);
-        
-        // Handle approve form submission with AJAX
         document.getElementById('approveForm').addEventListener('submit', handleApproveSubmit);
     });
 
@@ -798,23 +770,22 @@
         document.getElementById('returnDateDisplay').value = returnDate.toLocaleDateString('id-ID', options);
     }
 
-function clearModalBackdrop() {
-    const backdrops = document.querySelectorAll('.modal-backdrop');
-    backdrops.forEach(el => el.remove());
-    document.body.classList.remove('modal-open');
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
-}
+    function clearModalBackdrop() {
+        const backdrops = document.querySelectorAll('.modal-backdrop');
+        backdrops.forEach(el => el.remove());
+        document.body.classList.remove('modal-open');
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+    }
 
-function showApproveModal(peminjaman_id, student_name) {
-    document.getElementById('studentNameDisplay').textContent = student_name;
-    document.getElementById('approveForm').action = '/admin/peminjaman/' + peminjaman_id + '/approve';
-    updateReturnDate();
-    // Ensure any existing backdrop is removed before showing the modal
-    clearModalBackdrop();
-    const modal = new bootstrap.Modal(document.getElementById('approveModal'));
-    modal.show();
-}
+    function showApproveModal(peminjaman_id, student_name) {
+        document.getElementById('studentNameDisplay').textContent = student_name;
+        document.getElementById('approveForm').action = '/admin/peminjaman/' + peminjaman_id + '/approve';
+        updateReturnDate();
+        clearModalBackdrop();
+        const modal = new bootstrap.Modal(document.getElementById('approveModal'));
+        modal.show();
+    }
 
     function handleApproveSubmit(e) {
         e.preventDefault();
@@ -825,7 +796,6 @@ function showApproveModal(peminjaman_id, student_name) {
         const formData = new FormData(form);
         const actionUrl = form.action;
 
-        // Disable submit button and show loading state
         submitBtn.disabled = true;
         submitBtn.innerHTML = '<i class="bi bi-hourglass-split"></i> Memproses...';
 
@@ -846,13 +816,8 @@ function showApproveModal(peminjaman_id, student_name) {
             return response.json();
         })
         .then(data => {
-            // Close modal
             bootstrap.Modal.getInstance(document.getElementById('approveModal')).hide();
-            
-            // Show success message
             showNotification('success', 'Peminjaman berhasil disetujui!');
-            
-            // Reload page after 1.5 seconds
             setTimeout(() => {
                 location.reload();
             }, 1500);
@@ -860,13 +825,35 @@ function showApproveModal(peminjaman_id, student_name) {
         .catch(error => {
             console.error('Error:', error);
             showNotification('error', error.message || 'Terjadi kesalahan saat memproses permintaan. Silakan coba lagi.');
-            
-            // Re-enable submit button
             submitBtn.disabled = false;
             submitBtn.innerHTML = originalBtnText;
         });
     }
 
+    function showDetailModal(peminjamanId) {
+        const data = detailData[peminjamanId];
+        if (!data) return;
+        document.getElementById('detailStudentName').textContent = data.studentName;
+        document.getElementById('detailStudentEmail').textContent = data.email;
+        document.getElementById('detailCreatedAt').textContent = data.createdAt;
+        document.getElementById('detailStatus').textContent = (function(status) {
+            if (status === 'menunggu_acc') return 'Menunggu';
+            if (status === 'dipinjam') return 'Disetujui';
+            if (status === 'ditolak') return 'Ditolak';
+            return status;
+        })(data.status);
+        const list = document.getElementById('detailBookList');
+        list.innerHTML = '';
+        data.books.forEach(book => {
+            const li = document.createElement('li');
+            li.textContent = `${book.title} (${book.qty} buku)`;
+            list.appendChild(li);
+        });
+        clearModalBackdrop();
+        const modal = new bootstrap.Modal(document.getElementById('detailModal'));
+        modal.show();
+    }
+    
     function showNotification(type, message) {
         const alertDiv = document.createElement('div');
         alertDiv.className = `alert alert-${type === 'success' ? 'success' : 'danger'} alert-dismissible fade show`;
@@ -878,12 +865,9 @@ function showApproveModal(peminjaman_id, student_name) {
         `;
         
         document.body.appendChild(alertDiv);
-        
-        // Auto remove after 5 seconds
         setTimeout(() => {
             alertDiv.remove();
         }, 5000);
     }
 </script>
-
 @endsection

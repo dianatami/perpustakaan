@@ -85,6 +85,17 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
     Route::resource('peminjaman', PeminjamanController::class)
         ->only(['index', 'create', 'store', 'edit', 'update', 'destroy']);
     
+    // Transaksi Menu Routes
+    Route::get('transaksi/pengajuan', [PeminjamanController::class, 'pengajuan'])->name('transaksi.pengajuan');
+    Route::get('transaksi/pengembalian', [PeminjamanController::class, 'pengembalian'])->name('transaksi.pengembalian');
+    Route::get('transaksi/riwayat', [PeminjamanController::class, 'riwayat'])->name('transaksi.riwayat');
+
+    // Laporan Menu Routes
+    Route::get('laporan/utama', [PeminjamanController::class, 'laporanUtama'])->name('laporan.utama');
+    Route::get('laporan/peminjaman', [PeminjamanController::class, 'laporanPeminjaman'])->name('laporan.peminjaman');
+    Route::get('laporan/pengembalian', [PeminjamanController::class, 'laporanPengembalian'])->name('laporan.pengembalian');
+    Route::get('laporan/denda', [PeminjamanController::class, 'laporanDenda'])->name('laporan.denda');
+    Route::get('laporan/statistik', [PeminjamanController::class, 'laporanStatistik'])->name('laporan.statistik');
 
     Route::post('peminjaman/{peminjaman}/approve', [PeminjamanController::class, 'approve'])
         ->name('peminjaman.approve');

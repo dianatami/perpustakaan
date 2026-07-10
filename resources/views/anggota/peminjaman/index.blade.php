@@ -3,6 +3,9 @@
 
 @section('content')
 @php($portalPrefix = $portalPrefix ?? (request()->routeIs('guru.*') ? 'guru' : 'anggota'))
+{{-- Tom Select CDN --}}
+<link href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
 <style>
     * {
         transition: all 0.25s ease;
@@ -49,6 +52,62 @@
             opacity: 1;
             transform: translateY(0);
         }
+    }
+
+    /* ── Tom Select overrides ── */
+    .ts-wrapper { border-radius: 12px !important; }
+    .ts-wrapper .ts-control {
+        border: 1px solid var(--portal-border) !important;
+        border-radius: 12px !important;
+        padding: 8px 14px !important;
+        min-height: 44px;
+        font-size: 0.95rem;
+    }
+    .ts-wrapper.focus .ts-control {
+        border-color: var(--portal-primary) !important;
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--portal-primary) 18%, transparent) !important;
+    }
+    .ts-dropdown {
+        border-radius: 12px !important;
+        border: 1px solid var(--portal-border) !important;
+        box-shadow: 0 12px 32px rgba(15,23,42,0.12) !important;
+        margin-top: 4px !important;
+    }
+    .ts-dropdown .option {
+        padding: 10px 14px !important;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .ts-dropdown .option:last-child { border-bottom: none; }
+    .ts-dropdown .option .book-opt-title {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.92rem;
+    }
+    .ts-dropdown .option .book-opt-code {
+        color: var(--portal-primary);
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+    .ts-dropdown .option .book-opt-author {
+        font-size: 0.82rem;
+        color: #64748b;
+    }
+    .ts-dropdown .option .book-opt-stock {
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+    .ts-dropdown .option .book-opt-stock.in-stock { color: #10b981; }
+    .ts-dropdown .option .book-opt-stock.out-of-stock { color: #ef4444; }
+    .ts-dropdown .option[aria-disabled="true"],
+    .ts-dropdown .option.disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        background: #fafafa !important;
+    }
+    .ts-dropdown .active { background: color-mix(in srgb, var(--portal-primary) 8%, transparent) !important; }
+    .ts-wrapper .ts-control .item {
+        font-weight: 600;
+        color: #0f172a;
     }
 </style>
 
@@ -101,11 +160,15 @@
                                 <div id="book-wrapper">
                                     <div class="row g-2 mb-2 book-item">
                                         <div class="col-md-7">
-                                            <select name="books[0][book_id]" class="form-select" required>
+                                            <select name="books[0][book_id]" class="form-select book-select" required>
                                                 <option value="">-- Pilih Buku --</option>
                                                 @foreach($availableBooks as $b)
-                                                    <option value="{{ $b->id }}" {{ $b->stock <= 0 ? 'disabled' : '' }}>
-                                                        {{ $b->title }} (stok: {{ $b->stock }}) {{ $b->stock <= 0 ? '- Stok Habis' : '' }}
+                                                    <option value="{{ $b->id }}"
+                                                        data-book-code="{{ $b->book_code ?? '' }}"
+                                                        data-author="{{ $b->author ?? '' }}"
+                                                        data-stock="{{ $b->stock }}"
+                                                        {{ $b->stock <= 0 ? 'disabled' : '' }}>
+                                                        {{ $b->title }}
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -341,6 +404,67 @@
             setInterval(updateTimers, 1000);
         }
 
+        // ── Tom Select helper ──
+        function initTomSelect(selectEl) {
+            if (!selectEl || selectEl.tomselect) return; // already initialized
+            new TomSelect(selectEl, {
+                placeholder: '🔍 Cari judul, kode, atau penulis...',
+                allowEmptyOption: true,
+                searchField: [], // we use custom scoring
+                score: function(search) {
+                    var query = search.toLowerCase();
+                    return function(item) {
+                        if (!query) return 1;
+                        var title = (item.text || '').toLowerCase();
+                        var code  = (item.bookCode || '').toLowerCase();
+                        var author= (item.author || '').toLowerCase();
+                        if (title.indexOf(query) !== -1) return 1 + (title.indexOf(query) === 0 ? 0.5 : 0);
+                        if (code.indexOf(query) !== -1) return 1;
+                        if (author.indexOf(query) !== -1) return 0.8;
+                        return 0;
+                    };
+                },
+                onInitialize: function() {
+                    // Inject data-attributes into internal item data
+                    var self = this;
+                    Object.keys(self.options).forEach(function(key) {
+                        var optEl = selectEl.querySelector('option[value="' + key + '"]');
+                        if (optEl) {
+                            self.options[key].bookCode = optEl.getAttribute('data-book-code') || '';
+                            self.options[key].author   = optEl.getAttribute('data-author') || '';
+                            self.options[key].stock    = optEl.getAttribute('data-stock') || '0';
+                            self.options[key].disabled = optEl.disabled;
+                        }
+                    });
+                },
+                render: {
+                    option: function(data, escape) {
+                        var stock = parseInt(data.stock || 0);
+                        var stockClass = stock > 0 ? 'in-stock' : 'out-of-stock';
+                        var stockLabel = stock > 0 ? 'Stok tersedia : ' + stock : '❌ Stok Habis';
+                        var codeHtml = data.bookCode ? '<span class="book-opt-code">' + escape(data.bookCode) + ' — </span>' : '';
+                        var authorHtml = data.author ? '<div class="book-opt-author">✏️ ' + escape(data.author) + '</div>' : '';
+                        return '<div>'
+                            + '<div class="book-opt-title">' + codeHtml + escape(data.text) + '</div>'
+                            + authorHtml
+                            + '<div class="book-opt-stock ' + stockClass + '">📦 ' + stockLabel + '</div>'
+                            + '</div>';
+                    },
+                    item: function(data, escape) {
+                        var codePrefix = data.bookCode ? escape(data.bookCode) + ' — ' : '';
+                        return '<div>' + codePrefix + escape(data.text) + '</div>';
+                    },
+                    no_results: function() {
+                        return '<div class="no-results" style="padding:10px 14px;color:#94a3b8;">Buku tidak ditemukan</div>';
+                    }
+                }
+            });
+        }
+
+        // Initialize Tom Select on the initial book select (if exists)
+        var initialSelect = document.querySelector('#book-wrapper .book-select');
+        if (initialSelect) initTomSelect(initialSelect);
+
         // Add/Remove Book Items in Borrow Form
         let indexBook = 1;
         const addBtn = document.getElementById('add-book');
@@ -351,11 +475,15 @@
                 let html = `
                     <div class="row g-2 mb-2 book-item">
                         <div class="col-md-7">
-                            <select name="books[${indexBook}][book_id]" class="form-select" required>
+                            <select name="books[${indexBook}][book_id]" class="form-select book-select" required>
                                 <option value="">-- Pilih Buku --</option>
                                 @foreach($availableBooks as $b)
-                                    <option value="{{ $b->id }}">
-                                        {{ $b->title }} (stok: {{ $b->stock }})
+                                    <option value="{{ $b->id }}"
+                                        data-book-code="{{ $b->book_code ?? '' }}"
+                                        data-author="{{ $b->author ?? '' }}"
+                                        data-stock="{{ $b->stock }}"
+                                        {{ $b->stock <= 0 ? 'disabled' : '' }}>
+                                        {{ $b->title }}
                                     </option>
                                 @endforeach
                             </select>
@@ -371,6 +499,9 @@
                     </div>
                 `;
                 wrapper.insertAdjacentHTML('beforeend', html);
+                // Initialize Tom Select on the newly added select
+                var newSelect = wrapper.querySelector('.book-item:last-child .book-select');
+                initTomSelect(newSelect);
                 indexBook++;
             });
         }
@@ -379,7 +510,11 @@
             if(e.target.closest('.remove-book')) {
                 const items = document.querySelectorAll('.book-item');
                 if(items.length > 1) {
-                    e.target.closest('.book-item').remove();
+                    // Destroy Tom Select instance before removing DOM
+                    var bookItem = e.target.closest('.book-item');
+                    var sel = bookItem.querySelector('.book-select');
+                    if (sel && sel.tomselect) sel.tomselect.destroy();
+                    bookItem.remove();
                 }
             }
         });

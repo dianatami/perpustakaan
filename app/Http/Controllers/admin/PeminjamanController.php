@@ -518,4 +518,122 @@ class PeminjamanController extends Controller
             'formatted' => 'Rp ' . number_format($total, 0, ',', '.'),
         ]);
     }
+
+    public function pengajuan()
+    {
+        $peminjaman = Bookrent::with(['user', 'details.book'])
+            ->whereIn('status', ['menunggu_acc', 'dipinjam', 'ditolak'])
+            ->latest('created_at')
+            ->paginate(10);
+        $users = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])->get();
+        $books = Book::all();
+
+        return view('admin.transaksi.pengajuan', compact('peminjaman', 'users', 'books'));
+    }
+
+    public function pengembalian()
+    {
+        $peminjaman = Bookrent::with(['user', 'details.book'])
+            ->where('status', 'proses_kembali')
+            ->latest('created_at')
+            ->paginate(10);
+        $users = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])->get();
+        $books = Book::all();
+
+        return view('admin.transaksi.pengembalian', compact('peminjaman', 'users', 'books'));
+    }
+
+    public function riwayat()
+    {
+        $peminjaman = Bookrent::with(['user', 'details.book'])
+            ->latest('created_at')
+            ->paginate(10);
+        $users = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])->get();
+        $books = Book::all();
+
+        return view('admin.transaksi.riwayat', compact('peminjaman', 'users', 'books'));
+    }
+
+    public function laporanUtama()
+    {
+        $peminjaman = Bookrent::with(['user', 'details.book.category'])
+            ->latest('created_at')
+            ->get();
+            
+        $totalBuku = Book::count();
+        $totalAnggota = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])->count();
+        $totalPinjam = Bookrent::count();
+        $sedangDipinjam = Bookrent::where('status', 'dipinjam')->count();
+        $sudahDikembalikan = Bookrent::where('status', 'kembali')->count();
+        $terlambat = Bookrent::where('status', 'terlambat')->count();
+        
+        // Sum the fine
+        $totalDenda = 0;
+        foreach ($peminjaman as $p) {
+            if (method_exists($p, 'calculateFine')) {
+                $totalDenda += $p->calculateFine();
+            }
+        }
+
+        return view('admin.laporan.utama', compact(
+            'peminjaman', 'totalBuku', 'totalAnggota', 'totalPinjam', 
+            'sedangDipinjam', 'sudahDikembalikan', 'terlambat', 'totalDenda'
+        ));
+    }
+
+    public function laporanPeminjaman()
+    {
+        $peminjaman = Bookrent::with(['user', 'details.book'])
+            ->latest('created_at')
+            ->paginate(10);
+
+        return view('admin.laporan.peminjaman', compact('peminjaman'));
+    }
+
+    public function laporanPengembalian()
+    {
+        $peminjaman = Bookrent::with(['user', 'details.book'])
+            ->where('status', 'kembali')
+            ->latest('created_at')
+            ->paginate(10);
+
+        return view('admin.laporan.pengembalian', compact('peminjaman'));
+    }
+
+    public function laporanDenda()
+    {
+        $peminjaman = Bookrent::with(['user', 'details.book'])
+            ->where('denda', '>', 0)
+            ->latest('created_at')
+            ->paginate(10);
+
+        return view('admin.laporan.denda', compact('peminjaman'));
+    }
+
+    public function laporanStatistik()
+    {
+        $totalBuku = Book::count();
+        $totalKategori = \App\Models\Kategori::count();
+        $totalAnggota = User::where('role', '0')->count();
+        $totalGuru = User::where('role', User::ROLE_GURU)->count();
+        $totalPinjam = Bookrent::count();
+        $stokTersedia = Book::where('stock', '>', 0)->count();
+        $dipinjam = Bookrent::where('status', 'dipinjam')->count();
+        $totalRusak = Book::sum('damaged');
+        $totalHilang = Book::sum('lost');
+        $leaderboardSiswa = User::leaderboardPeminjam(10);
+
+        return view('admin.laporan.statistik', compact(
+            'totalBuku',
+            'totalKategori',
+            'totalAnggota',
+            'totalGuru',
+            'totalPinjam',
+            'stokTersedia',
+            'dipinjam',
+            'totalRusak',
+            'totalHilang',
+            'leaderboardSiswa'
+        ));
+    }
 }
