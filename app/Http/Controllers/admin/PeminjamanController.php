@@ -554,18 +554,43 @@ class PeminjamanController extends Controller
         return view('admin.transaksi.riwayat', compact('peminjaman', 'users', 'books'));
     }
 
-    public function laporanUtama()
+    public function laporanUtama(Request $request)
     {
+        // Periode bulanan otomatis (default: bulan & tahun berjalan)
+        $bulan = (int) $request->input('bulan', Carbon::now()->month);
+        $tahun = (int) $request->input('tahun', Carbon::now()->year);
+
+        // Validasi range
+        $bulan = max(1, min(12, $bulan));
+        $tahun = max(2020, min(Carbon::now()->year + 1, $tahun));
+
+        // Hitung tanggal awal & akhir otomatis menggunakan Carbon
+        $startDate = Carbon::create($tahun, $bulan, 1)->startOfMonth();
+        $endDate   = Carbon::create($tahun, $bulan, 1)->endOfMonth();
+
+        // Nama bulan dalam Bahasa Indonesia
+        $namaBulanList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+        $namaBulan = $namaBulanList[$bulan];
+
+        // Data peminjaman difilter berdasarkan periode bulan terpilih
         $peminjaman = Bookrent::with(['user', 'details.book.category'])
+            ->whereBetween('created_at', [$startDate, $endDate])
             ->latest('created_at')
             ->get();
             
         $totalBuku = Book::count();
         $totalAnggota = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])->count();
-        $totalPinjam = Bookrent::count();
-        $sedangDipinjam = Bookrent::where('status', 'dipinjam')->count();
-        $sudahDikembalikan = Bookrent::where('status', 'kembali')->count();
-        $terlambat = Bookrent::where('status', 'terlambat')->count();
+        $totalPinjam = Bookrent::whereBetween('created_at', [$startDate, $endDate])->count();
+        $sedangDipinjam = Bookrent::where('status', 'dipinjam')
+            ->whereBetween('created_at', [$startDate, $endDate])->count();
+        $sudahDikembalikan = Bookrent::where('status', 'kembali')
+            ->whereBetween('created_at', [$startDate, $endDate])->count();
+        $terlambat = Bookrent::where('status', 'terlambat')
+            ->whereBetween('created_at', [$startDate, $endDate])->count();
         
         // Sum the fine
         $totalDenda = 0;
@@ -575,9 +600,16 @@ class PeminjamanController extends Controller
             }
         }
 
+        // Total denda dari field denda (fallback jika calculateFine tidak ada)
+        if ($totalDenda === 0) {
+            $totalDenda = (int) Bookrent::whereBetween('created_at', [$startDate, $endDate])
+                ->sum('denda');
+        }
+
         return view('admin.laporan.utama', compact(
             'peminjaman', 'totalBuku', 'totalAnggota', 'totalPinjam', 
-            'sedangDipinjam', 'sudahDikembalikan', 'terlambat', 'totalDenda'
+            'sedangDipinjam', 'sudahDikembalikan', 'terlambat', 'totalDenda',
+            'bulan', 'tahun', 'namaBulan', 'startDate', 'endDate', 'namaBulanList'
         ));
     }
 

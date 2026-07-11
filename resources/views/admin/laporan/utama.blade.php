@@ -49,10 +49,17 @@
     .badge-menunggu {background:#fef3c7;color:#92400e;}
     
     .action-bar {display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;}
-    .btn-action {padding:0.6rem 1.2rem;border-radius:10px;font-weight:700;font-size:0.85rem;border:none;display:inline-flex;align-items:center;gap:0.5rem;transition:all 0.2s;}
-    .btn-pdf {background:#ef4444;color:#fff;} .btn-pdf:hover {background:#dc2626;}
-    .btn-excel {background:#10b981;color:#fff;} .btn-excel:hover {background:#059669;}
-    .btn-print {background:#64748b;color:#fff;} .btn-print:hover {background:#475569;}
+    .btn-action {padding:0.6rem 1.2rem;border-radius:10px;font-weight:700;font-size:0.85rem;border:none;display:inline-flex;align-items:center;gap:0.5rem;transition:all 0.2s;cursor:pointer;}
+    .btn-pdf {background:#ef4444;color:#fff;} .btn-pdf:hover {background:#dc2626;color:#fff;}
+    .btn-excel {background:#10b981;color:#fff;} .btn-excel:hover {background:#059669;color:#fff;}
+    .btn-print {background:#64748b;color:#fff;} .btn-print:hover {background:#475569;color:#fff;}
+
+    .period-filter-bar {background:linear-gradient(135deg,#f0fdf9 0%,#ecfdf5 50%,#f0f9ff 100%);border:1px solid #d1e7dd;border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+    .period-filter-bar label {font-weight:700;font-size:0.85rem;color:#1e293b;margin:0;white-space:nowrap;}
+    .period-filter-bar .form-select {border-radius:10px;border:1px solid #cbd5e1;font-weight:600;font-size:0.85rem;padding:0.5rem 2rem 0.5rem 0.8rem;background-color:#fff;max-width:160px;}
+    .period-filter-bar .btn-filter {background:linear-gradient(135deg,#0f8c80,#116b64);color:#fff;border:none;border-radius:10px;padding:0.55rem 1.4rem;font-weight:700;font-size:0.85rem;display:inline-flex;align-items:center;gap:0.4rem;transition:all 0.2s;cursor:pointer;}
+    .period-filter-bar .btn-filter:hover {background:linear-gradient(135deg,#116b64,#0f5c54);transform:translateY(-1px);}
+    .period-badge {display:inline-flex;align-items:center;gap:0.5rem;background:rgba(15,140,128,0.12);color:#0f8c80;padding:0.4rem 1rem;border-radius:999px;font-weight:700;font-size:0.82rem;letter-spacing:0.02em;}
     
     @media print {
         .admin-sidebar, .admin-topbar, .action-bar, .no-print {display:none !important;}
@@ -71,12 +78,34 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h1><i class="bi bi-file-earmark-bar-graph"></i> Laporan Resmi Perpustakaan</h1>
-                <p>Ringkasan Eksekutif & Data Statistik Operasional Perpustakaan</p>
+                <p>Laporan Bulanan Perpustakaan — Periode <strong>{{ $namaBulan }} {{ $tahun }}</strong></p>
             </div>
             <div class="text-end d-none d-md-block">
                 <div style="font-size:0.9rem;opacity:0.8;">Tanggal Cetak</div>
                 <div style="font-size:1.2rem;font-weight:700;">{{ date('d M Y') }}</div>
+                <div class="mt-1"><span class="period-badge" style="background:rgba(255,255,255,0.2);color:#fff;"><i class="bi bi-calendar3"></i> {{ $namaBulan }} {{ $tahun }}</span></div>
             </div>
+        </div>
+    </div>
+
+    {{-- FILTER BULAN & TAHUN --}}
+    <div class="period-filter-bar no-print">
+        <label><i class="bi bi-funnel-fill"></i> Periode Laporan:</label>
+        <form method="GET" action="{{ route('admin.laporan.utama') }}" class="d-flex align-items-center gap-2 flex-wrap" id="periodForm">
+            <select name="bulan" class="form-select">
+                @foreach($namaBulanList as $num => $nama)
+                    <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>{{ $nama }}</option>
+                @endforeach
+            </select>
+            <select name="tahun" class="form-select">
+                @for($y = date('Y'); $y >= 2020; $y--)
+                    <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
+                @endfor
+            </select>
+            <button type="submit" class="btn-filter"><i class="bi bi-search"></i> Tampilkan</button>
+        </form>
+        <div class="ms-auto">
+            <span class="period-badge"><i class="bi bi-calendar-check"></i> {{ $startDate->format('d M Y') }} — {{ $endDate->format('d M Y') }}</span>
         </div>
     </div>
 
@@ -179,13 +208,14 @@
         arsort($catCounts);
         $topCats = array_slice($catCounts, 0, 5, true);
         
-        // Prepare Monthly Chart Data
-        $monthly = [];
-        for($i=1; $i<=12; $i++) $monthly[date('M', mktime(0,0,0,$i,1))] = 0;
+        // Prepare Daily Chart Data (tren harian dalam bulan terpilih)
+        $daily = [];
+        $daysInMonth = $endDate->day;
+        for($i=1; $i<=$daysInMonth; $i++) $daily[$i] = 0;
         foreach($peminjaman as $p) {
-            if($p->created_at && $p->created_at->format('Y') == date('Y')) {
-                $m = $p->created_at->format('M');
-                $monthly[$m]++;
+            if($p->created_at) {
+                $day = (int) $p->created_at->format('j');
+                $daily[$day]++;
             }
         }
     @endphp
@@ -255,24 +285,16 @@
             </div>
         </div>
 
-        {{-- FILTERS (No Print) --}}
+        {{-- FILTERS (No Print) — Periode sudah difilter server-side --}}
         <div class="row g-2 mb-4 no-print">
-            <div class="col-md-3">
-                <select class="form-select" id="filter-period">
-                    <option value="">Semua Periode</option>
-                    <option value="{{ date('Y-m') }}">Bulan Ini</option>
-                    <option value="{{ date('Y-m', strtotime('-1 month')) }}">Bulan Lalu</option>
-                    <option value="{{ date('Y') }}">Tahun Ini</option>
-                </select>
-            </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <select class="form-select" id="filter-type">
                     <option value="">Semua Jenis Anggota</option>
                     <option value="Siswa">Siswa</option>
                     <option value="Guru">Guru</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <select class="form-select" id="filter-status">
                     <option value="">Semua Status</option>
                     <option value="Dipinjam">Dipinjam</option>
@@ -280,7 +302,7 @@
                     <option value="Terlambat">Terlambat</option>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <input type="text" class="form-control" id="filter-search" placeholder="Cari Nama/Buku...">
             </div>
         </div>
@@ -349,19 +371,22 @@
         // --- CHARTS INITIALIZATION ---
         Chart.defaults.font.family = "'Plus Jakarta Sans', sans-serif";
         
-        // 1. Monthly Borrowing Chart
+        // 1. Daily Borrowing Chart (tren harian dalam bulan terpilih)
         new Chart(document.getElementById('monthlyChart'), {
             type: 'line',
             data: {
-                labels: {!! json_encode(array_keys($monthly)) !!},
+                labels: {!! json_encode(array_map(function($d) { return 'Tgl ' . $d; }, array_keys($daily))) !!},
                 datasets: [{
-                    label: 'Total Peminjaman',
-                    data: {!! json_encode(array_values($monthly)) !!},
+                    label: 'Peminjaman Harian',
+                    data: {!! json_encode(array_values($daily)) !!},
                     borderColor: '#0f8c80',
                     backgroundColor: 'rgba(15, 140, 128, 0.1)',
                     borderWidth: 3,
                     tension: 0.4,
-                    fill: true
+                    fill: true,
+                    pointBackgroundColor: '#0f8c80',
+                    pointRadius: 3,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
@@ -414,28 +439,25 @@
             }
         });
 
-        // --- FILTERING LOGIC ---
+        // --- FILTERING LOGIC (client-side: type, status, search) ---
         const rows = document.querySelectorAll('#reportTable tbody tr');
-        const filterPeriod = document.getElementById('filter-period');
         const filterType = document.getElementById('filter-type');
         const filterStatus = document.getElementById('filter-status');
         const filterSearch = document.getElementById('filter-search');
 
         function applyFilters() {
-            const pVal = filterPeriod.value;
             const tVal = filterType.value;
             const sVal = filterStatus.value;
             const qVal = filterSearch.value.toLowerCase();
 
             rows.forEach(row => {
-                const rPeriod = row.getAttribute('data-period');
                 const rType = row.getAttribute('data-type');
                 const rStatus = row.getAttribute('data-status');
-                const text = row.querySelector('.searchable').textContent.toLowerCase();
-                const books = row.querySelectorAll('.searchable')[1].textContent.toLowerCase();
+                const searchables = row.querySelectorAll('.searchable');
+                const text = searchables[0] ? searchables[0].textContent.toLowerCase() : '';
+                const books = searchables[1] ? searchables[1].textContent.toLowerCase() : '';
 
                 let show = true;
-                if(pVal && !rPeriod.startsWith(pVal)) show = false;
                 if(tVal && rType !== tVal) show = false;
                 if(sVal && rStatus !== sVal) show = false;
                 if(qVal && !(text.includes(qVal) || books.includes(qVal))) show = false;
@@ -444,18 +466,20 @@
             });
         }
 
-        filterPeriod.addEventListener('change', applyFilters);
         filterType.addEventListener('change', applyFilters);
         filterStatus.addEventListener('change', applyFilters);
         filterSearch.addEventListener('input', applyFilters);
     });
 
     // --- EXPORT FUNCTIONS ---
+    const exportNamaBulan = @json($namaBulan);
+    const exportTahun = @json($tahun);
+
     function exportPDF() {
         const element = document.getElementById('report-content');
         const opt = {
             margin:       0.3,
-            filename:     'Laporan_Perpustakaan.pdf',
+            filename:     'Laporan_Peminjaman_' + exportNamaBulan + '_' + exportTahun + '.pdf',
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true },
             jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
@@ -480,7 +504,7 @@
         });
         
         const wb = XLSX.utils.table_to_book(clone, {sheet: "Laporan"});
-        XLSX.writeFile(wb, 'Laporan_Perpustakaan.xlsx');
+        XLSX.writeFile(wb, 'Laporan_Peminjaman_' + exportNamaBulan + '_' + exportTahun + '.xlsx');
     }
 </script>
 @endsection
