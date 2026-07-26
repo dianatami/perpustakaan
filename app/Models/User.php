@@ -76,27 +76,34 @@ class User extends Authenticatable
     }
 
     /**
-     * Leaderboard peminjam terbanyak (non-admin).
-     * Hanya menghitung peminjaman yang berhasil (status: dipinjam atau kembali)
+     * Leaderboard peminjam terbanyak spesifik per role.
+     * Hanya menghitung peminjaman yang berhasil pada bulan berjalan.
      */
-    public static function leaderboardPeminjam(int $limit = 10)
+    public static function leaderboardByRole(int|string $role, int $limit = 10)
     {
-        return self::query()
-            ->leftJoin('bookrent', function ($join) {
+        $startOfMonth = \Carbon\Carbon::now()->startOfMonth();
+        $endOfMonth = \Carbon\Carbon::now()->endOfMonth();
+
+        $query = self::query()
+            ->leftJoin('bookrent', function ($join) use ($startOfMonth, $endOfMonth) {
                 $join->on('user.id', '=', 'bookrent.user_id')
-                    ->whereIn('bookrent.status', ['dipinjam', 'kembali']);
+                    ->whereIn('bookrent.status', ['dipinjam', 'kembali'])
+                    ->whereBetween('bookrent.created_at', [$startOfMonth, $endOfMonth]);
             })
-            ->selectRaw('user.id, user.nama, user.role, COUNT(bookrent.id) as total_peminjaman, COALESCE(SUM(CASE WHEN bookrent.status = "kembali" THEN 1 ELSE 0 END), 0) as total_dikembalikan')
-            ->where(function ($query): void {
-                $query->whereNull('user.role')
-                    ->orWhere('user.role', '!=', self::ROLE_ADMIN);
-            })
-            ->groupBy('user.id', 'user.nama', 'user.role')
+            ->selectRaw('user.id, user.nama, user.role, user.nisn, COUNT(bookrent.id) as total_peminjaman, MAX(bookrent.created_at) as latest_transaction')
+            ->where('user.role', $role)
+            ->where('user.status', 1)
+            ->groupBy('user.id', 'user.nama', 'user.role', 'user.nisn')
             ->havingRaw('COUNT(bookrent.id) > 0')
             ->orderByDesc('total_peminjaman')
-            ->orderBy('user.nama')
-            ->limit($limit)
-            ->get();
+            ->orderByDesc('latest_transaction')
+            ->orderBy('user.nama');
+
+        if ($limit > 0) {
+            $query->limit($limit);
+        }
+
+        return $query->get();
     }
 
     /**

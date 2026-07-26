@@ -60,8 +60,7 @@ Route::post('tampilan/logout', [LoginController::class, 'logout'])
     ->name('tampilan.logout');
 
 // Leaderboard Routes
-Route::get('leaderboard', [LeaderboardController::class, 'index'])
-    ->name('leaderboard.index');
+
 Route::middleware('auth')->get('leaderboard/live', [LeaderboardController::class, 'live'])
     ->name('leaderboard.live');
 Route::middleware('auth')->get('leaderboard/top3', [LeaderboardController::class, 'top3'])

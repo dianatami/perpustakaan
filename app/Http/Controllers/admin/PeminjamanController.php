@@ -653,7 +653,17 @@ class PeminjamanController extends Controller
         $dipinjam = Bookrent::where('status', 'dipinjam')->count();
         $totalRusak = Book::sum('damaged');
         $totalHilang = Book::sum('lost');
-        $leaderboardSiswa = User::leaderboardPeminjam(10);
+        $leaderboardGuruFull = User::leaderboardByRole(User::ROLE_GURU, 0);
+        $leaderboardSiswaFull = User::leaderboardByRole(User::ROLE_ANGGOTA, 0);
+
+        $leaderboardGuru = $leaderboardGuruFull->take(10);
+        $leaderboardSiswa = $leaderboardSiswaFull->take(10);
+
+        $totalGuruAktif = $leaderboardGuruFull->count();
+        $totalSiswaAktif = $leaderboardSiswaFull->count();
+
+        $totalPeminjamanGuruLb = $leaderboardGuruFull->sum('total_peminjaman');
+        $totalPeminjamanSiswaLb = $leaderboardSiswaFull->sum('total_peminjaman');
 
         return view('admin.laporan.statistik', compact(
             'totalBuku',
@@ -665,7 +675,12 @@ class PeminjamanController extends Controller
             'dipinjam',
             'totalRusak',
             'totalHilang',
-            'leaderboardSiswa'
+            'leaderboardGuru',
+            'leaderboardSiswa',
+            'totalGuruAktif',
+            'totalSiswaAktif',
+            'totalPeminjamanGuruLb',
+            'totalPeminjamanSiswaLb'
         ));
     }
 }

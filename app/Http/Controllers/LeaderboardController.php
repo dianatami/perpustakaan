@@ -9,50 +9,38 @@ use Illuminate\View\View;
 
 class LeaderboardController extends Controller
 {
-    /**
-     * Tampilkan halaman leaderboard
-     */
-    public function index(): View
-    {
-        $leaderboard = User::leaderboardPeminjam(50);
-        $myRank = null;
-        
-        if (auth()->check()) {
-            $myRank = $leaderboard->search(function ($item) {
-                return $item->id === auth()->id();
-            });
-            if ($myRank !== false) {
-                $myRank = $myRank + 1;
-            }
-        }
 
-        return view('leaderboard.index', compact('leaderboard', 'myRank'));
-    }
 
     /**
      * API endpoint untuk live leaderboard (JSON)
      */
     public function live(): JsonResponse
     {
-        $items = User::leaderboardPeminjam(10);
-        $totalPeserta = $items->count();
-        $totalPeminjaman = (int) $items->sum('total_peminjaman');
-        $peminjamanTertinggi = (int) max(1, (int) $items->max('total_peminjaman'));
+        $guru = User::leaderboardByRole(User::ROLE_GURU, 10);
+        $siswa = User::leaderboardByRole(User::ROLE_ANGGOTA, 10);
+
+        $mapItem = static function ($item) {
+            return [
+                'id' => (int) $item->id,
+                'nama' => (string) $item->nama,
+                'role' => (string) $item->roleLabel(),
+                'nisn' => (string) ($item->nisn ?? '-'),
+                'total_peminjaman' => (int) $item->total_peminjaman,
+            ];
+        };
 
         return response()->json([
             'updated_at' => Carbon::now()->format('d M Y H:i:s'),
-            'total_peserta' => $totalPeserta,
-            'total_peminjaman' => $totalPeminjaman,
-            'peminjaman_tertinggi' => $peminjamanTertinggi,
-            'items' => $items->map(static function ($item) {
-                return [
-                    'id' => (int) $item->id,
-                    'nama' => (string) $item->nama,
-                    'role' => (string) $item->roleLabel(),
-                    'total_peminjaman' => (int) $item->total_peminjaman,
-                    'total_dikembalikan' => (int) ($item->total_dikembalikan ?? 0),
-                ];
-            })->values(),
+            'guru' => [
+                'total_peserta' => $guru->count(),
+                'total_peminjaman' => (int) $guru->sum('total_peminjaman'),
+                'items' => $guru->map($mapItem)->values(),
+            ],
+            'siswa' => [
+                'total_peserta' => $siswa->count(),
+                'total_peminjaman' => (int) $siswa->sum('total_peminjaman'),
+                'items' => $siswa->map($mapItem)->values(),
+            ]
         ]);
     }
 
@@ -61,7 +49,7 @@ class LeaderboardController extends Controller
      */
     public function top3(): JsonResponse
     {
-        $items = User::leaderboardPeminjam(3);
+        $items = User::leaderboardByRole(User::ROLE_ANGGOTA, 3);
 
         return response()->json([
             'items' => $items->map(static function ($item, $index) {

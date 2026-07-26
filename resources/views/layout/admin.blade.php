@@ -419,6 +419,32 @@
             border-color: rgba(17, 50, 57, 0.08);
         }
 
+        /* Sidebar Overlay Styling */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2; /* Sidebar has z-index: 3 */
+            backdrop-filter: blur(2px);
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.25s, opacity 0.25s ease;
+        }
+
+        .sidebar-overlay.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        @media (min-width: 992px) {
+            .sidebar-overlay {
+                display: none !important;
+            }
+        }
+
         @keyframes riseIn {
             from {
                 opacity: 0;
@@ -457,6 +483,9 @@
     @include('partials.particles')
     
     <div class="admin-shell">
+        <!-- Overlay for Sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="{{ route('admin.beranda') }}" class="admin-brand">
                 <span class="admin-brand-icon"><i class="bi bi-building-fill"></i></span>
@@ -570,6 +599,7 @@
     <script>
         const toggleSidebarButton = document.getElementById('toggleSidebar');
         const adminSidebar = document.getElementById('adminSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
         const modalBackdrops = document.querySelectorAll('.modal-backdrop');
         modalBackdrops.forEach(el => el.remove());
 
@@ -578,15 +608,34 @@
             window.history.replaceState(null, '', window.location.href);
         }
 
+        function closeSidebar() {
+            if (adminSidebar) adminSidebar.classList.remove('show');
+            if (sidebarOverlay) sidebarOverlay.classList.remove('show');
+        }
+
         if (toggleSidebarButton && adminSidebar) {
-            toggleSidebarButton.addEventListener('click', () => {
+            toggleSidebarButton.addEventListener('click', (e) => {
+                e.stopPropagation(); // Mencegah klik dari event document lainnya
                 adminSidebar.classList.toggle('show');
+                if (sidebarOverlay) sidebarOverlay.classList.toggle('show');
             });
         
+            // Menutup sidebar jika overlay diklik
+            if (sidebarOverlay) {
+                sidebarOverlay.addEventListener('click', closeSidebar);
+            }
+
+            // Menutup sidebar dengan tombol ESC
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && adminSidebar.classList.contains('show')) {
+                    closeSidebar();
+                }
+            });
+
             document.querySelectorAll('.admin-nav-link').forEach((link) => {
                 link.addEventListener('click', () => {
                     if (window.innerWidth <= 991) {
-                        adminSidebar.classList.remove('show');
+                        closeSidebar();
                     }
                 });
             });

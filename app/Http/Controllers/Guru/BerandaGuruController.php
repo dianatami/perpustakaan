@@ -21,15 +21,25 @@ class BerandaGuruController extends Controller
             ->count();
         $riyawatPinjam = Bookrent::where('user_id', $user->id)->count();
         $books = Book::with('category')->orderByDesc('created_at')->take(10)->get();
-        $leaderboardSiswa = User::leaderboardPeminjam(10);
+        $leaderboardGuruFull = User::leaderboardByRole(User::ROLE_GURU, 0);
+
+        $myRankGuru = $leaderboardGuruFull->search(function ($item) use ($user) {
+            return $item->id === $user->id;
+        });
+        if ($myRankGuru !== false) {
+            $myRankGuru += 1;
+        }
+
+        $myTotalPeminjamanGuru = $leaderboardGuruFull->firstWhere('id', $user->id)->total_peminjaman ?? 0;
+
+        $leaderboardGuru = $leaderboardGuruFull->take(10);
+        $totalGuruAktif = $leaderboardGuruFull->count();
+        $totalPeminjamanGuruLb = $leaderboardGuruFull->sum('total_peminjaman');
 
         return view('guru.dashboard', compact(
-            'bukuTersedia',
-            'bookrents',
-            'books',
-            'riyawatPinjam',
-            'totalKategori',
-            'leaderboardSiswa'
+            'bukuTersedia', 'bookrents', 'books', 'riyawatPinjam', 'totalKategori',
+            'leaderboardGuru', 'totalGuruAktif', 'totalPeminjamanGuruLb',
+            'myRankGuru', 'myTotalPeminjamanGuru'
         ));
     }
 }
