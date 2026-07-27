@@ -4,33 +4,34 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="row mb-4 items-center">
-        <div class="col-md-5">
-            <div class="d-flex align-items-center gap-3">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 42px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
-                <h2 class="mb-0 fw-bold">Manajemen Anggota</h2>
+    <div class="d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3 mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 44px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));">
+            <div>
+                <h2 class="mb-0 fw-bold" style="color: #0f172a;">Manajemen Anggota</h2>
             </div>
         </div>
-        <div class="col-md-8 text-right d-flex flex-wrap justify-content-end gap-2 align-items-center">
+
+        <div class="d-flex flex-wrap align-items-center gap-2">
             <!-- Template Download Buttons -->
-            <a href="{{ route('admin.anggota.templateGuru') }}" class="btn btn-sm btn-outline-success" title="Download Template Excel Guru">
-                <i class="fas fa-file-excel"></i> Template Guru
+            <a href="{{ route('admin.anggota.templateGuru') }}" class="btn btn-sm btn-outline-success rounded-pill px-3" title="Download Template Excel Guru">
+                <i class="fas fa-file-excel me-1"></i> Template Guru
             </a>
-            <a href="{{ route('admin.anggota.templateSiswa') }}" class="btn btn-sm btn-outline-info" title="Download Template Excel Siswa">
-                <i class="fas fa-file-excel"></i> Template Siswa
+            <a href="{{ route('admin.anggota.templateSiswa') }}" class="btn btn-sm btn-outline-info rounded-pill px-3" title="Download Template Excel Siswa">
+                <i class="fas fa-file-excel me-1"></i> Template Siswa
             </a>
 
             <!-- Import Excel Buttons -->
-            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importGuruModal" data-bs-toggle="modal" data-bs-target="#importGuruModal">
-                <i class="fas fa-file-import"></i> Import Guru
+            <button type="button" class="btn btn-sm btn-success rounded-pill px-3" data-toggle="modal" data-target="#importGuruModal" data-bs-toggle="modal" data-bs-target="#importGuruModal">
+                <i class="fas fa-file-import me-1"></i> Import Guru
             </button>
-            <button type="button" class="btn btn-sm btn-info text-white" data-toggle="modal" data-target="#importSiswaModal" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
-                <i class="fas fa-file-import"></i> Import Siswa
+            <button type="button" class="btn btn-sm btn-info text-white rounded-pill px-3" data-toggle="modal" data-target="#importSiswaModal" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
+                <i class="fas fa-file-import me-1"></i> Import Siswa
             </button>
 
             <!-- Manual Add Member -->
-            <a href="{{ route('admin.anggota.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Tambah Anggota
+            <a href="{{ route('admin.anggota.create') }}" class="btn btn-primary rounded-pill px-3 fw-bold" style="background: #0f8c80; border-color: #0f8c80;">
+                <i class="fas fa-plus me-1"></i> Tambah Anggota
             </a>
         </div>
     </div>

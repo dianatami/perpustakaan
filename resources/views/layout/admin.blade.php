@@ -477,6 +477,51 @@
                 padding: 20px;
             }
         }
+
+        /* Global badge style for book quantity */
+        .book-qty {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.35rem;
+            padding: 0.35rem 0.75rem;
+            background: linear-gradient(135deg, #ff7a59 0%, #ff5252 100%);
+            color: #ffffff !important;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            white-space: nowrap !important;
+            box-shadow: 0 2px 6px rgba(255, 122, 89, 0.22);
+            line-height: 1;
+            vertical-align: middle;
+        }
+
+        .book-qty .qty-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.28);
+            color: #ffffff;
+            padding: 0.15rem 0.5rem;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 0.75rem;
+            min-width: 20px;
+            height: 20px;
+            line-height: 1;
+        }
+
+        .book-qty.qty-zero {
+            background: #f1f5f9;
+            color: #64748b !important;
+            box-shadow: none;
+            border: 1px solid #cbd5e1;
+        }
+
+        .book-qty.qty-zero .qty-num {
+            background: #cbd5e1;
+            color: #334155;
+        }
     </style>
 </head>
 <body>

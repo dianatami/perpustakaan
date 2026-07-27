@@ -158,9 +158,8 @@
     }
 
     .rack-search {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
+        max-width: 380px;
+        width: 100%;
     }
 
     @media (max-width: 991px) {
@@ -239,18 +238,22 @@
 
     <div class="col-lg-8">
         <div class="rack-card">
-            <div class="rack-card-header d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
+            <div class="rack-card-header d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
                 <div>
                     <h5 class="rack-card-title">Daftar Rak Buku</h5>
                     <p class="rack-card-subtitle">Pantau jumlah koleksi dan posisi rak.</p>
                 </div>
                 <form action="{{ route('admin.racks.index') }}" method="GET" class="rack-search">
                     <input type="hidden" name="per_page" value="{{ $perPage ?? 10 }}">
-                    <input type="search" name="search" class="form-control" placeholder="Cari kode, nama, lokasi" value="{{ $search ?? '' }}">
-                    <button class="btn btn-outline-secondary" type="submit">Cari</button>
-                    @if(!empty($search))
-                        <a href="{{ route('admin.racks.index', ['per_page' => $perPage ?? 10]) }}" class="btn btn-outline-secondary">Reset</a>
-                    @endif
+                    <div class="input-group">
+                        <input type="search" name="search" class="form-control" placeholder="Cari kode, nama, lokasi..." value="{{ $search ?? '' }}">
+                        <button class="btn btn-primary" type="submit" style="background: #0f8c80; border-color: #0f8c80;">
+                            <i class="bi bi-search"></i> Cari
+                        </button>
+                        @if(!empty($search))
+                            <a href="{{ route('admin.racks.index', ['per_page' => $perPage ?? 10]) }}" class="btn btn-outline-secondary">Reset</a>
+                        @endif
+                    </div>
                 </form>
             </div>
             <div class="rack-card-body">

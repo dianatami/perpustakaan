@@ -275,7 +275,10 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <span class="book-qty">{{ $item->details->sum('qty') }} Buku</span>
+                                    @php $qtySum = $item->details->sum('qty'); @endphp
+                                    <span class="book-qty {{ $qtySum == 0 ? 'qty-zero' : '' }}">
+                                        <span class="qty-num">{{ $qtySum }}</span> Buku
+                                    </span>
                                 </td>
                                 <td>{{ \Carbon\Carbon::parse($item->borrow_date)->format('d M Y') }}</td>
                                 <td>{{ \Carbon\Carbon::parse($item->return_date)->format('d M Y') }}</td>

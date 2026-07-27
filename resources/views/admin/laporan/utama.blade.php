@@ -31,12 +31,81 @@
     
     .chart-container {position:relative;height:300px;width:100%;}
     
-    .list-group-custom .list-group-item {border:none;border-bottom:1px solid #f1f5f9;padding:1rem 0;display:flex;justify-content:space-between;align-items:center;}
-    .list-group-custom .list-group-item:last-child {border-bottom:none;}
-    .rank-badge {width:28px;height:28px;border-radius:8px;background:#f1f5f9;color:#475569;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:0.85rem;margin-right:1rem;}
-    .rank-1 {background:#fef08a;color:#854d0e;}
-    .rank-2 {background:#e2e8f0;color:#475569;}
-    .rank-3 {background:#fed7aa;color:#9a3412;}
+    .top-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .top-list-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.75rem;
+        padding: 0.6rem 0.85rem;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #f1f5f9;
+        transition: all 0.2s ease;
+    }
+
+    .top-list-item:hover {
+        background: #ffffff;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06);
+        border-color: #e2e8f0;
+    }
+
+    .rank-pill {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .rank-pill-1 { background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%); color: #ffffff; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3); }
+    .rank-pill-2 { background: linear-gradient(135deg, #cbd5e1 0%, #64748b 100%); color: #ffffff; }
+    .rank-pill-3 { background: linear-gradient(135deg, #fed7aa 0%, #ea580c 100%); color: #ffffff; }
+    .rank-pill-other { background: #e2e8f0; color: #475569; }
+
+    .top-list-content {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .top-list-title {
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+    }
+
+    .top-list-sub {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin: 0;
+    }
+
+    .top-list-badge {
+        background: rgba(15, 140, 128, 0.1);
+        color: #0f8c80;
+        padding: 0.2rem 0.65rem;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.75rem;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
     
     .datatable {font-size:0.85rem;}
     .datatable thead th {background:#f8fafc;color:#475569;text-transform:uppercase;font-size:0.75rem;letter-spacing:0.05em;padding:1rem;border-bottom:2px solid #e2e8f0;}
@@ -54,10 +123,10 @@
     .btn-excel {background:#10b981;color:#fff;} .btn-excel:hover {background:#059669;color:#fff;}
     .btn-print {background:#64748b;color:#fff;} .btn-print:hover {background:#475569;color:#fff;}
 
-    .period-filter-bar {background:linear-gradient(135deg,#f0fdf9 0%,#ecfdf5 50%,#f0f9ff 100%);border:1px solid #d1e7dd;border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+    .period-filter-bar {background:linear-gradient(135deg,#f0fdf9 0%,#ecfdf5 50%,#f0f9ff 100%);border:1px solid #d1e7dd;border-radius:16px;padding:1.2rem 1.5rem;margin-bottom:2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;}
     .period-filter-bar label {font-weight:700;font-size:0.85rem;color:#1e293b;margin:0;white-space:nowrap;}
-    .period-filter-bar .form-select {border-radius:10px;border:1px solid #cbd5e1;font-weight:600;font-size:0.85rem;padding:0.5rem 2rem 0.5rem 0.8rem;background-color:#fff;max-width:160px;}
-    .period-filter-bar .btn-filter {background:linear-gradient(135deg,#0f8c80,#116b64);color:#fff;border:none;border-radius:10px;padding:0.55rem 1.4rem;font-weight:700;font-size:0.85rem;display:inline-flex;align-items:center;gap:0.4rem;transition:all 0.2s;cursor:pointer;}
+    .period-filter-bar .form-select {border-radius:10px;border:1px solid #cbd5e1;font-weight:600;font-size:0.85rem;padding:0.5rem 2rem 0.5rem 0.8rem;background-color:#fff;max-width:160px;width:auto;}
+    .period-filter-bar .btn-filter {background:linear-gradient(135deg,#0f8c80,#116b64);color:#fff;border:none;border-radius:10px;padding:0.55rem 1.4rem;font-weight:700;font-size:0.85rem;display:inline-flex;align-items:center;gap:0.4rem;transition:all 0.2s;cursor:pointer;white-space:nowrap;}
     .period-filter-bar .btn-filter:hover {background:linear-gradient(135deg,#116b64,#0f5c54);transform:translateY(-1px);}
     .period-badge {display:inline-flex;align-items:center;gap:0.5rem;background:rgba(15,140,128,0.12);color:#0f8c80;padding:0.4rem 1rem;border-radius:999px;font-weight:700;font-size:0.82rem;letter-spacing:0.02em;}
     
@@ -90,21 +159,23 @@
 
     {{-- FILTER BULAN & TAHUN --}}
     <div class="period-filter-bar no-print">
-        <label><i class="bi bi-funnel-fill"></i> Periode Laporan:</label>
-        <form method="GET" action="{{ route('admin.laporan.utama') }}" class="d-flex align-items-center gap-2 flex-wrap" id="periodForm">
-            <select name="bulan" class="form-select">
-                @foreach($namaBulanList as $num => $nama)
-                    <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>{{ $nama }}</option>
-                @endforeach
-            </select>
-            <select name="tahun" class="form-select">
-                @for($y = date('Y'); $y >= 2020; $y--)
-                    <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
-                @endfor
-            </select>
-            <button type="submit" class="btn-filter"><i class="bi bi-search"></i> Tampilkan</button>
-        </form>
-        <div class="ms-auto">
+        <div class="d-flex align-items-center gap-3 flex-wrap">
+            <label><i class="bi bi-funnel-fill"></i> Periode Laporan:</label>
+            <form method="GET" action="{{ route('admin.laporan.utama') }}" class="d-flex align-items-center gap-2" id="periodForm">
+                <select name="bulan" class="form-select">
+                    @foreach($namaBulanList as $num => $nama)
+                        <option value="{{ $num }}" {{ $bulan == $num ? 'selected' : '' }}>{{ $nama }}</option>
+                    @endforeach
+                </select>
+                <select name="tahun" class="form-select">
+                    @for($y = date('Y'); $y >= 2020; $y--)
+                        <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>{{ $y }}</option>
+                    @endfor
+                </select>
+                <button type="submit" class="btn-filter"><i class="bi bi-search"></i> Tampilkan</button>
+            </form>
+        </div>
+        <div>
             <span class="period-badge"><i class="bi bi-calendar-check"></i> {{ $startDate->format('d M Y') }} — {{ $endDate->format('d M Y') }}</span>
         </div>
     </div>
@@ -224,19 +295,19 @@
         <div class="col-md-4">
             <div class="section-card h-100">
                 <h4 class="section-title"><i class="bi bi-trophy-fill"></i> 10 Buku Terlaris</h4>
-                <ul class="list-group list-group-custom">
+                <ul class="top-list">
                     @php $i = 1; @endphp
                     @forelse($topBooks as $title => $count)
-                        <li class="list-group-item">
-                            <div class="d-flex align-items-center">
-                                <span class="rank-badge rank-{{ $i<=3 ? $i : 'other' }}">{{ $i }}</span>
-                                <span class="fw-semibold text-truncate" style="max-width:180px;" title="{{ $title }}">{{ $title }}</span>
+                        <li class="top-list-item">
+                            <span class="rank-pill rank-pill-{{ $i <= 3 ? $i : 'other' }}">{{ $i }}</span>
+                            <div class="top-list-content">
+                                <p class="top-list-title" title="{{ $title }}">{{ $title }}</p>
                             </div>
-                            <span class="badge bg-light text-dark">{{ $count }}x</span>
+                            <span class="top-list-badge">{{ $count }}x</span>
                         </li>
                         @php $i++; @endphp
                     @empty
-                        <li class="list-group-item text-muted">Belum ada data</li>
+                        <li class="top-list-item text-muted">Belum ada data</li>
                     @endforelse
                 </ul>
             </div>
@@ -244,22 +315,20 @@
         <div class="col-md-4">
             <div class="section-card h-100">
                 <h4 class="section-title"><i class="bi bi-star-fill"></i> 10 Anggota Teraktif</h4>
-                <ul class="list-group list-group-custom">
+                <ul class="top-list">
                     @php $i = 1; @endphp
                     @forelse($topMembers as $name => $data)
-                        <li class="list-group-item">
-                            <div class="d-flex align-items-center">
-                                <span class="rank-badge rank-{{ $i<=3 ? $i : 'other' }}">{{ $i }}</span>
-                                <div>
-                                    <div class="fw-semibold text-truncate" style="max-width:150px;">{{ $name }}</div>
-                                    <small class="text-muted">{{ $data['type'] }}</small>
-                                </div>
+                        <li class="top-list-item">
+                            <span class="rank-pill rank-pill-{{ $i <= 3 ? $i : 'other' }}">{{ $i }}</span>
+                            <div class="top-list-content">
+                                <p class="top-list-title" title="{{ $name }}">{{ $name }}</p>
+                                <p class="top-list-sub">{{ $data['type'] }}</p>
                             </div>
-                            <span class="badge bg-light text-dark">{{ $data['count'] }}x</span>
+                            <span class="top-list-badge">{{ $data['count'] }}x</span>
                         </li>
                         @php $i++; @endphp
                     @empty
-                        <li class="list-group-item text-muted">Belum ada data</li>
+                        <li class="top-list-item text-muted">Belum ada data</li>
                     @endforelse
                 </ul>
             </div>
@@ -267,7 +336,7 @@
         <div class="col-md-4">
             <div class="section-card h-100">
                 <h4 class="section-title"><i class="bi bi-tags-fill"></i> Kategori Populer</h4>
-                <div class="chart-container" style="height:220px;">
+                <div class="chart-container" style="height:250px;">
                     <canvas id="categoryChart"></canvas>
                 </div>
             </div>
