@@ -76,47 +76,64 @@
         }
 
         .admin-brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 28px;
+            display: block;
+            margin-bottom: 24px;
             text-decoration: none;
             color: #ffffff;
             position: relative;
             z-index: 1;
         }
 
+        .admin-brand-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
         .admin-brand-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 13px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            background: rgba(255, 255, 255, 0.16);
-            font-size: 1.2rem;
+            background: #ffffff;
+            padding: 4px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+
+        .admin-brand-icon img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
         }
 
         .admin-brand-title {
             font-family: 'Sora', sans-serif;
-            font-weight: 700;
-            font-size: 1.05rem;
-            line-height: 1.25;
+            font-weight: 800;
+            font-size: 1.1rem;
+            line-height: 1.2;
+            color: #ffffff;
+            display: block;
         }
 
         .admin-brand-subtitle {
-            font-size: 0.78rem;
-            color: rgba(226, 245, 242, 0.72);
+            font-size: 0.76rem;
+            color: rgba(226, 245, 242, 0.75);
+            font-weight: 600;
+            display: block;
         }
 
         .admin-school-name {
-            margin-top: 10px;
+            margin-top: 12px;
             padding-top: 10px;
-            border-top: 1px solid rgba(214, 245, 240, 0.25);
-            font-size: 1.25rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 0.95rem;
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.85);
-            letter-spacing: 0.05em;
+            color: #ffffff;
+            letter-spacing: 0.02em;
+            line-height: 1.35;
         }
 
         .admin-nav {
@@ -533,14 +550,18 @@
 
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="{{ route('admin.beranda') }}" class="admin-brand">
-                <span class="admin-brand-icon">
-                    <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
-                </span>
-                <span>
-                    <span class="admin-brand-title">Control Room</span>
-                    <span class="admin-brand-subtitle d-block">Perpustakaan Sekolah</span>
-                    <span class="admin-school-name d-block">Perpustakaan SMKN 1 Tirtamulya</span>
-                </span>
+                <div class="admin-brand-top">
+                    <span class="admin-brand-icon">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya">
+                    </span>
+                    <div>
+                        <span class="admin-brand-title">Control Room</span>
+                        <span class="admin-brand-subtitle">Perpustakaan Sekolah</span>
+                    </div>
+                </div>
+                <div class="admin-school-name">
+                    Perpustakaan SMKN 1 Tirtamulya
+                </div>
             </a>
 
             <nav class="admin-nav">

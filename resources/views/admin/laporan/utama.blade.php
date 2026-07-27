@@ -254,12 +254,15 @@
         $catCounts = [];
         
         foreach($peminjaman as $p) {
-            $memberType = ($p->user->role ?? '') == '2' ? 'Guru' : 'Siswa';
-            $memberName = $p->user->nama ?? 'Unknown';
-            if(!isset($memberCounts[$memberName])) {
-                $memberCounts[$memberName] = ['count'=>0, 'type'=>$memberType];
+            if ($p->user) {
+                $userId = $p->user->id;
+                $memberType = (string)$p->user->role === '2' ? 'Guru' : 'Siswa';
+                $memberName = $p->user->nama ?? 'Unknown';
+                if(!isset($memberCounts[$userId])) {
+                    $memberCounts[$userId] = ['name' => $memberName, 'count' => 0, 'type' => $memberType];
+                }
+                $memberCounts[$userId]['count']++;
             }
-            $memberCounts[$memberName]['count']++;
             
             foreach($p->details as $d) {
                 $title = $d->book->title ?? 'Unknown';
@@ -317,11 +320,11 @@
                 <h4 class="section-title"><i class="bi bi-star-fill"></i> 10 Anggota Teraktif</h4>
                 <ul class="top-list">
                     @php $i = 1; @endphp
-                    @forelse($topMembers as $name => $data)
+                    @forelse($topMembers as $userId => $data)
                         <li class="top-list-item">
                             <span class="rank-pill rank-pill-{{ $i <= 3 ? $i : 'other' }}">{{ $i }}</span>
                             <div class="top-list-content">
-                                <p class="top-list-title" title="{{ $name }}">{{ $name }}</p>
+                                <p class="top-list-title" title="{{ $data['name'] }}">{{ $data['name'] }}</p>
                                 <p class="top-list-sub">{{ $data['type'] }}</p>
                             </div>
                             <span class="top-list-badge">{{ $data['count'] }}x</span>

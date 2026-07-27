@@ -14,14 +14,19 @@
 
     <div class="card shadow border-0">
 
-        <div class="card-header bg-success text-white d-flex align-items-center gap-3">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
-            <h4 class="mb-0 text-white fw-bold">
-                Form Peminjaman Buku
-            </h4>
+        <div class="card-header text-white d-flex align-items-center justify-content-between p-3" style="background: linear-gradient(135deg, #0f8c80 0%, #116b64 100%);">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                <h4 class="mb-0 text-white fw-bold">
+                    Form Peminjaman Buku
+                </h4>
+            </div>
+            <a href="{{ route('admin.peminjaman.index') }}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold" style="color: #0f8c80;">
+                <i class="fas fa-arrow-left me-1"></i> Kembali
+            </a>
         </div>
 
-        <div class="card-body">
+        <div class="card-body p-4">
 
             {{-- ERROR --}}
             @if(session('error'))
@@ -50,7 +55,7 @@
                     {{-- USER --}}
                     <div class="col-md-6 mb-3">
 
-                        <label class="form-label fw-bold">
+                        <label class="form-label fw-bold text-dark">
                             Peminjam
                         </label>
 
@@ -61,23 +66,21 @@
                         >
 
                             <option value="">
-                                Cari anggota...
+                                Cari peminjam...
                             </option>
 
                             @foreach ($users as $user)
-
+                                @php
+                                    $idNum = !empty($user->nisn) ? 'NISN: ' . $user->nisn : (!empty($user->nip) ? 'NIP: ' . $user->nip : '');
+                                @endphp
                                 <option
-                                value="{{ $user->id }}"
-                                {{ $user->status == 0 ? 'disabled' : '' }}
+                                    value="{{ $user->id }}"
+                                    {{ $user->status == 0 ? 'disabled' : '' }}
                                 >
-                                {{ $user->nama }}
-                                -
-                                {{ $user->email }}
-                                {{ $user->status == 0 ? '(Nonaktif)' : '' }}
-                                    
-
+                                    {{ $user->nama }}
+                                    @if($idNum) - {{ $idNum }} @endif
+                                    {{ $user->status == 0 ? '(Nonaktif)' : '' }}
                                 </option>
-
                             @endforeach
 
                         </select>
@@ -87,7 +90,7 @@
                     {{-- TANGGAL --}}
                     <div class="col-md-3 mb-3">
 
-                        <label class="form-label fw-bold">
+                        <label class="form-label fw-bold text-dark">
                             Tanggal Pinjam
                         </label>
 
@@ -103,7 +106,7 @@
 
                     <div class="col-md-3 mb-3">
 
-                        <label class="form-label fw-bold">
+                        <label class="form-label fw-bold text-dark">
                             Tanggal Kembali
                         </label>
 
@@ -118,29 +121,28 @@
 
                 </div>
 
-                <hr>
+                <hr class="my-4">
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
-
-                    <h5 class="mb-0">
-                        Daftar Buku
+                    <h5 class="mb-0 fw-bold text-dark">
+                        <i class="fas fa-book me-2" style="color: #0f8c80;"></i> Daftar Buku
                     </h5>
 
                     <button
                         type="button"
-                        class="btn btn-primary"
+                        class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold"
+                        style="color: #0f8c80; border-color: #0f8c80;"
                         id="add-book"
                     >
-                        + Tambah Buku
+                        <i class="fas fa-plus me-1"></i> Tambah Buku
                     </button>
-
                 </div>
 
                 {{-- WRAPPER --}}
                 <div id="book-wrapper">
 
                     {{-- ITEM --}}
-                    <div class="book-item row mb-3">
+                    <div class="book-item row mb-3 align-items-start">
 
                         {{-- SELECT BUKU --}}
                         <div class="col-md-7">
@@ -167,7 +169,6 @@
                                         -
                                         {{ $book->title }}
                                         (stok: {{ $book->stock }})
-                                        
 
                                     </option>
 
@@ -189,7 +190,7 @@
                                 required
                             >
 
-                            <small class="text-muted stock-text">
+                            <small class="text-muted stock-text d-block mt-1">
                                 Stok tersedia: -
                             </small>
 
@@ -200,9 +201,9 @@
 
                             <button
                                 type="button"
-                                class="btn btn-danger remove-book w-100"
+                                class="btn btn-outline-danger remove-book w-100"
                             >
-                                Hapus
+                                <i class="fas fa-trash-alt me-1"></i> Hapus
                             </button>
 
                         </div>
@@ -211,14 +212,14 @@
 
                 </div>
 
-                <hr>
-
-                <button type="submit" class="btn btn-success">
-
-                    <i class="fas fa-save"></i>
-                    Simpan Peminjaman
-
-                </button>
+                <div class="d-flex align-items-center gap-2 pt-3 border-top mt-4">
+                    <button type="submit" class="btn btn-success px-4 rounded-pill fw-bold" style="background: #0f8c80; border-color: #0f8c80;">
+                        <i class="fas fa-save me-2"></i> Simpan Peminjaman
+                    </button>
+                    <a href="{{ route('admin.peminjaman.index') }}" class="btn btn-outline-secondary px-4 rounded-pill">
+                        Batal
+                    </a>
+                </div>
 
             </form>
 
@@ -245,12 +246,14 @@ $(document).ready(function(){
     // =========================================
 
     function initSelect2(){
-
-        $('.select2').select2({
+        $('select[name="user_id"]').select2({
+            width: '100%',
+            placeholder: 'Cari peminjam...'
+        });
+        $('.book-select').select2({
             width: '100%',
             placeholder: 'Cari buku...'
         });
-
     }
 
     initSelect2();
@@ -330,7 +333,7 @@ $(document).ready(function(){
     $('#add-book').click(function(){
 
         let html = `
-            <div class="book-item row mb-3">
+            <div class="book-item row mb-3 align-items-start">
 
                 <div class="col-md-7">
 

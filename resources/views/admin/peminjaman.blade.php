@@ -49,7 +49,10 @@
         <select name="user_id" required>
             <option value="">-- Pilih Peminjam --</option>
             @foreach ($users as $user)
-                <option value="{{ $user->id }}">{{ $user->nama }}</option>
+                @php
+                    $idNum = !empty($user->nisn) ? 'NISN: ' . $user->nisn : (!empty($user->nip) ? 'NIP: ' . $user->nip : '');
+                @endphp
+                <option value="{{ $user->id }}">{{ $user->nama }}{{ $idNum ? ' - ' . $idNum : '' }}</option>
             @endforeach
         </select>
 
