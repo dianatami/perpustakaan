@@ -22,10 +22,10 @@ class RegisterController extends Controller
             'email' => 'required|email|unique:user,email',
             'has_nip' => 'boolean',
             'role' => 'sometimes|in:0,2',
-            'nip' => ['nullable', 'string', function (string $attribute, mixed $value, \Closure $fail): void {
+            'nip' => ['required_if:has_nip,1,true', 'nullable', 'string', function (string $attribute, mixed $value, \Closure $fail): void {
                 $identifier = trim((string) $value);
 
-                // Jika field kosong, tidak perlu validasi
+                // Jika field kosong, tidak perlu validasi lebih lanjut
                 if ($identifier === '') {
                     return;
                 }
@@ -54,7 +54,7 @@ class RegisterController extends Controller
         ]);
 
         $identifier = trim((string) $request->input('nip'));
-        $hasNip = (bool) $request->input('has_nip');
+        $hasNip = filter_var($request->input('has_nip'), FILTER_VALIDATE_BOOLEAN);
 
         // Prevent registering with the reserved admin email
         if (strtolower(trim((string) $request->input('email'))) === 'admin@gmail.com') {

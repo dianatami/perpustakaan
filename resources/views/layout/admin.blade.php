@@ -488,7 +488,9 @@
 
         <aside class="admin-sidebar" id="adminSidebar">
             <a href="{{ route('admin.beranda') }}" class="admin-brand">
-                <span class="admin-brand-icon"><i class="bi bi-building-fill"></i></span>
+                <span class="admin-brand-icon">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                </span>
                 <span>
                     <span class="admin-brand-title">Control Room</span>
                     <span class="admin-brand-subtitle d-block">Perpustakaan Sekolah</span>

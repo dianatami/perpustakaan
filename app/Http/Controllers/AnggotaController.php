@@ -232,4 +232,47 @@ class AnggotaController extends Controller
 
         return redirect()->route('admin.anggota.index')->with('success', 'Status anggota berhasil diubah');
     }
+
+    public function importGuru(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        try {
+            $defaultPassword = $request->input('default_password', 'SmkTirtamulya2026');
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\GuruImport($defaultPassword), $request->file('file'));
+
+            return redirect()->route('admin.anggota.index')->with('success', 'Data Guru & Akun berhasil di-import dan dipindahkan ke sistem!');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.anggota.index')->with('error', 'Gagal mengimport data guru: ' . $e->getMessage());
+        }
+    }
+
+    public function importSiswa(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:5120',
+        ]);
+
+        try {
+            $defaultPassword = $request->input('default_password', 'SmkTirtamulya2026');
+            \Maatwebsite\Excel\Facades\Excel::import(new \App\Imports\SiswaImport($defaultPassword), $request->file('file'));
+
+            return redirect()->route('admin.anggota.index')->with('success', 'Data Siswa & Akun berhasil di-import dan dipindahkan ke sistem!');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.anggota.index')->with('error', 'Gagal mengimport data siswa: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTemplateGuru()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\GuruTemplateExport(), 'Template_Import_Guru.xlsx');
+    }
+
+    public function downloadTemplateSiswa()
+    {
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SiswaTemplateExport(), 'Template_Import_Siswa.xlsx');
+    }
 }
+

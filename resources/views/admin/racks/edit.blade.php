@@ -51,9 +51,12 @@
     </div>
 
     <div class="rack-edit-card">
-        <div class="rack-edit-header">
-            <h5 class="rack-edit-title">Informasi Rak</h5>
-            <p class="rack-edit-subtitle">Pastikan kode rak tetap konsisten.</p>
+        <div class="rack-edit-header d-flex align-items-center gap-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 44px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));">
+            <div>
+                <h5 class="rack-edit-title mb-0">Informasi Rak</h5>
+                <p class="rack-edit-subtitle mb-0">Pastikan kode rak tetap konsisten.</p>
+            </div>
         </div>
         <div class="rack-edit-body">
             <form action="{{ route('admin.racks.update', $rack->id) }}" method="POST">

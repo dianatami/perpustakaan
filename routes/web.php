@@ -114,6 +114,11 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:1'])->group(fu
     Route::put('anggota/{id}', [AnggotaController::class, 'update'])->name('anggota.update');
     Route::delete('anggota/{id}', [AnggotaController::class, 'destroy'])->name('anggota.destroy');
     Route::put('anggota/{id}/status', [AnggotaController::class, 'toggleStatus'])->name('anggota.toggleStatus');
+
+    Route::post('anggota/import-guru', [AnggotaController::class, 'importGuru'])->name('anggota.importGuru');
+    Route::post('anggota/import-siswa', [AnggotaController::class, 'importSiswa'])->name('anggota.importSiswa');
+    Route::get('anggota/template-guru', [AnggotaController::class, 'downloadTemplateGuru'])->name('anggota.templateGuru');
+    Route::get('anggota/template-siswa', [AnggotaController::class, 'downloadTemplateSiswa'])->name('anggota.templateSiswa');
 });
 
 $portalSharedRoutes = function () {

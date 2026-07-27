@@ -4,44 +4,74 @@
 
 @section('content')
 <div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <h2>Manajemen Anggota</h2>
+    <div class="row mb-4 items-center">
+        <div class="col-md-5">
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 42px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                <h2 class="mb-0 fw-bold">Manajemen Anggota</h2>
+            </div>
         </div>
-        <div class="col-md-6 text-right">
+        <div class="col-md-8 text-right d-flex flex-wrap justify-content-end gap-2 align-items-center">
+            <!-- Template Download Buttons -->
+            <a href="{{ route('admin.anggota.templateGuru') }}" class="btn btn-sm btn-outline-success" title="Download Template Excel Guru">
+                <i class="fas fa-file-excel"></i> Template Guru
+            </a>
+            <a href="{{ route('admin.anggota.templateSiswa') }}" class="btn btn-sm btn-outline-info" title="Download Template Excel Siswa">
+                <i class="fas fa-file-excel"></i> Template Siswa
+            </a>
+
+            <!-- Import Excel Buttons -->
+            <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#importGuruModal" data-bs-toggle="modal" data-bs-target="#importGuruModal">
+                <i class="fas fa-file-import"></i> Import Guru
+            </button>
+            <button type="button" class="btn btn-sm btn-info text-white" data-toggle="modal" data-target="#importSiswaModal" data-bs-toggle="modal" data-bs-target="#importSiswaModal">
+                <i class="fas fa-file-import"></i> Import Siswa
+            </button>
+
+            <!-- Manual Add Member -->
             <a href="{{ route('admin.anggota.create') }}" class="btn btn-primary">
                 <i class="fas fa-plus"></i> Tambah Anggota
             </a>
         </div>
-        <div class="card mb-4">
-    <div class="card-body">
-        <form method="GET" action="{{ route('admin.anggota.index') }}">
-            <div class="input-group">
-                <input
-                    type="text"
-                    name="search"
-                    class="form-control"
-                    placeholder="Cari nama, email, NISN atau NIP..."
-                    value="{{ request('search') }}"
-                >
-
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i> Cari
-                </button>
-
-                @if(request('search'))
-                    <a href="{{ route('admin.anggota.index') }}" class="btn btn-secondary">
-                        Reset
-                    </a>
-                @endif
-            </div>
-        </form>
     </div>
-</div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="{{ route('admin.anggota.index') }}">
+                <div class="input-group">
+                    <input
+                        type="text"
+                        name="search"
+                        class="form-control"
+                        placeholder="Cari nama, email, NISN atau NIP..."
+                        value="{{ request('search') }}"
+                    >
+
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Cari
+                    </button>
+
+                    @if(request('search'))
+                        <a href="{{ route('admin.anggota.index') }}" class="btn btn-secondary">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
     </div>
 
     @if ($message = Session::get('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ $message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    @endif
+
+    @if ($message = Session::get('error'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
             {{ $message }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
@@ -192,6 +222,85 @@
                     Belum ada data guru terdaftar.
                 </div>
             @endif
+        </div>
+    </div>
+</div>
+
+<!-- Custom Style Fix: Hilangkan modal-backdrop hitam yang menghalangi klik -->
+<style>
+    .modal-backdrop {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+        pointer-events: none !important;
+    }
+    .modal.show {
+        background-color: rgba(0, 0, 0, 0.4) !important;
+    }
+</style>
+
+<!-- Modal Import Guru Excel -->
+<div class="modal fade" id="importGuruModal" tabindex="-1" data-backdrop="false" data-bs-backdrop="false" aria-labelledby="importGuruModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-success text-white d-flex align-items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 38px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                <h5 class="modal-title font-weight-bold mb-0 text-white" id="importGuruModalLabel"><i class="fas fa-file-excel"></i> Import Data Guru dari Excel</h5>
+                <button type="button" class="close text-white ms-auto" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ route('admin.anggota.importGuru') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <p class="text-muted small">Unggah file Excel berisi data Guru (NIP, Nama, Email, No HP). Sistem otomatis membuatkan akun login dengan password default: <strong>SmkTirtamulya2026</strong>.</p>
+                    <div class="form-group mb-3">
+                        <label for="fileGuru" class="form-label font-weight-bold text-dark">Pilih File Excel / CSV:</label>
+                        <input type="file" name="file" id="fileGuru" class="form-control" accept=".xlsx,.xls,.csv" required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="defaultPasswordGuru" class="form-label font-weight-bold text-dark">Password Default Akun Baru:</label>
+                        <input type="text" name="default_password" id="defaultPasswordGuru" value="SmkTirtamulya2026" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success font-weight-bold"><i class="fas fa-upload"></i> Import & Pindah ke Sistem</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Import Siswa Excel -->
+<div class="modal fade" id="importSiswaModal" tabindex="-1" data-backdrop="false" data-bs-backdrop="false" aria-labelledby="importSiswaModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content shadow-lg border-0">
+            <div class="modal-header bg-info text-white d-flex align-items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 38px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                <h5 class="modal-title font-weight-bold mb-0 text-white" id="importSiswaModalLabel"><i class="fas fa-file-excel"></i> Import Data Siswa dari Excel</h5>
+                <button type="button" class="close text-white ms-auto" data-dismiss="modal" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ route('admin.anggota.importSiswa') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <p class="text-muted small">Unggah file Excel berisi data Siswa (NISN, Nama, Email, No HP). Sistem otomatis membuatkan akun login dengan password default: <strong>SmkTirtamulya2026</strong>.</p>
+                    <div class="form-group mb-3">
+                        <label for="fileSiswa" class="form-label font-weight-bold text-dark">Pilih File Excel / CSV:</label>
+                        <input type="file" name="file" id="fileSiswa" class="form-control" accept=".xlsx,.xls,.csv" required>
+                    </div>
+                    <div class="form-group mb-2">
+                        <label for="defaultPasswordSiswa" class="form-label font-weight-bold text-dark">Password Default Akun Baru:</label>
+                        <input type="text" name="default_password" id="defaultPasswordSiswa" value="SmkTirtamulya2026" class="form-control">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-info text-white font-weight-bold"><i class="fas fa-upload"></i> Import & Pindah ke Sistem</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

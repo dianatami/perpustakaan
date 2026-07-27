@@ -3,7 +3,13 @@
 @section('content')
     <div class="container p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
-            <h1 class="mb-0 fw-bold">Edit Kategori</h1>
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                <div>
+                    <h1 class="mb-0 fw-bold">Edit Kategori</h1>
+                    <small class="text-muted">Perpustakaan SMKN 1 Tirtamulya</small>
+                </div>
+            </div>
             <div>
                 <a href="{{ route('admin.kategori.index') }}" class="btn btn-sm btn-secondary me-2">Kembali ke Kategori</a>
                 <a href="{{ route('admin.beranda') }}" class="btn btn-sm btn-outline-primary">Kembali ke Beranda</a>
@@ -34,7 +40,10 @@
             <div class="col-md-6">
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body">
-                        <h5 class="mb-4 fw-bold text-primary">Tambah Buku ke: {{ $kategori->name_category }}</h5>
+                        <div class="d-flex align-items-center gap-3 mb-4">
+                            <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 38px; width: auto; object-fit: contain;">
+                            <h5 class="mb-0 fw-bold text-primary">Tambah Buku ke: {{ $kategori->name_category }}</h5>
+                        </div>
                         
                         <form action="{{ route('admin.kategori.book.store', $kategori->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf

@@ -137,18 +137,22 @@
             <div class="card border-0 shadow-sm rounded-4" style="overflow: hidden;">
                 <div class="card-header border-0 pt-4 pb-3"
                     style="background: linear-gradient(130deg, #1d4f78, #ff7a59);">
-                    <h5 class="card-title fw-bold mb-0 text-white">
-                        <i class="bi bi-book"></i> Panel Peminjaman Buku
-                    </h5>
+                    <div class="d-flex align-items-center gap-3">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 44px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                        <h5 class="card-title fw-bold mb-0 text-white">
+                            Panel Peminjaman Buku SMKN 1 Tirtamulya
+                        </h5>
+                    </div>
                 </div>
 
                 <div class="card-body pb-4">
                     <!-- FORM PINJAM BUKU -->
                     <div class="mb-5">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <h5 class="fw-bold mb-0">
-                                <i class="bi bi-journal-plus"></i> Form Pinjam Buku Baru
-                            </h5>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 38px; width: auto; object-fit: contain;">
+                                <h5 class="fw-bold mb-0">Form Pinjam Buku Baru</h5>
+                            </div>
                             <span class="badge bg-primary">
                                 {{ $availableBooks->count() ?? 0 }} Buku Tersedia
                             </span>

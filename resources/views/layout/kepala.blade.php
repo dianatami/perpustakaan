@@ -216,7 +216,9 @@
     <div class="kepala-shell">
         <header class="kepala-header">
             <a href="{{ route('kepala.beranda') }}" class="kepala-brand">
-                <span class="kepala-brand-icon"><i class="bi bi-bank2"></i></span>
+                <span class="kepala-brand-icon">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                </span>
                 <span>
                     <h1 class="kepala-brand-title">Dashboard Kepala Sekolah</h1>
                     <p class="kepala-brand-subtitle">Executive access for literacy governance</p>

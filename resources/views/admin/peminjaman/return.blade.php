@@ -20,8 +20,9 @@
     <div class="row">
         <div class="col-lg-8">
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-success text-white">
-                    <h5 class="mb-0"><i class="fas fa-clipboard-check"></i> Terima Pengembalian</h5>
+                <div class="card-header bg-success text-white d-flex align-items-center gap-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 44px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+                    <h5 class="mb-0 text-white fw-bold">Terima Pengembalian Buku</h5>
                 </div>
                 <div class="card-body">
                     <form action="{{ route('admin.peminjaman.confirm-return', $peminjaman->id) }}" method="POST">

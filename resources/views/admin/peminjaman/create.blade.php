@@ -14,9 +14,10 @@
 
     <div class="card shadow border-0">
 
-        <div class="card-header bg-success text-white">
-            <h4 class="mb-0">
-                📚 Form Peminjaman Buku
+        <div class="card-header bg-success text-white d-flex align-items-center gap-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+            <h4 class="mb-0 text-white fw-bold">
+                Form Peminjaman Buku
             </h4>
         </div>
 

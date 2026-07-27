@@ -58,9 +58,12 @@
 </style>
 
 <div class="password-card">
-    <div class="password-header">
-        <h2 class="password-title">Perbarui Password Akun</h2>
-        <p class="password-subtitle">Gunakan kombinasi password yang kuat agar akun tetap aman.</p>
+    <div class="password-header d-flex align-items-center gap-3">
+        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">
+        <div>
+            <h2 class="password-title">Perbarui Password Akun</h2>
+            <p class="password-subtitle">Gunakan kombinasi password yang kuat agar akun tetap aman.</p>
+        </div>
     </div>
 
     <div class="password-body">

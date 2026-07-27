@@ -347,7 +347,7 @@
             <div class="portal-header-top">
                 <a href="{{ route($portalPrefix . '.beranda') }}" class="portal-brand">
                     <span class="portal-brand-icon">
-                        <i class="bi {{ $isGuru ? 'bi-mortarboard-fill' : 'bi-stars' }}"></i>
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
                     </span>
                     <span>
                         <h1 class="portal-brand-title">{{ $portalTitle }}</h1>

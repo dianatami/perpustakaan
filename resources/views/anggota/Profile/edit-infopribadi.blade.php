@@ -209,6 +209,13 @@
 
         <!-- Data Pribadi -->
         <div class="form-section">
+            <div class="d-flex align-items-center gap-3 mb-3 pb-2 border-bottom">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 42px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                <div>
+                    <h3 class="fw-bold mb-0">Form Informasi Pribadi</h3>
+                    <small class="text-muted">Perpustakaan SMKN 1 Tirtamulya</small>
+                </div>
+            </div>
             <h4 class="section-title">
                 <i class="bi bi-calendar-event"></i> Data Pribadi
             </h4>

@@ -6,7 +6,13 @@
 <div class="container-fluid">
     <div class="row mb-4">
         <div class="col-md-12">
-            <h2>Tambah Anggota Baru</h2>
+            <div class="d-flex align-items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                <div>
+                    <h2 class="mb-0 fw-bold">Tambah Anggota Baru</h2>
+                    <small class="text-muted">Perpustakaan SMKN 1 Tirtamulya</small>
+                </div>
+            </div>
         </div>
     </div>
 

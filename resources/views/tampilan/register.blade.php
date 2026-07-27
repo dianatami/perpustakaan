@@ -22,7 +22,7 @@
             <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
                 <div>
                     <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/72 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
-                        <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[150deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" class="h-10 w-10 object-contain drop-shadow">
                         <span>
                             <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
                             <span class="block text-xs text-shelf-ink/65">Portal Literasi</span>
@@ -71,10 +71,13 @@
                 <div class="reveal-item glass-card relative overflow-hidden rounded-[2rem] p-6 sm:p-8" data-reveal style="transition-delay:120ms;">
                     <div class="absolute -right-12 top-4 h-24 w-24 rounded-full border border-white/90"></div>
 
-                    <div class="relative">
-                        <p class="font-mono text-xs uppercase tracking-[0.16em] text-shelf-ink/62">Create Account</p>
-                        <h2 class="mt-2 font-display text-3xl text-shelf-ink">{{ $judul ?? 'Daftar Akun Baru' }}</h2>
-                        <p class="mt-1 text-sm text-shelf-ink/68">Isi data berikut untuk mulai menggunakan sistem perpustakaan.</p>
+                    <div class="relative flex items-center gap-4">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" class="h-16 w-16 object-contain drop-shadow-md transition-transform hover:scale-105">
+                        <div>
+                            <p class="font-mono text-xs uppercase tracking-[0.16em] text-shelf-ink/62">Create Account</p>
+                            <h2 class="mt-1 font-display text-3xl font-bold text-shelf-ink">{{ $judul ?? 'Daftar Akun Baru' }}</h2>
+                            <p class="mt-0.5 text-sm text-shelf-ink/68">Isi data berikut untuk mulai menggunakan sistem perpustakaan.</p>
+                        </div>
                     </div>
 
                     @if (session()->has('error'))

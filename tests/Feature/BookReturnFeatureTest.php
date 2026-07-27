@@ -79,7 +79,6 @@ class BookReturnFeatureTest extends TestCase
 
         $response = $this->actingAs($anggota)->post(route('anggota.pengembalian.store', $borrow->id));
 
-        $response->dumpSession();
         $response->assertSessionHas('success');
         $response->assertStatus(302);
 
@@ -169,7 +168,7 @@ class BookReturnFeatureTest extends TestCase
 
         $response = $this->actingAs($other)->post(route('anggota.pengembalian.store', $borrow->id));
 
-        $response->assertSessionHas('error', 'Data peminjaman tidak ditemukan.');
+        $response->assertSessionHas('error', 'Anda tidak berhak mengakses data ini.');
 
         $this->assertDatabaseHas('bookrent', [
             'id' => $borrow->id,

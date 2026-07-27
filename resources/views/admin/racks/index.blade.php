@@ -176,10 +176,13 @@
 
 <div class="rack-hero">
     <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3">
-        <div>
-            <span class="rack-pill"><i class="bi bi-archive"></i> Manajemen Rak</span>
-            <h1>Atur rak buku dengan rapi</h1>
-            <p>Kelompokkan koleksi buku berdasarkan rak agar pencarian lebih cepat dan tampilannya selalu tertata.</p>
+        <div class="d-flex align-items-center gap-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 52px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+            <div>
+                <span class="rack-pill"><i class="bi bi-archive"></i> Manajemen Rak</span>
+                <h1 class="mb-0 fw-bold">Atur rak buku dengan rapi</h1>
+                <p class="mb-0">Kelompokkan koleksi buku berdasarkan rak agar pencarian lebih cepat dan tampilannya selalu tertata.</p>
+            </div>
         </div>
         <div class="text-end">
             <div class="rack-pill"><i class="bi bi-layers"></i> {{ $racks->total() }} Rak</div>
@@ -194,9 +197,12 @@
 <div class="row g-4">
     <div class="col-lg-4">
         <div class="rack-card">
-            <div class="rack-card-header">
-                <h5 class="rack-card-title">Buat Rak Baru</h5>
-                <p class="rack-card-subtitle">Simpan kode rak agar buku mudah ditata dan ditemukan.</p>
+            <div class="rack-card-header d-flex align-items-center gap-3">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 40px; width: auto; object-fit: contain;">
+                <div>
+                    <h5 class="rack-card-title mb-0">Buat Rak Baru</h5>
+                    <p class="rack-card-subtitle mb-0">Simpan kode rak agar buku mudah ditata dan ditemukan.</p>
+                </div>
             </div>
             <div class="rack-card-body">
                 <form action="{{ route('admin.racks.store') }}" method="POST" class="rack-form">

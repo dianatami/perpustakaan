@@ -4,9 +4,12 @@
     <div class="container-fluid px-4 py-4">
         <div class="mb-4">
             <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
-                <div>
-                    <h2 class="mb-1 fw-bold">Kategori</h2>
-                    <p class="text-muted mb-0">Kelola inventaris, anggota, dan transaksi perpustakaan.</p>
+                <div class="d-flex align-items-center gap-3">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+                    <div>
+                        <h2 class="mb-0 fw-bold">Kategori Buku</h2>
+                        <p class="text-muted mb-0">Kelola inventaris kategori perpustakaan SMKN 1 Tirtamulya.</p>
+                    </div>
                 </div>
                 <div class="text-muted small">Total {{ $kategori->total() }} kategori</div>
             </div>
@@ -21,9 +24,12 @@
                 <div class="card border-0 shadow-sm overflow-hidden">
                     <div class="card-body">
                         <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div>
-                                <h5 class="card-title mb-1">Tambah Kategori Baru</h5>
-                                <p class="text-muted mb-0">Masukkan nama kategori untuk menambah data baru.</p>
+                            <div class="d-flex align-items-center gap-3">
+                                <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 38px; width: auto; object-fit: contain;">
+                                <div>
+                                    <h5 class="card-title mb-0 fw-bold">Tambah Kategori Baru</h5>
+                                    <p class="text-muted mb-0 small">Masukkan nama kategori untuk menambah data baru.</p>
+                                </div>
                             </div>
                             <span class="badge bg-success bg-opacity-10 text-success">Baru</span>
                         </div>

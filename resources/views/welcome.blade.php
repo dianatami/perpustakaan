@@ -82,7 +82,7 @@
             <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
                 <div>
                     <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/70 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
-                        <span class="grid h-10 w-10 place-content-center rounded-2xl bg-linear-[148deg,#10172e,#178f78] text-white shadow-lg shadow-shelf-teal/35">PB</span>
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" class="h-10 w-10 object-contain drop-shadow">
                         <span>
                             <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
                             <span class="block text-xs text-shelf-ink/68">Ruang baca yang bergerak</span>

@@ -194,8 +194,8 @@ class User extends Authenticatable
             return false;
         }
 
-        // Validasi tahun keterima PNS harus tepat 24 tahun setelah tahun lahir
-        if ($appointYear !== $birthYear + 24) {
+        // Validasi tahun keterima PNS (minimal umur 17 tahun dan tidak melebihi tahun berjalan)
+        if ($appointYear < $birthYear + 17 || $appointYear > (int) date('Y')) {
             return false;
         }
 

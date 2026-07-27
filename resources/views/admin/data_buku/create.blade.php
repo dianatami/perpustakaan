@@ -25,9 +25,12 @@
 
 <div class="book-form-shell">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h3 class="mb-1 fw-bold">Tambah Buku</h3>
-            <div class="text-muted">Lengkapi detail buku dan pilih rak penyimpanan.</div>
+        <div class="d-flex align-items-center gap-3">
+            <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="max-height: 48px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
+            <div>
+                <h3 class="mb-0 fw-bold">Tambah Buku</h3>
+                <div class="text-muted">Lengkapi detail buku dan pilih rak penyimpanan.</div>
+            </div>
         </div>
         <a href="{{ route('admin.books.index') }}" class="btn btn-outline-secondary">Kembali</a>
     </div>
