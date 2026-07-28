@@ -17,7 +17,6 @@ class RegisterTest extends TestCase
             'email' => 'siswabaru@example.com',
             'password' => 'password123',
             'hp' => '081234567890',
-            'role' => User::ROLE_ANGGOTA,
         ]);
 
         $response->assertRedirect(route('anggota.beranda'));
@@ -29,20 +28,20 @@ class RegisterTest extends TestCase
         ]);
     }
 
-    public function test_user_can_register_as_guru_without_nip(): void
+    public function test_registration_without_nip_always_defaults_to_anggota_role(): void
     {
         $response = $this->post(route('tampilan.register.process'), [
-            'nama' => 'Guru Tanpa NIP',
-            'email' => 'gurutanpanip@example.com',
+            'nama' => 'Pendaftar Biasa',
+            'email' => 'pendaftar@example.com',
             'password' => 'password123',
             'hp' => '081234567891',
-            'role' => User::ROLE_GURU,
+            'role' => User::ROLE_GURU, // Attempting to forge guru role without NIP
         ]);
 
-        $response->assertRedirect(route('guru.beranda'));
+        $response->assertRedirect(route('anggota.beranda'));
         $this->assertDatabaseHas('user', [
-            'email' => 'gurutanpanip@example.com',
-            'role' => User::ROLE_GURU,
+            'email' => 'pendaftar@example.com',
+            'role' => User::ROLE_ANGGOTA,
         ]);
     }
 
@@ -53,7 +52,6 @@ class RegisterTest extends TestCase
         $response = $this->post(route('tampilan.register.process'), [
             'nama' => 'Guru BerNIP',
             'email' => 'gurubernip@example.com',
-            'has_nip' => '1',
             'nip' => $validNip,
             'password' => 'password123',
             'hp' => '081234567892',
@@ -74,7 +72,6 @@ class RegisterTest extends TestCase
         $response = $this->post(route('tampilan.register.process'), [
             'nama' => 'Siswa BerNISN',
             'email' => 'siswabernisn@example.com',
-            'has_nip' => '1',
             'nip' => $validNisn,
             'password' => 'password123',
             'hp' => '081234567893',
@@ -88,26 +85,11 @@ class RegisterTest extends TestCase
         ]);
     }
 
-    public function test_registration_fails_when_has_nip_is_checked_but_input_is_empty(): void
-    {
-        $response = $this->post(route('tampilan.register.process'), [
-            'nama' => 'Siswa Kosong NIP',
-            'email' => 'siswakosong@example.com',
-            'has_nip' => '1',
-            'nip' => '',
-            'password' => 'password123',
-            'hp' => '081234567894',
-        ]);
-
-        $response->assertSessionHasErrors('nip');
-    }
-
     public function test_registration_fails_with_invalid_nip_format(): void
     {
         $response = $this->post(route('tampilan.register.process'), [
             'nama' => 'Siswa NIP Salah',
             'email' => 'salahnip@example.com',
-            'has_nip' => '1',
             'nip' => '12345',
             'password' => 'password123',
             'hp' => '081234567895',

@@ -265,15 +265,16 @@
                                 </a>
                             </div>
                         </div>
+@php($isGuruPortal = ($portalPrefix === 'guru' || request()->routeIs('guru.*')))
                         <!-- Info Profil -->
                         <div class="col-md-8 profile-info">
                             <h2 class="profile-name">{{ $user->nama ?? 'User' }}</h2>
                             <div class="profile-role-badge">
                                 <i class="bi bi-star-fill"></i>
-                                {{ request()->routeIs('anggota.*') ? 'Murid Aktif' : 'Anggota' }}
+                                {{ $isGuruPortal ? 'Guru' : 'Murid Aktif' }}
                             </div>
                             <p class="profile-motto">
-                                Selamat datang di ruang profil siswa. Temukan buku inspiratif, cek riwayat pinjaman, dan jaga semangat belajarmu setiap hari.
+                                {{ $isGuruPortal ? 'Selamat datang di ruang profil guru. Temukan buku inspiratif, cek riwayat pinjaman, dan jaga semangat literasi setiap hari.' : 'Selamat datang di ruang profil siswa. Temukan buku inspiratif, cek riwayat pinjaman, dan jaga semangat belajarmu setiap hari.' }}
                             </p>
                             <p class="profile-member-since">
                                 <i class="bi bi-calendar-event"></i> Member sejak {{ optional($user->created_at)->format('d F Y') ?? '-' }}
@@ -325,7 +326,7 @@
                 style="background: linear-gradient(130deg, #1d4f78, #ff7a59);">
 
                 <h5 class="card-title fw-bold mb-0 text-white">
-                    <i class="bi bi-person-vcard"></i> Informasi Murid
+                    <i class="bi bi-person-vcard"></i> {{ $isGuruPortal ? 'Informasi Guru' : 'Informasi Murid' }}
                 </h5>
             </div>
 
@@ -365,30 +366,6 @@
                         @endif
 
                     </div>
-                </div>
-
-                <!-- Alamat -->
-                <div class="mb-4">
-                    <div class="text-muted small mb-2">
-                        <i class="bi bi-house"></i> Alamat Lengkap
-                    </div>
-
-                    <div class="fw-bold text-dark" style="font-size: 1.05rem;">
-                        {{ $user->alamat ?? '-' }}
-                    </div>
-                </div>
-
-                <!-- Button -->
-                <div class="pt-3 border-top">
-                    <a href="{{ route($portalPrefix . '.edit.profil') }}"
-                        class="btn btn-sm w-100 rounded-3"
-                        style="background: linear-gradient(135deg, #3b82f6 0%, #38bdf8 100%);
-                               color: white;
-                               border: none;
-                               font-weight: 600;">
-
-                        <i class="bi bi-pencil"></i> Sunting Data Murid
-                    </a>
                 </div>
 
             </div>

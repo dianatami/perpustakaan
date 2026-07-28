@@ -306,20 +306,10 @@
                         <span class="rack-tag"><i class="bi bi-archive"></i> {{ $book->rack->code }}</span>
                     @endif
                     <p class="book-meta">Stok tersedia: <strong>{{ $book->stock }}</strong></p>
-                    <div class="d-flex gap-2 mt-auto">
-                        <a href="{{ route($portalPrefix . '.buku.show', $book->id) }}" class="btn-detail text-center flex-grow-1">
+                    <div class="mt-auto pt-2">
+                        <a href="{{ route($portalPrefix . '.buku.show', $book->id) }}" class="btn-detail text-center w-100 d-block">
                             Lihat Detail
                         </a>
-                        @if($book->stock > 0)
-                            <form action="{{ route($portalPrefix . '.pinjam.store') }}" method="POST" class="d-inline">
-                                @csrf
-                                <input type="hidden" name="books[0][book_id]" value="{{ $book->id }}">
-                                <input type="hidden" name="books[0][qty]" value="1">
-                                <button type="submit" class="btn btn-success rounded-pill px-3 font-weight-bold h-100" title="Pinjam Buku Ini">
-                                    <i class="bi bi-journal-plus"></i> Pinjam
-                                </button>
-                            </form>
-                        @endif
                     </div>
                 </div>
             </article>
