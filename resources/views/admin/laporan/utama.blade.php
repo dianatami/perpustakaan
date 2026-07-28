@@ -282,14 +282,15 @@
         arsort($catCounts);
         $topCats = array_slice($catCounts, 0, 5, true);
         
-        // Prepare Daily Chart Data (tren harian dalam bulan terpilih)
+        // Prepare Daily Chart Data (tren harian)
         $daily = [];
-        $daysInMonth = $endDate->day;
-        for($i=1; $i<=$daysInMonth; $i++) $daily[$i] = 0;
-        foreach($peminjaman as $p) {
-            if($p->created_at) {
+        for ($i = 1; $i <= 31; $i++) {
+            $daily[$i] = 0;
+        }
+        foreach ($peminjaman as $p) {
+            if ($p->created_at) {
                 $day = (int) $p->created_at->format('j');
-                $daily[$day]++;
+                $daily[$day] = ($daily[$day] ?? 0) + 1;
             }
         }
     @endphp
@@ -361,7 +362,7 @@
         <div class="row g-2 mb-4 no-print">
             <div class="col-md-4">
                 <select class="form-select" id="filter-type">
-                    <option value="">Semua Jenis Anggota</option>
+                    <option value="">Semua Anggota</option>
                     <option value="Siswa">Siswa</option>
                     <option value="Guru">Guru</option>
                 </select>
@@ -543,40 +544,48 @@
         filterSearch.addEventListener('input', applyFilters);
     });
 
-    // --- EXPORT FUNCTIONS ---
+    // --- EXPORT FUNCTIONS (MURNI DATA TABEL) ---
     const exportNamaBulan = @json($namaBulan);
     const exportTahun = @json($tahun);
 
     function exportPDF() {
-        const element = document.getElementById('report-content');
-        const opt = {
-            margin:       0.3,
-            filename:     'Laporan_Peminjaman_' + exportNamaBulan + '_' + exportTahun + '.pdf',
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true },
-            jsPDF:        { unit: 'in', format: 'a4', orientation: 'landscape' }
-        };
-        
-        // Hide elements not needed in PDF
-        document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
-        
-        html2pdf().set(opt).from(element).save().then(() => {
-            // Restore elements
-            document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+        if (!window.jspdf) {
+            alert('Library PDF sedang dimuat, silakan coba beberapa detik lagi.');
+            return;
+        }
+
+        const { jsPDF } = window.jspdf;
+        const doc = new jsPDF('landscape', 'pt', 'a4');
+
+        doc.setFontSize(14);
+        doc.text("LAPORAN RESMI PEMINJAMAN BUKU PERPUSTAKAAN", 40, 40);
+        doc.setFontSize(10);
+        doc.text(`Periode: ${exportNamaBulan} ${exportTahun} | SMKN 1 Tirtamulya | Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 40, 58);
+
+        doc.autoTable({
+            html: '#reportTable',
+            startY: 75,
+            theme: 'grid',
+            styles: { fontSize: 8, cellPadding: 6 },
+            headStyles: { fillColor: [29, 79, 120], textColor: [255, 255, 255], fontStyle: 'bold' }
         });
+
+        doc.save(`Laporan_Utama_${exportNamaBulan}_${exportTahun}.pdf`);
     }
 
     function exportExcel() {
         const table = document.getElementById('reportTable');
+        if (!table) return;
         
-        // Clone table to modify for excel (remove hidden rows)
         const clone = table.cloneNode(true);
         Array.from(clone.querySelectorAll('tr')).forEach(tr => {
-            if(tr.style.display === 'none') tr.remove();
+            if (tr.style.display === 'none') tr.remove();
         });
         
-        const wb = XLSX.utils.table_to_book(clone, {sheet: "Laporan"});
-        XLSX.writeFile(wb, 'Laporan_Peminjaman_' + exportNamaBulan + '_' + exportTahun + '.xlsx');
+        const wb = XLSX.utils.table_to_book(clone, { sheet: "Laporan" });
+        XLSX.writeFile(wb, `Laporan_Utama_${exportNamaBulan}_${exportTahun}.xlsx`);
     }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 @endsection

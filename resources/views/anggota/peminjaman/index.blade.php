@@ -163,7 +163,7 @@
                                 @csrf
                                 <div id="book-wrapper">
                                     <div class="row g-2 mb-2 book-item">
-                                        <div class="col-md-7">
+                                        <div class="col-12 col-md-7">
                                             <select name="books[0][book_id]" class="form-select book-select" required>
                                                 <option value="">-- Pilih Buku --</option>
                                                 @foreach($availableBooks as $b)
@@ -171,28 +171,29 @@
                                                         data-book-code="{{ $b->book_code ?? '' }}"
                                                         data-author="{{ $b->author ?? '' }}"
                                                         data-stock="{{ $b->stock }}"
+                                                        {{ (string) request('book_id') === (string) $b->id ? 'selected' : '' }}
                                                         {{ $b->stock <= 0 ? 'disabled' : '' }}>
                                                         {{ $b->title }}
                                                     </option>
                                                 @endforeach
                                             </select>
                                         </div>
-                                        <div class="col-md-3">
+                                        <div class="col-7 col-sm-8 col-md-3">
                                             <input type="number" name="books[0][qty]" class="form-control" min="1" value="1" placeholder="Qty" required>
                                         </div>
-                                        <div class="col-md-2 d-grid">
+                                        <div class="col-5 col-sm-4 col-md-2 d-grid">
                                             <button type="button" class="btn btn-danger remove-book">
-                                                <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash"></i> Hapus
                                             </button>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div class="d-flex gap-2 mt-3">
+                                <div class="d-flex flex-wrap gap-2 mt-3">
                                     <button type="button" class="btn btn-outline-primary" id="add-book">
                                         <i class="bi bi-plus-circle"></i> Tambah Buku
                                     </button>
-                                    <button type="submit" class="btn btn-primary fw-bold">
+                                    <button type="submit" class="btn btn-primary fw-bold flex-grow-1 flex-sm-grow-0">
                                         <i class="bi bi-send"></i> Ajukan Peminjaman
                                     </button>
                                 </div>
@@ -478,7 +479,7 @@
             addBtn.addEventListener('click', function () {
                 let html = `
                     <div class="row g-2 mb-2 book-item">
-                        <div class="col-md-7">
+                        <div class="col-12 col-md-7">
                             <select name="books[${indexBook}][book_id]" class="form-select book-select" required>
                                 <option value="">-- Pilih Buku --</option>
                                 @foreach($availableBooks as $b)
@@ -492,12 +493,12 @@
                                 @endforeach
                             </select>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-7 col-sm-8 col-md-3">
                             <input type="number" name="books[${indexBook}][qty]" class="form-control" min="1" value="1" placeholder="Qty" required>
                         </div>
-                        <div class="col-md-2 d-grid">
+                        <div class="col-5 col-sm-4 col-md-2 d-grid">
                             <button type="button" class="btn btn-danger remove-book">
-                                <i class="bi bi-trash"></i>
+                                <i class="bi bi-trash"></i> Hapus
                             </button>
                         </div>
                     </div>

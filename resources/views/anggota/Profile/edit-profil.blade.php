@@ -126,8 +126,20 @@
     }
 
     @media (max-width: 576px) {
+        .form-card {
+            padding: 20px 16px;
+            border-radius: 18px;
+        }
+
         .button-row {
-            justify-content: stretch;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .button-row .btn-cancel,
+        .button-row .btn-save {
+            width: 100%;
+            text-align: center;
         }
     }
 </style>
@@ -231,6 +243,9 @@
             </div>
 
             <div class="button-row">
+                <a href="{{ route($portalPrefix . '.ubah.password') }}" class="btn-cancel" style="background: rgba(255, 122, 89, 0.12); color: #ff7a59; border-color: rgba(255, 122, 89, 0.3);">
+                    <i class="bi bi-key-fill"></i> Ubah Password
+                </a>
                 <a href="{{ route($portalPrefix . '.profil.detail') }}" class="btn-cancel">
                     <i class="bi bi-arrow-left"></i> Batal
                 </a>

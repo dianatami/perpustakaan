@@ -99,47 +99,50 @@
         .portal-brand {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             text-decoration: none;
             color: var(--portal-ink);
         }
 
-        .portal-brand-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 13px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(150deg, var(--portal-primary), var(--portal-primary-dark));
-            color: #fff;
-            box-shadow: var(--portal-shadow);
-            font-size: 1.2rem;
+        .portal-brand-logo-img {
+            height: 44px;
+            width: auto;
+            max-width: 48px;
+            object-fit: contain;
+            filter: drop-shadow(0 2px 6px rgba(15, 23, 42, 0.12));
+            flex-shrink: 0;
+            transition: transform 0.25s ease;
+        }
+
+        .portal-brand:hover .portal-brand-logo-img {
+            transform: scale(1.05);
         }
 
         .portal-brand-title {
             margin: 0;
             font-family: 'Libre Baskerville', serif;
-            font-size: 1.03rem;
-            line-height: 1.15;
-            letter-spacing: 0.1px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--portal-ink);
         }
 
         .portal-brand-subtitle {
             margin: 2px 0 0;
             color: var(--portal-muted);
-            font-size: 0.81rem;
+            font-size: 0.82rem;
         }
 
-        .portal-school-name {
-            margin-top: 8px;
-            padding-top: 8px;
-            border-top: 1px solid var(--portal-border);
-            font-size: 0.82rem;
-            font-weight: 700;
+        .portal-school-badge {
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
             color: var(--portal-primary);
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
+            background: color-mix(in srgb, var(--portal-primary) 12%, transparent);
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid color-mix(in srgb, var(--portal-primary) 25%, transparent);
+            white-space: nowrap;
         }
 
         .portal-actions {
@@ -300,6 +303,17 @@
             }
         }
 
+        @keyframes slideDownNav {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         @media (max-width: 992px) {
             .portal-user-chip {
                 display: none;
@@ -308,33 +322,72 @@
 
         @media (max-width: 768px) {
             .portal-header {
-                padding: 12px 14px;
+                padding: 10px 14px;
+            }
+
+            .portal-brand {
+                gap: 10px;
+            }
+
+            .portal-brand-logo-img {
+                height: 38px;
+                max-width: 40px;
+            }
+
+            .portal-brand-title {
+                font-size: 1rem;
+            }
+
+            .portal-brand-subtitle {
+                font-size: 0.76rem;
             }
 
             .portal-nav-toggle {
-                display: inline-block;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 38px;
+                height: 38px;
+                border-radius: 10px;
+                background: color-mix(in srgb, var(--portal-primary) 10%, transparent);
             }
 
             .portal-nav-wrap {
                 display: none;
+                margin-top: 10px;
+                padding-top: 10px;
+                border-top: 1px dashed var(--portal-border);
             }
 
             .portal-nav-wrap.show {
                 display: block;
+                animation: slideDownNav 0.25s ease-out;
             }
 
             .portal-nav {
                 flex-direction: column;
                 align-items: stretch;
+                gap: 6px;
             }
 
             .portal-nav-link {
                 border-radius: 12px;
+                padding: 10px 14px;
             }
 
             .portal-main {
-                width: calc(100% - 14px);
-                margin-top: 14px;
+                width: calc(100% - 16px);
+                margin: 12px auto 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .portal-school-badge {
+                display: none;
+            }
+
+            .portal-brand-subtitle {
+                display: none;
             }
         }
     </style>
@@ -346,14 +399,14 @@
         <header class="portal-header">
             <div class="portal-header-top">
                 <a href="{{ route($portalPrefix . '.beranda') }}" class="portal-brand">
-                    <span class="portal-brand-icon">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" style="width: 32px; height: 32px; object-fit: contain; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));">
-                    </span>
-                    <span>
-                        <h1 class="portal-brand-title">{{ $portalTitle }}</h1>
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" class="portal-brand-logo-img">
+                    <div>
+                        <div class="d-flex align-items-center gap-2">
+                            <h1 class="portal-brand-title">{{ $portalTitle }}</h1>
+                            <span class="portal-school-badge">SMKN 1 TIRTAMULYA</span>
+                        </div>
                         <p class="portal-brand-subtitle">{{ $portalSubtitle }}</p>
-                        <p class="portal-school-name">Perpustakaan SMKN 1 Tirtamulya</p>
-                    </span>
+                    </div>
                 </a>
 
                 <div class="portal-actions">

@@ -397,7 +397,8 @@
 
     @media (max-width: 768px) {
         .mentor-hero {
-            padding: 20px;
+            padding: 20px 16px;
+            border-radius: 20px;
         }
 
         .mentor-title {
@@ -407,6 +408,37 @@
         .mentor-stat-grid,
         .mentor-book-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .mentor-book-cover {
+            height: 135px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .mentor-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .mentor-action {
+            text-align: center;
+            width: 100%;
+        }
+
+        .mentor-chip-list {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .mentor-bead {
+            display: none;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .mentor-stat-grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>

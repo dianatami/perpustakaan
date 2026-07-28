@@ -242,12 +242,36 @@
 
     @media (max-width: 767px) {
         .page-hero-kategori {
-            padding: 24px;
+            padding: 20px 18px;
             border-radius: 20px;
         }
 
         .header-title {
-            font-size: 2rem;
+            font-size: 1.75rem;
+        }
+
+        .search-box {
+            max-width: 100%;
+        }
+
+        .kategori-header {
+            min-height: 140px;
+            padding: 24px 16px;
+        }
+
+        .kategori-body {
+            padding: 18px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .header-title {
+            font-size: 1.45rem;
+        }
+
+        .page-badge-kategori {
+            width: 100%;
+            justify-content: center;
         }
     }
 </style>

@@ -556,54 +556,45 @@ class PeminjamanController extends Controller
 
     public function laporanUtama(Request $request)
     {
-        // Periode bulanan otomatis (default: bulan & tahun berjalan)
-        $bulan = (int) $request->input('bulan', Carbon::now()->month);
-        $tahun = (int) $request->input('tahun', Carbon::now()->year);
+        $bulanInput = $request->input('bulan');
+        $bulan = ($bulanInput === 'all') ? 'all' : ($bulanInput ? (int) $bulanInput : (int) date('n'));
+        $tahun = (int) $request->input('tahun', date('Y'));
 
-        // Validasi range
-        $bulan = max(1, min(12, $bulan));
-        $tahun = max(2020, min(Carbon::now()->year + 1, $tahun));
-
-        // Hitung tanggal awal & akhir otomatis menggunakan Carbon
-        $startDate = Carbon::create($tahun, $bulan, 1)->startOfMonth();
-        $endDate   = Carbon::create($tahun, $bulan, 1)->endOfMonth();
-
-        // Nama bulan dalam Bahasa Indonesia
         $namaBulanList = [
             1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
             5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
             9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
         ];
-        $namaBulan = $namaBulanList[$bulan];
+        $namaBulan = ($bulan === 'all') ? 'Semua Periode' : ($namaBulanList[$bulan] ?? $namaBulanList[date('n')]);
 
-        // Data peminjaman difilter berdasarkan periode bulan terpilih
-        $peminjaman = Bookrent::with(['user', 'details.book.category'])
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->latest('created_at')
-            ->get();
-            
+        $query = Bookrent::with(['user', 'details.book.category']);
+
+        if ($bulan !== 'all') {
+            $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfDay();
+            $endDate = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth()->endOfDay();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } else {
+            $startDate = Carbon::createFromDate($tahun, 1, 1)->startOfDay();
+            $endDate = Carbon::createFromDate($tahun, 12, 31)->endOfDay();
+            $query->whereYear('created_at', $tahun);
+        }
+
+        $peminjaman = $query->latest('created_at')->get();
+
         $totalBuku = Book::count();
         $totalAnggota = User::whereIn('role', [(string) User::ROLE_ANGGOTA, (string) User::ROLE_GURU])->count();
-        $totalPinjam = Bookrent::whereBetween('created_at', [$startDate, $endDate])->count();
-        $sedangDipinjam = Bookrent::where('status', 'dipinjam')
-            ->whereBetween('created_at', [$startDate, $endDate])->count();
-        $sudahDikembalikan = Bookrent::where('status', 'kembali')
-            ->whereBetween('created_at', [$startDate, $endDate])->count();
-        $terlambat = Bookrent::where('status', 'terlambat')
-            ->whereBetween('created_at', [$startDate, $endDate])->count();
+        $totalPinjam = $peminjaman->count();
+        $sedangDipinjam = $peminjaman->where('status', 'dipinjam')->count();
+        $sudahDikembalikan = $peminjaman->where('status', 'kembali')->count();
+        $terlambat = $peminjaman->where('status', 'terlambat')->count();
         
-        // Sum the fine
         $totalDenda = 0;
         foreach ($peminjaman as $p) {
             if (method_exists($p, 'calculateFine')) {
                 $totalDenda += $p->calculateFine();
+            } else {
+                $totalDenda += (int) ($p->denda ?? 0);
             }
-        }
-
-        // Total denda dari field denda (fallback jika calculateFine tidak ada)
-        if ($totalDenda === 0) {
-            $totalDenda = (int) Bookrent::whereBetween('created_at', [$startDate, $endDate])
-                ->sum('denda');
         }
 
         return view('admin.laporan.utama', compact(
@@ -613,13 +604,85 @@ class PeminjamanController extends Controller
         ));
     }
 
-    public function laporanPeminjaman()
+    public function laporanPeminjaman(Request $request)
     {
-        $peminjaman = Bookrent::with(['user', 'details.book'])
-            ->latest('created_at')
-            ->paginate(10);
+        $bulanInput = $request->input('bulan');
+        $bulan = ($bulanInput === 'all') ? 'all' : ($bulanInput ? (int) $bulanInput : (int) date('n'));
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $status = $request->input('status');
+        $role = $request->input('role');
+        $search = $request->input('search');
 
-        return view('admin.laporan.peminjaman', compact('peminjaman'));
+        $namaBulanList = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
+        ];
+        $namaBulan = ($bulan === 'all') ? 'Semua Periode' : ($namaBulanList[$bulan] ?? $namaBulanList[date('n')]);
+
+        $query = Bookrent::with(['user', 'details.book.category']);
+
+        // Filter periode rentang waktu 1 bulan terpilih
+        if ($bulan !== 'all') {
+            $startDate = Carbon::createFromDate($tahun, $bulan, 1)->startOfDay();
+            $endDate = Carbon::createFromDate($tahun, $bulan, 1)->endOfMonth()->endOfDay();
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($request->filled('tahun')) {
+            $query->whereYear('created_at', $tahun);
+        }
+
+        // Filter status
+        if ($request->filled('status')) {
+            $query->where('status', $status);
+        }
+
+        // Filter role (Siswa = 0, Guru = 2)
+        if ($request->filled('role')) {
+            $query->whereHas('user', function ($q) use ($role) {
+                $q->where('role', $role);
+            });
+        }
+
+        // Filter pencarian (Nama, Email, Judul Buku)
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->whereHas('user', function ($qu) use ($search) {
+                    $qu->where('nama', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%");
+                })->orWhereHas('details.book', function ($qb) use ($search) {
+                    $qb->where('title', 'like', "%{$search}%");
+                });
+            });
+        }
+
+        // Ambil seluruh data hasil filter rentang 1 bulan terpilih
+        $allPeminjaman = (clone $query)->latest('created_at')->get();
+
+        // Hitung statistik tersinkronisasi
+        $totalPinjam = $allPeminjaman->count();
+        $sedangDipinjam = $allPeminjaman->where('status', 'dipinjam')->count();
+        $sudahDikembalikan = $allPeminjaman->where('status', 'kembali')->count();
+        $menungguAcc = $allPeminjaman->where('status', 'menunggu_acc')->count();
+        $prosesKembali = $allPeminjaman->where('status', 'proses_kembali')->count();
+        $ditolak = $allPeminjaman->where('status', 'ditolak')->count();
+        
+        $totalDenda = 0;
+        foreach ($allPeminjaman as $p) {
+            if (method_exists($p, 'calculateFine')) {
+                $totalDenda += $p->calculateFine();
+            } else {
+                $totalDenda += (int) ($p->denda ?? 0);
+            }
+        }
+
+        // Data untuk tampilan tabel terpaginasi
+        $peminjaman = $query->latest('created_at')->paginate(15)->withQueryString();
+
+        return view('admin.laporan.peminjaman', compact(
+            'peminjaman', 'allPeminjaman', 'totalPinjam', 'sedangDipinjam',
+            'sudahDikembalikan', 'menungguAcc', 'prosesKembali', 'ditolak', 'totalDenda',
+            'bulan', 'tahun', 'namaBulan', 'namaBulanList', 'status', 'role', 'search'
+        ));
     }
 
     public function laporanPengembalian()

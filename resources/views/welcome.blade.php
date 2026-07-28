@@ -39,7 +39,7 @@
         ],
         [
             'title' => 'Guru',
-            'description' => 'Memantau pola baca peserta didik dan mengarahkan rekomendasi buku kelas.',
+            'description' => 'Menjelajah buku favorit, memperbarui profil, dan memeriksa status peminjaman.',
             'accent' => 'bg-shelf-ocean/15 text-shelf-ocean',
         ],
         [
@@ -80,16 +80,10 @@
 
         <header class="relative z-20">
             <div class="mx-auto flex w-full max-w-7xl items-center justify-between px-5 pb-3 pt-6 sm:px-8 lg:px-10">
-                <div>
-                    <a href="{{ route('landing') }}" class="inline-flex items-center gap-3 rounded-full border border-shelf-ink/12 bg-white/70 px-4 py-2 backdrop-blur-sm transition hover:border-shelf-teal/45 hover:bg-white">
-                        <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" class="h-10 w-10 object-contain drop-shadow">
-                        <span>
-                            <span class="block font-display text-sm font-semibold leading-tight">Perpustakaan Sekolah</span>
-                            <span class="block text-xs text-shelf-ink/68">Ruang baca yang bergerak</span>
-                        </span>
-                    </a>
-                    <p class="mt-2 ml-4 text-2xl font-bold text-shelf-teal">Perpustakaan SMKN 1 Tirtamulya</p>
-                </div>
+                <a href="{{ route('landing') }}" class="inline-flex items-center gap-2.5 rounded-full border border-shelf-ink/12 bg-white/85 px-4 py-2 backdrop-blur-md transition hover:border-shelf-teal/45 hover:bg-white shadow-xs">
+                    <img src="{{ asset('images/logo.png') }}" alt="Logo SMKN 1 Tirtamulya" class="h-8 w-8 object-contain drop-shadow-xs">
+                    <span class="font-display text-sm font-bold text-shelf-teal tracking-wide">SMKN 1 TIRTAMULYA</span>
+                </a>
 
                 <nav class="hidden items-center gap-1 rounded-full border border-shelf-ink/12 bg-white/70 p-1 text-sm font-semibold backdrop-blur-sm md:flex">
                     <a href="#fitur" class="rounded-full px-4 py-2 text-shelf-ink/75 transition hover:bg-shelf-mist hover:text-shelf-ocean">Fitur</a>
@@ -118,13 +112,13 @@
                         Perpustakaan Digital Sekolah
                     </p>
 
-                    <h1 class="mt-6 font-display font-semibold leading-[1.03] text-shelf-ink [font-size:clamp(2.2rem,7vw,5.9rem)]">
-                        Tampil modern
-                        <span class="ink-gradient">belajar makin fokus</span>
-                        setiap hari.
+                    <h1 class="mt-5 font-display font-extrabold leading-[1.12] tracking-tight text-shelf-ink [font-size:clamp(2.1rem,4.2vw,3.6rem)]">
+                        Tampil Modern, <br class="hidden sm:inline">
+                        <span class="ink-gradient">Belajar Makin Fokus</span><br>
+                        Setiap Hari.
                     </h1>
 
-                    <p class="mt-6 max-w-2xl text-lg leading-relaxed text-shelf-ink/76">
+                    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-shelf-ink/76">
                         Dari pencarian buku sampai pelacakan peminjaman, semua dirancang seperti pengalaman produk premium: cepat, bersih, dan mudah dipahami oleh siswa, guru, dan admin.
                     </p>
 

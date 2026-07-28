@@ -191,21 +191,49 @@
 
     @media (max-width: 768px) {
         .profile-name {
-            font-size: 1.8rem;
+            font-size: 1.7rem;
+            text-align: center;
         }
 
         .profile-photo {
-            width: 140px;
-            height: 140px;
+            width: 130px;
+            height: 130px;
         }
 
         .profile-header {
-            padding: 2rem 1.2rem;
+            padding: 1.8rem 1rem !important;
+            border-radius: 20px;
+        }
+
+        .profile-info {
+            text-align: center;
+        }
+
+        .profile-motto,
+        .profile-member-since {
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .profile-name {
+            font-size: 1.45rem;
+        }
+
+        .edit-action-btns {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .edit-action-btns .btn {
+            width: 100%;
         }
     }
 </style>
 
-<div class="container-fluid py-5">
+<div class="container-fluid py-4">
     <!-- Success Notification -->
     @if(session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert" 
@@ -217,9 +245,9 @@
     @endif
 
     <!-- Header Profile Section -->
-    <div class="row mb-5">
+    <div class="row mb-4">
         <div class="col-12">
-            <div class="profile-header p-5">
+            <div class="profile-header p-4 p-md-5">
                 <div class="profile-content">
                     <div class="row align-items-center">
                         <!-- Foto Profil -->
@@ -228,9 +256,14 @@
                                 <img src="{{ ($user && $user->foto) ? asset('storage/' . $user->foto) : 'https://ui-avatars.com/api/?name=' . urlencode($user->nama ?? 'User') . '&background=667eea&color=fff&size=200' }}" 
                                      alt="Foto Profil">
                             </div>
-                            <a href="{{ route($portalPrefix . '.edit.profil') }}" class="btn edit-btn btn-sm">
-                                <i class="bi bi-pencil-square"></i> Edit Profil
-                            </a>
+                            <div class="d-flex justify-content-center gap-2 mt-3 edit-action-btns">
+                                <a href="{{ route($portalPrefix . '.edit.profil') }}" class="btn edit-btn btn-sm">
+                                    <i class="bi bi-pencil-square"></i> Edit Profil
+                                </a>
+                                <a href="{{ route($portalPrefix . '.ubah.password') }}" class="btn edit-btn btn-sm" style="background: rgba(255, 255, 255, 0.2); color: #fff; border: 1px solid rgba(255, 255, 255, 0.4);">
+                                    <i class="bi bi-key-fill"></i> Ubah Password
+                                </a>
+                            </div>
                         </div>
                         <!-- Info Profil -->
                         <div class="col-md-8 profile-info">

@@ -164,12 +164,18 @@
     }
 
     @media (max-width: 576px) {
+        .form-section {
+            padding: 20px 16px;
+            border-radius: 12px;
+        }
+
         .button-group {
             flex-direction: column;
         }
 
         .button-group button, .button-group a {
             width: 100%;
+            text-align: center;
         }
     }
 </style>

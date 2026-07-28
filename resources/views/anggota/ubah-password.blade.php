@@ -51,8 +51,22 @@
     }
 
     @media (max-width: 576px) {
+        .password-header {
+            padding: 18px 16px;
+        }
+
+        .password-body {
+            padding: 18px 16px;
+        }
+
         .password-actions {
             flex-direction: column;
+            width: 100%;
+        }
+
+        .password-actions .btn {
+            width: 100%;
+            text-align: center;
         }
     }
 </style>

@@ -413,7 +413,8 @@
 
     @media (max-width: 768px) {
         .member-hero {
-            padding: 20px;
+            padding: 20px 16px;
+            border-radius: 20px;
         }
 
         .member-title {
@@ -423,6 +424,32 @@
         .member-stat-grid,
         .member-book-grid {
             grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .member-book-cover {
+            height: 135px;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .member-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .member-action {
+            text-align: center;
+            width: 100%;
+        }
+
+        .member-bead {
+            display: none;
+        }
+    }
+
+    @media (max-width: 400px) {
+        .member-stat-grid {
+            grid-template-columns: 1fr;
         }
     }
 </style>

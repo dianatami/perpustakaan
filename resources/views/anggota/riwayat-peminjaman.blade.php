@@ -47,6 +47,26 @@
         vertical-align: middle;
         font-size: 0.9rem;
     }
+
+    @media (max-width: 576px) {
+        .history-header {
+            padding: 16px 16px;
+        }
+
+        .history-title {
+            font-size: 1.1rem;
+        }
+
+        .history-body {
+            padding: 14px;
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: 10px 8px;
+            font-size: 0.84rem;
+        }
+    }
 </style>
 
 <div class="history-card">
