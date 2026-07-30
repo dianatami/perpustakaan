@@ -24,3 +24,20 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Database backups
+*.sql
+*.sqlite
+
+# Uploaded files / temporary files
+/storage/app/public/*
+!/storage/app/public/.gitignore
