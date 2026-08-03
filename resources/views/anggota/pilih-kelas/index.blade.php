@@ -9,11 +9,167 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Unbounded:wght@500;600;700;800&family=Urbanist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        /* Standalone Fallback CSS rules to guarantee 100% perfect rendering on cPanel / Domainesia hosting without NPM */
+        :root {
+            --shelf-ink: #10172e;
+            --shelf-teal: #178f78;
+            --shelf-ocean: #1d4f78;
+            --shelf-gold: #ffc95c;
+            --shelf-cloud: #f4f8fc;
+        }
+
+        body {
+            font-family: 'Urbanist', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: var(--shelf-cloud);
+            color: var(--shelf-ink);
+            margin: 0;
+            padding: 0;
+        }
+
+        .font-display { font-family: 'Unbounded', sans-serif; }
+        .font-mono { font-family: 'IBM Plex Mono', monospace; }
+
+        .bg-aurora-custom {
+            background: radial-gradient(circle at 10% 20%, rgba(255, 201, 92, 0.25) 0%, transparent 40%),
+                        radial-gradient(circle at 90% 30%, rgba(23, 143, 120, 0.2) 0%, transparent 45%),
+                        radial-gradient(circle at 50% 80%, rgba(29, 79, 120, 0.15) 0%, transparent 50%),
+                        #f4f8fc;
+        }
+
+        .glass-card-custom {
+            background: rgba(255, 255, 255, 0.88) !important;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            box-shadow: 0 20px 45px rgba(16, 23, 46, 0.1);
+        }
+
+        .grid-tingkat {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .grid-jurusan {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .grid-jurusan {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .flex-rombel {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .option-card-custom {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            border-radius: 18px;
+            border: 2px solid rgba(16, 23, 46, 0.12);
+            background: rgba(255, 255, 255, 0.82);
+            padding: 14px;
+            transition: all 0.2s ease-in-out;
+            user-select: none;
+        }
+
+        .option-card-custom:hover {
+            border-color: rgba(23, 143, 120, 0.5);
+            background: #ffffff;
+            transform: translateY(-1px);
+        }
+
+        .option-card-custom.is-active {
+            border-color: var(--shelf-teal) !important;
+            background: #ffffff !important;
+            box-shadow: 0 8px 24px rgba(23, 143, 120, 0.2) !important;
+            outline: 2px solid rgba(23, 143, 120, 0.35) !important;
+        }
+
+        .radio-indicator {
+            width: 18px !important;
+            height: 18px !important;
+            min-width: 18px !important;
+            max-width: 18px !important;
+            min-height: 18px !important;
+            max-height: 18px !important;
+            border-radius: 50%;
+            border: 2px solid rgba(16, 23, 46, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            transition: all 0.2s ease;
+        }
+
+        .option-card-custom.is-active .radio-indicator {
+            border-color: var(--shelf-teal) !important;
+            background-color: var(--shelf-teal) !important;
+        }
+
+        /* SVG Strict Dimensions */
+        svg {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        .radio-indicator svg {
+            width: 10px !important;
+            height: 10px !important;
+            min-width: 10px !important;
+            max-width: 10px !important;
+            min-height: 10px !important;
+            max-height: 10px !important;
+        }
+
+        .btn-submit {
+            width: 100%;
+            border-radius: 16px;
+            background-color: var(--shelf-ink);
+            color: #ffffff;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Unbounded', sans-serif;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 12px 28px rgba(16, 23, 46, 0.25);
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-submit:hover {
+            background-color: var(--shelf-ocean);
+            transform: translateY(-1px);
+        }
+
+        .preview-box {
+            background: linear-gradient(135deg, rgba(23, 143, 120, 0.14) 0%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 201, 92, 0.14) 100%);
+            border: 1px solid rgba(23, 143, 120, 0.35);
+            border-radius: 18px;
+            padding: 18px;
+            text-align: center;
+        }
+    </style>
 </head>
 <body class="bg-shelf-cloud text-shelf-ink antialiased selection:bg-shelf-gold/80 selection:text-shelf-ink overflow-x-hidden min-h-screen">
     @include('partials.particles')
 
-    <div class="relative isolate min-h-screen overflow-hidden bg-aurora flex flex-col justify-between">
+    <div class="relative isolate min-h-screen overflow-hidden bg-aurora-custom flex flex-col justify-between">
         <div class="paper-grain"></div>
 
         <!-- Ambient blur Orbs -->
@@ -35,7 +191,7 @@
                 <form action="{{ route('tampilan.logout') }}" method="POST" class="inline">
                     @csrf
                     <button type="submit" class="inline-flex items-center gap-1.5 rounded-full border border-shelf-ink/15 bg-white/80 px-3 py-1.5 text-xs font-semibold text-shelf-ink/80 transition hover:bg-red-50 hover:text-red-600 sm:px-4 sm:py-2 sm:text-sm">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                        <svg width="16" height="16" style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
                         <span>Keluar</span>
                     </button>
                 </form>
@@ -44,7 +200,7 @@
 
         <!-- Main Card Area -->
         <main class="relative z-10 mx-auto my-auto w-full max-w-3xl px-4 py-6 sm:px-8 lg:py-10">
-            <div class="glass-card relative overflow-hidden rounded-3xl p-5 sm:p-8 md:p-10 shadow-2xl border border-white/80">
+            <div class="glass-card-custom relative overflow-hidden p-5 sm:p-8 md:p-10">
                 <div class="absolute -right-10 -top-10 h-32 w-32 rounded-full border border-white/60 pointer-events-none"></div>
 
                 <!-- Header Info -->
@@ -64,7 +220,7 @@
                 <!-- Alert Messages -->
                 @if (session('info'))
                     <div class="mt-5 rounded-2xl border border-shelf-teal/30 bg-shelf-teal/10 p-3.5 text-xs sm:text-sm text-shelf-ink/90 flex items-start gap-2.5">
-                        <svg class="w-5 h-5 text-shelf-teal shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg width="20" height="20" style="width:20px;height:20px;min-width:20px;" class="text-shelf-teal shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                         <span>{{ session('info') }}</span>
                     </div>
                 @endif
@@ -86,14 +242,14 @@
 
                     <!-- 1. Pilih Tingkat Kelas -->
                     <div class="space-y-2.5">
-                        <label class="block font-mono text-[11px] font-semibold uppercase tracking-wider text-shelf-ink/70">
+                        <label class="block font-mono text-[11px] font-semibold uppercase tracking-wider text-shelf-ink/70 mb-2">
                             1. Tingkat Kelas <span class="text-red-500">*</span>
                         </label>
-                        <div class="grid grid-cols-3 gap-2.5 sm:gap-4">
+                        <div class="grid-tingkat">
                             @foreach ($tingkatList as $t)
-                                <label class="option-card relative flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-shelf-ink/12 bg-white/80 py-3.5 px-2 text-center backdrop-blur-sm transition-all duration-200 hover:border-shelf-teal/50 hover:bg-white">
+                                <label class="option-card-custom items-center justify-center py-3.5 px-2 text-center">
                                     <input type="radio" name="tingkat" value="{{ $t }}" class="sr-only" {{ old('tingkat') == $t ? 'checked' : ($t == 'X' ? 'checked' : '') }} required>
-                                    <span class="font-display text-base font-bold text-shelf-ink transition-colors sm:text-lg">Tingkat {{ $t }}</span>
+                                    <span class="font-display text-base font-bold text-shelf-ink sm:text-lg">Tingkat {{ $t }}</span>
                                     <span class="font-mono text-[10px] text-shelf-ink/50 mt-0.5">Kelas {{ $t == 'X' ? '10' : ($t == 'XI' ? '11' : '12') }}</span>
                                 </label>
                             @endforeach
@@ -102,17 +258,17 @@
 
                     <!-- 2. Pilih Jurusan / Program Keahlian -->
                     <div class="space-y-2.5">
-                        <label class="block font-mono text-[11px] font-semibold uppercase tracking-wider text-shelf-ink/70">
+                        <label class="block font-mono text-[11px] font-semibold uppercase tracking-wider text-shelf-ink/70 mb-2">
                             2. Jurusan / Program Keahlian <span class="text-red-500">*</span>
                         </label>
-                        <div class="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
+                        <div class="grid-jurusan">
                             @foreach ($jurusanList as $kode => $info)
-                                <label class="option-card relative flex cursor-pointer flex-col justify-between rounded-2xl border-2 border-shelf-ink/12 bg-white/80 p-3.5 backdrop-blur-sm transition-all duration-200 hover:border-shelf-teal/50 hover:bg-white" data-max-rombel="{{ $info['max_rombel'] }}">
+                                <label class="option-card-custom justify-between p-3.5" data-max-rombel="{{ $info['max_rombel'] }}">
                                     <input type="radio" name="jurusan" value="{{ $kode }}" class="sr-only" {{ old('jurusan') == $kode ? 'checked' : ($loop->first ? 'checked' : '') }} required>
                                     <div class="flex items-center justify-between w-full">
                                         <span class="font-display text-base font-extrabold text-shelf-ink">{{ $kode }}</span>
-                                        <span class="radio-indicator w-4 h-4 rounded-full border-2 border-shelf-ink/30 flex items-center justify-center text-white transition-all">
-                                            <svg class="w-2.5 h-2.5 stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg>
+                                        <span class="radio-indicator">
+                                            <svg width="10" height="10" class="stroke-current" fill="none" viewBox="0 0 24 24" stroke-width="3"><path d="M5 13l4 4L19 7"></path></svg>
                                         </span>
                                     </div>
                                     <span class="mt-2 text-[11px] font-medium leading-tight text-shelf-ink/75">{{ $info['nama'] }}</span>
@@ -124,12 +280,12 @@
 
                     <!-- 3. Pilih Nama Kelas -->
                     <div class="space-y-2.5">
-                        <label class="block font-mono text-[11px] font-semibold uppercase tracking-wider text-shelf-ink/70">
+                        <label class="block font-mono text-[11px] font-semibold uppercase tracking-wider text-shelf-ink/70 mb-2">
                             3. Nama Kelas <span class="text-red-500">*</span>
                         </label>
-                        <div class="flex items-center gap-2.5 sm:gap-3" id="rombel-container">
+                        <div class="flex-rombel" id="rombel-container">
                             @foreach (['1', '2', '3'] as $no)
-                                <label class="option-card rombel-option-card flex-1 relative flex cursor-pointer items-center justify-center rounded-2xl border-2 border-shelf-ink/12 bg-white/80 py-3 px-3 text-center transition-all duration-200 hover:border-shelf-teal/50 hover:bg-white" data-rombel="{{ $no }}">
+                                <label class="option-card-custom rombel-option-card flex-1 items-center justify-center py-3 px-3 text-center" data-rombel="{{ $no }}">
                                     <input type="radio" name="nomor_kelas" value="{{ $no }}" class="sr-only" {{ old('nomor_kelas', '1') == $no ? 'checked' : '' }} required>
                                     <span class="rombel-text font-display text-sm sm:text-base font-bold text-shelf-ink">TJKT {{ $no }}</span>
                                 </label>
@@ -138,19 +294,19 @@
                     </div>
 
                     <!-- Live Dynamic Preview Banner -->
-                    <div class="rounded-2xl border border-shelf-teal/40 bg-gradient-to-r from-shelf-teal/15 via-white/90 to-shelf-gold/15 p-4 sm:p-5 backdrop-blur-md text-center shadow-lg">
-                        <p class="font-mono text-[11px] uppercase tracking-wider text-shelf-ink/60">Konfirmasi Kelas Yang Dipilih</p>
+                    <div class="preview-box">
+                        <p class="font-mono text-[11px] uppercase tracking-wider text-shelf-ink/60 m-0">Konfirmasi Kelas Yang Dipilih</p>
                         <div class="mt-1 flex items-center justify-center gap-2">
                             <span class="font-display text-2xl font-extrabold text-shelf-ink sm:text-3xl tracking-wide" id="preview-kelas">X TJKT 1</span>
                         </div>
-                        <p class="mt-1 text-[11px] text-shelf-ink/70">Pastikan pilihan kelas Anda sudah benar sebelum menekan tombol simpan.</p>
+                        <p class="mt-1 text-[11px] text-shelf-ink/70 m-0">Pastikan pilihan kelas Anda sudah benar sebelum menekan tombol simpan.</p>
                     </div>
 
                     <!-- Submit Button -->
                     <div class="pt-2">
-                        <button type="submit" class="group relative flex w-full items-center justify-center gap-2 rounded-2xl bg-shelf-ink py-3.5 px-6 font-display text-sm font-semibold text-white shadow-xl shadow-shelf-ink/25 transition-all duration-200 hover:-translate-y-0.5 hover:bg-shelf-ocean focus:outline-none focus:ring-4 focus:ring-shelf-teal/30 sm:text-base">
+                        <button type="submit" class="btn-submit">
                             <span>Simpan Kelas & Lanjutkan</span>
-                            <svg class="h-4 w-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            <svg width="16" height="16" style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
                     </div>
                 </form>
@@ -197,7 +353,7 @@
                     }
                 });
 
-                // Style all radio groups
+                // Style all radio groups via active CSS class
                 const radioGroups = ['tingkat', 'jurusan', 'nomor_kelas'];
                 
                 radioGroups.forEach(name => {
@@ -206,22 +362,10 @@
                         const label = input.closest('label');
                         if (!label || label.style.display === 'none') return;
                         
-                        const indicator = label.querySelector('.radio-indicator');
-                        
                         if (input.checked) {
-                            label.classList.add('border-shelf-teal', 'bg-white', 'shadow-md', 'ring-2', 'ring-shelf-teal/40');
-                            label.classList.remove('border-shelf-ink/12', 'bg-white/80');
-                            if (indicator) {
-                                indicator.classList.add('border-shelf-teal', 'bg-shelf-teal');
-                                indicator.classList.remove('border-shelf-ink/30');
-                            }
+                            label.classList.add('is-active');
                         } else {
-                            label.classList.remove('border-shelf-teal', 'bg-white', 'shadow-md', 'ring-2', 'ring-shelf-teal/40');
-                            label.classList.add('border-shelf-ink/12', 'bg-white/80');
-                            if (indicator) {
-                                indicator.classList.remove('border-shelf-teal', 'bg-shelf-teal');
-                                indicator.classList.add('border-shelf-ink/30');
-                            }
+                            label.classList.remove('is-active');
                         }
                     });
                 });
