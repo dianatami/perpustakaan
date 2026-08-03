@@ -20,7 +20,8 @@ class AnggotaController extends Controller
                 $q->where('nama', 'like', "%{$search}%")
                   ->orWhere('email', 'like', "%{$search}%")
                   ->orWhere('nisn', 'like', "%{$search}%")
-                  ->orWhere('hp', 'like', "%{$search}%");
+                  ->orWhere('hp', 'like', "%{$search}%")
+                  ->orWhere('kelas', 'like', "%{$search}%");
             });
         })
         ->paginate(10, ['*'], 'siswa_page')
@@ -156,6 +157,7 @@ class AnggotaController extends Controller
         'email' => 'required|email|unique:user,email,' . $id,
         'hp' => 'required|digits_between:10,13',
         'nip' => 'nullable|string|max:20',
+        'kelas' => 'nullable|string|max:50',
         'password' => 'nullable|string|min:6',
     ]);
 
@@ -196,6 +198,7 @@ class AnggotaController extends Controller
         'role' => $role,
         'nip' => $nip,
         'nisn' => $nisn,
+        'kelas' => $request->filled('kelas') ? strtoupper(trim((string) $request->kelas)) : $anggota->kelas,
     ]);
 
     if ($request->filled('password')) {

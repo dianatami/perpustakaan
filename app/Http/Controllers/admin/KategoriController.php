@@ -71,15 +71,13 @@ class KategoriController extends Controller
         'description' => 'required',
         'stock' => 'required|integer|min:0',
         'rack_id' => 'nullable|exists:racks,id',
-        'cover' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+        'cover' => 'nullable|image|mimes:jpg,jpeg,png,webp,gif|max:5120'
     ]);
 
     $coverPath = null;
 
     if ($request->hasFile('cover')) {
-
-        $coverPath = $request->file('cover')->store('covers', 'public');
-
+        $coverPath = \App\Services\ImageOptimizerService::optimizeAndStore($request->file('cover'), 'covers', 1000, 1200, 80);
     }
 
     Book::create([

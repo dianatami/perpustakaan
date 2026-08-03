@@ -30,6 +30,7 @@ class SiswaImport implements ToCollection
             $nama = isset($row[1]) ? trim((string) $row[1]) : null;
             $email = isset($row[2]) ? trim((string) $row[2]) : null;
             $hp = isset($row[3]) ? trim((string) $row[3]) : null;
+            $kelas = isset($row[4]) ? strtoupper(trim((string) $row[4])) : null;
 
             if (empty($nama)) {
                 continue;
@@ -46,6 +47,7 @@ class SiswaImport implements ToCollection
                     'nama' => $nama,
                     'nisn' => $nisn,
                     'hp' => $hp,
+                    'kelas' => !empty($kelas) ? $kelas : null,
                     'role' => User::ROLE_ANGGOTA,
                     'status' => 1,
                     'password' => Hash::make($this->defaultPassword),

@@ -94,6 +94,7 @@
                                 <th>No</th>
                                 <th>No.Induk</th>
                                 <th>Nama</th>
+                                <th>Kelas</th>
                                 <th>Email</th>
                                 <th>Nomor HP</th>
                                 <th>Status</th>
@@ -107,6 +108,7 @@
                                     <td>{{ ($siswa->currentPage() - 1) * $siswa->perPage() + $loop->iteration }}</td>
                                     <td>{{ $item->nisn ?? '-' }}</td>
                                     <td>{{ $item->nama }}</td>
+                                    <td><span class="badge bg-secondary">{{ $item->kelas ?? '-' }}</span></td>
                                     <td>{{ $item->email }}</td>
                                     <td>{{ $item->hp }}</td>
                                     <td>

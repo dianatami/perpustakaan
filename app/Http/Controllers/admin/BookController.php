@@ -58,7 +58,7 @@ class BookController extends Controller
             'author' => 'required',
             'year' => 'nullable|digits:4',
             'stock' => 'required|integer|min:0',
-            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
         ]);
 
         $data = $request->only(['category_id', 'rack_id', 'book_code', 'title', 'author', 'publisher', 'year', 'cover', 'description', 'stock']);
@@ -66,7 +66,7 @@ class BookController extends Controller
         $data['description'] = $request->input('description', '');
 
         if ($request->hasFile('cover')) {
-            $data['cover'] = $request->file('cover')->store('covers', 'public');
+            $data['cover'] = \App\Services\ImageOptimizerService::optimizeAndStore($request->file('cover'), 'covers', 1000, 1200, 80);
         }
 
         Book::create($data);
@@ -92,7 +92,7 @@ class BookController extends Controller
             'author' => 'required',
             'year' => 'nullable|digits:4',
             'stock' => 'required|integer|min:0',
-            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'cover' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'description' => 'nullable',
         ]);
 
@@ -105,7 +105,7 @@ class BookController extends Controller
             if ($book->cover) {
                 Storage::disk('public')->delete($book->cover);
             }
-            $data['cover'] = $request->file('cover')->store('covers', 'public');
+            $data['cover'] = \App\Services\ImageOptimizerService::optimizeAndStore($request->file('cover'), 'covers', 1000, 1200, 80);
         }
 
         $book->update($data);

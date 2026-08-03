@@ -281,19 +281,29 @@
                             </p>
 
                             <div class="row g-3">
-                                <div class="col-md-4">
+                                @if(! $isGuruPortal)
+                                <div class="col-md-3">
                                     <div class="info-box">
-                                        <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
-                                        <div class="info-value">{{ $user->email ?? '-' }}</div>
+                                        <span class="info-label"><i class="bi bi-mortarboard-fill"></i> Kelas</span>
+                                        <div class="info-value">
+                                            <span>{{ $user->kelas ?? '-' }}</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                @endif
+                                <div class="{{ ! $isGuruPortal ? 'col-md-3' : 'col-md-4' }}">
+                                    <div class="info-box">
+                                        <span class="info-label"><i class="bi bi-envelope"></i> Email</span>
+                                        <div class="info-value text-truncate">{{ $user->email ?? '-' }}</div>
+                                    </div>
+                                </div>
+                                <div class="{{ ! $isGuruPortal ? 'col-md-3' : 'col-md-4' }}">
                                     <div class="info-box">
                                         <span class="info-label"><i class="bi bi-telephone"></i> Nomor HP</span>
                                         <div class="info-value">{{ $user->hp ?? '-' }}</div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="{{ ! $isGuruPortal ? 'col-md-3' : 'col-md-4' }}">
                                     <div class="info-box">
                                         <span class="info-label"><i class="bi bi-person"></i> Jenis Kelamin</span>
                                         <div class="info-value">

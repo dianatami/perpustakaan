@@ -74,6 +74,14 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="kelas">Kelas (Khusus Siswa, contoh: X RPL 1)</label>
+                    <input type="text" class="form-control @error('kelas') is-invalid @enderror" id="kelas" name="kelas" value="{{ old('kelas', $anggota->kelas) }}" placeholder="Contoh: X RPL 1">
+                    @error('kelas')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                <div class="form-group">
                     <label for="password">Password (Kosongkan jika tidak ingin mengubah)</label>
                     <input type="password" class="form-control @error('password') is-invalid @enderror" id="password" name="password">
                     @error('password')

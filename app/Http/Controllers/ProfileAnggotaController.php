@@ -171,7 +171,7 @@ class ProfileAnggotaController extends Controller
             'email' => 'required|email|unique:user,email,' . Auth::id(),
             'hp' => 'required|digits_between:10,13',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:5120',
             'tempat_lahir' => 'nullable|string|max:255',
             'tanggal_lahir' => ['nullable', 'date_format:Y-m-d', function ($attribute, $value, $fail) {
                 if ($value && !
@@ -198,10 +198,7 @@ class ProfileAnggotaController extends Controller
                 Storage::disk('public')->delete($user->foto);
             }
 
-            $foto = $request->file('foto');
-            $nama_foto = time() . '_' . $foto->getClientOriginalName();
-            $foto->storeAs('public/profil', $nama_foto);
-            $user->foto = 'profil/' . $nama_foto;
+            $user->foto = \App\Services\ImageOptimizerService::optimizeAndStore($request->file('foto'), 'profil', 600, 600, 80);
         }
 
         $user->save();

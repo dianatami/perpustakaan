@@ -15,14 +15,14 @@ class SiswaTemplateExport extends DefaultValueBinder implements FromCollection, 
 {
     public function headings(): array
     {
-        return ['NISN', 'Nama Siswa', 'Email (Opsional)', 'Nomor HP'];
+        return ['NISN', 'Nama Siswa', 'Email (Opsional)', 'Nomor HP', 'Kelas (Opsional)'];
     }
 
     public function collection()
     {
         return collect([
-            ['0019241678', 'Ahmad Rizky', 'ahmad.rizky@siswa.smk.sch.id', '089876543210'],
-            ['0019241679', 'Anisa Rahmawati', 'anisa.rahmawati@siswa.smk.sch.id', '089876543211'],
+            ['0019241678', 'Ahmad Rizky', 'ahmad.rizky@siswa.smk.sch.id', '089876543210', 'X TJKT 1'],
+            ['0019241679', 'Anisa Rahmawati', 'anisa.rahmawati@siswa.smk.sch.id', '089876543211', 'XI MP 2'],
         ]);
     }
 

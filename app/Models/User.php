@@ -39,6 +39,7 @@ class User extends Authenticatable
         'tanggal_lahir',
         'alamat',
         'foto',
+        'kelas',
     ];
 
     /**
@@ -241,5 +242,13 @@ class User extends Authenticatable
     public function setRoleAttribute(int|string $value): void
     {
         $this->attributes['role'] = (string) $value;
+    }
+
+    /**
+     * Check if user (siswa) has already selected a class.
+     */
+    public function hasSelectedKelas(): bool
+    {
+        return ! empty(trim((string) $this->kelas));
     }
 }

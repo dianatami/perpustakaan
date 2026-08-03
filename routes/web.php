@@ -12,6 +12,7 @@ use App\Http\Controllers\ProfileAnggotaController;
 use App\Http\Controllers\Anggota\AnggotaKategoriController;
 use App\Http\Controllers\Anggota\BerandaAnggotaController;
 use App\Http\Controllers\Anggota\BukuController;
+use App\Http\Controllers\Anggota\PilihKelasController;
 use App\Http\Controllers\Guru\BerandaGuruController;
 use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\BookController;
@@ -142,8 +143,13 @@ $portalSharedRoutes = function () {
 };
 
 Route::prefix('anggota')->name('anggota.')->middleware(['auth', 'role:0'])->group(function () use ($portalSharedRoutes) {
-    Route::get('beranda', [BerandaAnggotaController::class, 'berandaAnggota'])->name('beranda');
-    $portalSharedRoutes();
+    Route::get('pilih-kelas', [PilihKelasController::class, 'index'])->name('pilih-kelas');
+    Route::post('pilih-kelas', [PilihKelasController::class, 'store'])->name('pilih-kelas.store');
+
+    Route::middleware('ensure.kelas')->group(function () use ($portalSharedRoutes) {
+        Route::get('beranda', [BerandaAnggotaController::class, 'berandaAnggota'])->name('beranda');
+        $portalSharedRoutes();
+    });
 });
 
 Route::prefix('guru')->name('guru.')->middleware(['auth', 'role:2'])->group(function () use ($portalSharedRoutes) {

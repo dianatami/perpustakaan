@@ -78,6 +78,7 @@
                                     {{ $user->status == 0 ? 'disabled' : '' }}
                                 >
                                     {{ $user->nama }}
+                                    @if(!empty($user->kelas)) ({{ $user->kelas }}) @endif
                                     @if($idNum) - {{ $idNum }} @endif
                                     {{ $user->status == 0 ? '(Nonaktif)' : '' }}
                                 </option>
