@@ -330,8 +330,16 @@ class ProfileAnggotaController extends Controller
     {
         $user = Auth::user();
 
-        // Check authorization
-        if ($bookrent->user_id !== $user->id) {
+        if (!$user) {
+            return redirect()->route('tampilan.login')->with('error', 'Silakan login terlebih dahulu');
+        }
+
+        // Check authorization (pemilik transaksi via ID/relasi atau Admin)
+        $isOwner = (!empty($bookrent->user_id) && (int) $bookrent->user_id === (int) $user->id)
+            || $user->bookrent()->where('id', $bookrent->id)->exists();
+        $isAdmin = (int) $user->role === User::ROLE_ADMIN;
+
+        if (!$isOwner && !$isAdmin) {
             return back()->with('error', 'Anda tidak berhak mengakses data ini.');
         }
 
@@ -341,7 +349,10 @@ class ProfileAnggotaController extends Controller
         }
 
         try {
-            DB::transaction(function () use ($bookrent): void {
+            DB::transaction(function () use ($bookrent, $user): void {
+                if (empty($bookrent->user_id)) {
+                    $bookrent->user_id = $user->id;
+                }
                 $bookrent->status = 'proses_kembali';
                 $bookrent->save();
             });

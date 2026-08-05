@@ -70,6 +70,14 @@
                     @enderror
                 </div>
 
+                <div class="form-group" id="group-kelas">
+                    <label for="kelas">Kelas <small class="text-muted">(Khusus Siswa, contoh: X TJKT 1)</small></label>
+                    <input type="text" class="form-control @error('kelas') is-invalid @enderror" id="kelas" name="kelas" value="{{ old('kelas') }}" placeholder="Contoh: X TJKT 1">
+                    @error('kelas')
+                        <span class="invalid-feedback">{{ $message }}</span>
+                    @enderror
+                </div>
+
                 <div class="form-group">
                     <label for="hp">Nomor HP <span class="text-danger">*</span></label>
                     <input type="text" class="form-control @error('hp') is-invalid @enderror" id="hp" name="hp" value="{{ old('hp') }}" placeholder="Contoh: 081234567890" required>
@@ -99,4 +107,28 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const roleSelect = document.getElementById('role');
+    const groupKelas = document.getElementById('group-kelas');
+    const kelasInput = document.getElementById('kelas');
+
+    function toggleKelas() {
+        if (roleSelect.value === '2') {
+            // Guru -> Sembunyikan field Kelas
+            groupKelas.style.display = 'none';
+            kelasInput.value = '';
+        } else {
+            // Siswa atau belum dipilih -> Tampilkan field Kelas
+            groupKelas.style.display = 'block';
+        }
+    }
+
+    if (roleSelect && groupKelas) {
+        roleSelect.addEventListener('change', toggleKelas);
+        toggleKelas();
+    }
+});
+</script>
 @endsection

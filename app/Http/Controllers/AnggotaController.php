@@ -55,86 +55,68 @@ class AnggotaController extends Controller
      * Store a newly created member in database
      */
     public function store(Request $request)
-{
-    $request->validate([
-        'nip' => 'nullable|string|max:20',
-        'nama' => 'required|string|max:255|regex:/^[a-zA-Z\s\.\-\']+$/i',
-        'email' => 'required|email|unique:user,email',
-        'hp' => 'required|digits_between:10,13',
-        'password' => 'required|string|min:6',
-    ]);
+    {
+        $request->validate([
+            'nip' => 'nullable|string|max:20',
+            'nama' => 'required|string|max:255|regex:/^[a-zA-Z\s\.\-\']+$/i',
+            'email' => 'required|email|unique:user,email',
+            'hp' => 'required|digits_between:10,13',
+            'password' => 'required|string|min:6',
+            'kelas' => 'nullable|string|max:50',
+            'role' => 'nullable|in:0,2',
+        ]);
 
-    $identifier = trim((string) $request->nip);
-    if (User::isValidNip($identifier)) {
+        $identifier = trim((string) $request->nip);
+        $nip = null;
+        $nisn = null;
+        $role = $request->filled('role') ? (int) $request->role : User::ROLE_ANGGOTA;
 
-    if (User::where('nip', $identifier)->exists()) {
-        return back()
-            ->withErrors([
-                'nip' => 'NIP sudah digunakan oleh pengguna lain.'
-            ])
-            ->withInput();
-    }
-
-    $nip = $identifier;
-    $role = User::ROLE_GURU;
-
-    } elseif (User::isValidNisn($identifier)) {
-
-    if (User::where('nisn', $identifier)->exists()) {
-        return back()
-            ->withErrors([
-                'nip' => 'NISN sudah digunakan oleh pengguna lain.'
-            ])
-            ->withInput();
-    }
-
-    $nisn = $identifier;
-    $role = User::ROLE_ANGGOTA;
-
-    }
-
-    $nip = null;
-    $nisn = null;
-    $role = User::ROLE_ANGGOTA;
-
-    if ($identifier !== '') {
-
-        if (User::isValidNip($identifier)) {
-
-            $nip = $identifier;
-            $role = User::ROLE_GURU;
-
-        } elseif (User::isValidNisn($identifier)) {
-
-            $nisn = $identifier;
-            $role = User::ROLE_ANGGOTA;
-
-        } else {
-
-            return back()
-                ->withErrors([
-                    'nip' => 'Format NIP/NISN tidak valid.'
-                ])
-                ->withInput();
-
+        if ($identifier !== '') {
+            if (User::isValidNip($identifier)) {
+                if (User::where('nip', $identifier)->exists()) {
+                    return back()
+                        ->withErrors([
+                            'nip' => 'NIP sudah digunakan oleh pengguna lain.'
+                        ])
+                        ->withInput();
+                }
+                $nip = $identifier;
+                $role = User::ROLE_GURU;
+            } elseif (User::isValidNisn($identifier)) {
+                if (User::where('nisn', $identifier)->exists()) {
+                    return back()
+                        ->withErrors([
+                            'nip' => 'NISN sudah digunakan oleh pengguna lain.'
+                        ])
+                        ->withInput();
+                }
+                $nisn = $identifier;
+                $role = User::ROLE_ANGGOTA;
+            } else {
+                return back()
+                    ->withErrors([
+                        'nip' => 'Format NIP/NISN tidak valid.'
+                    ])
+                    ->withInput();
+            }
         }
+
+        User::create([
+            'nama' => $request->nama,
+            'email' => $request->email,
+            'hp' => $request->hp,
+            'password' => bcrypt($request->password),
+            'role' => $role,
+            'status' => 1,
+            'nip' => $nip,
+            'nisn' => $nisn,
+            'kelas' => ($role === User::ROLE_ANGGOTA && $request->filled('kelas')) ? strtoupper(trim((string) $request->kelas)) : null,
+        ]);
+
+        return redirect()
+            ->route('admin.anggota.index')
+            ->with('success', 'Anggota berhasil ditambahkan');
     }
-
-    User::create([
-        'nama' => $request->nama,
-        'email' => $request->email,
-        'hp' => $request->hp,
-        'password' => bcrypt($request->password),
-        'role' => $role,
-        'status' => 1,
-        'nip' => $nip,
-        'nisn' => $nisn,
-    ]);
-
-    return redirect()
-        ->route('admin.anggota.index')
-        ->with('success', 'Anggota berhasil ditambahkan');
-}
 
     /**
      * Show the form for editing a member

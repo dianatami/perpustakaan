@@ -35,6 +35,7 @@ class BookReturnFeatureTest extends TestCase
             'hp' => '081234567890',
             'status' => 1,
             'role' => $role,
+            'kelas' => $role === User::ROLE_ANGGOTA ? 'X TJKT 1' : null,
         ]);
     }
 

@@ -31,6 +31,7 @@ class RoleAccessAndLoginTest extends TestCase
             'hp' => '081234567890',
             'status' => $active,
             'role' => $role,
+            'kelas' => $role === User::ROLE_ANGGOTA ? 'X TJKT 1' : null,
         ]);
     }
 
