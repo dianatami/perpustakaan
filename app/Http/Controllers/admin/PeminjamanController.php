@@ -45,7 +45,7 @@ class PeminjamanController extends Controller
                 }
 
                 $borrowDate = Carbon::now()->toDateString();
-                $duration = $request->input('borrow_duration', 7);
+                $duration = $request->input('borrow_duration', 3);
                 $returnDate = Carbon::now()->addDays($duration)->toDateString();
 
                 $peminjaman->status = 'dipinjam';

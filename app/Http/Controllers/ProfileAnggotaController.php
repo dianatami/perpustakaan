@@ -127,7 +127,7 @@ class ProfileAnggotaController extends Controller
                 }
 
                 $borrowDate = $request->borrow_date ? Carbon::parse($request->borrow_date)->toDateString() : Carbon::now()->toDateString();
-                $returnDate = $request->return_date ? Carbon::parse($request->return_date)->toDateString() : Carbon::now()->addDays(7)->toDateString();
+                $returnDate = $request->return_date ? Carbon::parse($request->return_date)->toDateString() : Carbon::now()->addDays(3)->toDateString();
 
                 $bookrent = Bookrent::create([
                     'user_id' => $user->id,

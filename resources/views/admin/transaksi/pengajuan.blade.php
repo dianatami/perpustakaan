@@ -691,7 +691,7 @@
 
                     <div class="mb-4">
                         <label for="borrowDuration" class="form-label">Lama Peminjaman (Hari)</label>
-                        <input type="number" class="form-control" id="borrowDuration" name="borrow_duration" min="1" max="30" value="7" required>
+                        <input type="number" class="form-control" id="borrowDuration" name="borrow_duration" min="1" max="30" value="3" required>
                         <small class="text-muted">Berapa hari buku boleh dipinjam?</small>
                     </div>
 

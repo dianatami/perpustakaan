@@ -254,7 +254,7 @@ $(document).ready(function(){
 
     initSelect2();
 
-    // Set return_date to 7 days after borrow_date
+    // Set return_date to 3 days after borrow_date
     function formatDateYMD(date) {
         const y = date.getFullYear();
         const m = String(date.getMonth() + 1).padStart(2, '0');
@@ -266,7 +266,7 @@ $(document).ready(function(){
         const borrowVal = $('input[name="borrow_date"]').val();
         if (!borrowVal) return;
         const b = new Date(borrowVal + 'T00:00:00');
-        b.setDate(b.getDate() + 7);
+        b.setDate(b.getDate() + 3);
         $('input[name="return_date"]').val(formatDateYMD(b));
     }
 
