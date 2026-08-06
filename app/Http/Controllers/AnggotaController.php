@@ -119,82 +119,24 @@ class AnggotaController extends Controller
     }
 
     /**
-     * Show the form for editing a member
+     * Show the form for editing a member (Disabled)
      */
     public function edit($id)
     {
-        $anggota = User::findOrFail($id);
-        return view('admin.user.edit', compact('anggota'));
+        return redirect()
+            ->route('admin.anggota.index')
+            ->with('error', 'Pengubahan data anggota tidak diperbolehkan.');
     }
 
     /**
-     * Update the specified member in database
+     * Update the specified member in database (Disabled)
      */
     public function update(Request $request, $id)
-{
-    $anggota = User::findOrFail($id);
-
-    $request->validate([
-        'nama' => 'required|string|max:255',
-        'email' => 'required|email|unique:user,email,' . $id,
-        'hp' => 'required|digits_between:10,13',
-        'nip' => 'nullable|string|max:20',
-        'kelas' => 'nullable|string|max:50',
-        'password' => 'nullable|string|min:6',
-    ]);
-
-    $identifier = trim((string) $request->nip);
-
-    $nip = null;
-    $nisn = null;
-    $role = User::ROLE_ANGGOTA;
-
-    if ($identifier !== '') {
-
-        if (User::isValidNip($identifier)) {
-
-            $nip = $identifier;
-            $role = User::ROLE_GURU;
-
-        } elseif (User::isValidNisn($identifier)) {
-
-            $nisn = $identifier;
-            $role = User::ROLE_ANGGOTA;
-
-        } else {
-
-            return back()
-                ->withErrors([
-                    'nip' => 'Format NIP/NISN tidak valid.'
-                ])
-                ->withInput();
-
-        }
+    {
+        return redirect()
+            ->route('admin.anggota.index')
+            ->with('error', 'Pengubahan data anggota tidak diperbolehkan.');
     }
-
-    $anggota->update([
-        'nama' => $request->nama,
-        'email' => $request->email,
-        'hp' => $request->hp,
-        'status' => $request->status,
-        'role' => $role,
-        'nip' => $nip,
-        'nisn' => $nisn,
-        'kelas' => $request->filled('kelas') ? strtoupper(trim((string) $request->kelas)) : $anggota->kelas,
-    ]);
-
-    if ($request->filled('password')) {
-
-        $anggota->update([
-            'password' => bcrypt($request->password)
-        ]);
-
-    }
-
-    return redirect()
-        ->route('admin.anggota.index')
-        ->with('success', 'Anggota berhasil diperbarui');
-}
 
     /**
      * Delete a member
