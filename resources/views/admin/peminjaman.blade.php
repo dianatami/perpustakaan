@@ -60,7 +60,7 @@
         <select name="book_id" required>
             <option value="">-- Pilih Buku --</option>
             @foreach ($books as $book)
-                <option value="{{ $book->id }}">{{ $book->book_code ? $book->book_code . ' - ' : '' }}{{ $book->title }}@if(!empty($book->author)) | Penulis: {{ $book->author }}@endif</option>
+                <option value="{{ $book->id }}">{{ $book->book_code ? $book->book_code . ' - ' : '' }}{{ $book->title }} (Penulis: {{ $book->author ?: '-' }})</option>
             @endforeach
         </select>
 

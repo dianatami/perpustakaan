@@ -165,15 +165,7 @@
                                         {{ $book->stock <= 0 ? 'disabled' : '' }}
                                         data-stock="{{ $book->stock }}"
                                     >
-
-                                        {{ $book->book_code }}
-                                        -
-                                        {{ $book->title }}
-                                        @if (!empty($book->author))
-                                            | Penulis: {{ $book->author }}
-                                        @endif
-                                        (stok: {{ $book->stock }})
-
+                                        {{ $book->book_code }} - {{ $book->title }} (Penulis: {{ $book->author ?: '-' }})
                                     </option>
 
                                 @endforeach
@@ -357,15 +349,7 @@ $(document).ready(function(){
                                 value="{{ $book->id }}"
                                 data-stock="{{ $book->stock }}"
                             >
-
-                                {{ $book->book_code }}
-                                -
-                                {{ $book->title }}
-                                @if (!empty($book->author))
-                                    | Penulis: {{ $book->author }}
-                                @endif
-                                (stok: {{ $book->stock }})
-
+                                {{ $book->book_code }} - {{ $book->title }} (Penulis: {{ $book->author ?: '-' }})
                             </option>
 
                         @endforeach
