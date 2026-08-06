@@ -173,7 +173,7 @@
                                                         data-stock="{{ $b->stock }}"
                                                         {{ (string) request('book_id') === (string) $b->id ? 'selected' : '' }}
                                                         {{ $b->stock <= 0 ? 'disabled' : '' }}>
-                                                        {{ $b->title }}
+                                                        {{ $b->book_code ? $b->book_code . ' - ' : '' }}{{ $b->title }}@if(!empty($b->author)) | Penulis: {{ $b->author }}@endif (stok: {{ $b->stock }})
                                                     </option>
                                                 @endforeach
                                             </select>
@@ -488,7 +488,7 @@
                                         data-author="{{ $b->author ?? '' }}"
                                         data-stock="{{ $b->stock }}"
                                         {{ $b->stock <= 0 ? 'disabled' : '' }}>
-                                        {{ $b->title }}
+                                        {{ $b->book_code ? $b->book_code . ' - ' : '' }}{{ $b->title }}@if(!empty($b->author)) | Penulis: {{ $b->author }}@endif (stok: {{ $b->stock }})
                                     </option>
                                 @endforeach
                             </select>

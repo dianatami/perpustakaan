@@ -19,7 +19,7 @@ class RoleAccessAndLoginTest extends TestCase
         if ($role === User::ROLE_GURU) {
             $nip = $identifier ?? '198704122010011001';
         } elseif ($role === User::ROLE_ANGGOTA) {
-            $nisn = $identifier ?? '1234567890';
+            $nisn = $identifier ?? '123456789';
         }
 
         return User::create([
@@ -96,10 +96,10 @@ class RoleAccessAndLoginTest extends TestCase
 
     public function test_siswa_can_login_with_nis(): void
     {
-        $siswa = $this->makeUser(User::ROLE_ANGGOTA, 'siswa-nis@example.com', true, '1234567890');
+        $siswa = $this->makeUser(User::ROLE_ANGGOTA, 'siswa-nis@example.com', true, '123456789');
 
         $response = $this->post(route('tampilan.login.process'), [
-            'identifier' => '1234567890',
+            'identifier' => '123456789',
             'password' => 'secret123',
         ]);
 
@@ -120,7 +120,7 @@ class RoleAccessAndLoginTest extends TestCase
     public function test_invalid_nisn_length_is_rejected_on_login(): void
     {
         $this->post(route('tampilan.login.process'), [
-            'identifier' => '123456789',
+            'identifier' => '1234567890',
             'password' => 'secret123',
         ])->assertSessionHas('error', 'Format NIP/NISN/Email tidak valid.');
 

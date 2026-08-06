@@ -28,7 +28,7 @@ class AnggotaStoreTest extends TestCase
         $admin = $this->makeAdmin();
 
         $response = $this->actingAs($admin)->post(route('admin.anggota.store'), [
-            'nip' => '1234567890',
+            'nip' => '123456789',
             'nama' => 'Budi Santoso',
             'email' => 'budi@example.com',
             'role' => '0',
@@ -43,7 +43,7 @@ class AnggotaStoreTest extends TestCase
         $this->assertDatabaseHas('user', [
             'nama' => 'Budi Santoso',
             'email' => 'budi@example.com',
-            'nisn' => '1234567890',
+            'nisn' => '123456789',
             'role' => User::ROLE_ANGGOTA,
             'kelas' => 'X TJKT 1',
         ]);

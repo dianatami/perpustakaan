@@ -27,6 +27,78 @@
     .modal-header .btn-close{filter:brightness(0) invert(1);}
     .modal-title{font-weight:800;color:#fff;}
     @media (max-width:768px){.admin-header{padding:2.2rem 1.5rem;}.admin-header h1{font-size:1.8rem;}.table-wrapper{padding:1.5rem;}.datatable{font-size:.85rem;}.action-buttons{flex-direction:column;}.btn-detail{width:100%;text-align:center;}}
+    .filter-card {
+        background: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+        padding: 1.5rem 1.8rem;
+        margin-bottom: 2rem;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+    }
+    .filter-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1.2rem;
+        padding-bottom: 0.8rem;
+        border-bottom: 1px solid #f1f5f9;
+    }
+    .filter-card-title {
+        font-size: 1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .filter-card-title i {
+        color: #0f8c80;
+        font-size: 1.15rem;
+    }
+    .filter-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        color: #64748b;
+        margin-bottom: 0.4rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        display: block;
+    }
+    .filter-control {
+        border-radius: 12px;
+        border: 1.5px solid #e2e8f0;
+        padding: 0.65rem 0.9rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #1e293b;
+        background-color: #f8fafc;
+        transition: all 0.2s ease;
+        width: 100%;
+    }
+    .filter-control:focus {
+        background-color: #fff;
+        border-color: #0f8c80;
+        box-shadow: 0 0 0 3px rgba(15, 140, 128, 0.15);
+        outline: none;
+    }
+    .btn-reset-filter {
+        border-radius: 10px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        padding: 0.4rem 0.8rem;
+        color: #64748b;
+        background: #f1f5f9;
+        border: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+    }
+    .btn-reset-filter:hover {
+        background: #e2e8f0;
+        color: #0f172a;
+    }
 </style>
 
 <div class="container-fluid py-4">
@@ -49,48 +121,62 @@
     @endphp
 
     {{-- FILTERS --}}
-    <div class="row g-2 mb-4">
-        <div class="col-md-2">
-            <input type="date" class="form-control" id="period_start" placeholder="Tanggal Mulai">
-            <small class="text-muted">Dari Tgl Pinjam</small>
+    <div class="filter-card">
+        <div class="filter-card-header">
+            <h6 class="filter-card-title">
+                <i class="bi bi-funnel-fill"></i> Filter & Cari Data Riwayat
+            </h6>
+            <button type="button" class="btn-reset-filter" onclick="resetFilters()">
+                <i class="bi bi-arrow-counterclockwise"></i> Reset Filter
+            </button>
         </div>
-        <div class="col-md-2">
-            <input type="date" class="form-control" id="period_end" placeholder="Tanggal Akhir">
-            <small class="text-muted">Sampai Tgl Pinjam</small>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" id="name_filter">
-                <option value="">Semua Nama</option>
-                @foreach($uniqueNames as $name)
-                    <option value="{{ $name }}">{{ $name }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" id="book_filter">
-                <option value="">Semua Judul Buku</option>
-                @foreach($uniqueBooks as $title)
-                    <option value="{{ $title }}">{{ $title }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" id="category_filter">
-                <option value="">Semua Kategori</option>
-                @foreach($uniqueCategories as $cat)
-                    <option value="{{ $cat }}">{{ $cat }}</option>
-                @endforeach
-            </select>
-        </div>
-        <div class="col-md-2">
-            <select class="form-select" id="status_filter">
-                <option value="">Semua Status</option>
-                <option value="menunggu_acc">Menunggu</option>
-                <option value="dipinjam">Dipinjam</option>
-                <option value="ditolak">Ditolak</option>
-                <option value="kembali">Kembali</option>
-                <option value="terlambat">Terlambat</option>
-            </select>
+        <div class="row g-3">
+            <div class="col-xl-2 col-lg-4 col-md-6">
+                <label for="period_start" class="filter-label">Dari Tgl Pinjam</label>
+                <input type="date" class="form-control filter-control" id="period_start">
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6">
+                <label for="period_end" class="filter-label">Sampai Tgl Pinjam</label>
+                <input type="date" class="form-control filter-control" id="period_end">
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6">
+                <label for="name_filter" class="filter-label">Nama Anggota</label>
+                <select class="form-select filter-control" id="name_filter">
+                    <option value="">Semua Nama</option>
+                    @foreach($uniqueNames as $name)
+                        <option value="{{ $name }}">{{ $name }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6">
+                <label for="book_filter" class="filter-label">Judul Buku</label>
+                <select class="form-select filter-control" id="book_filter">
+                    <option value="">Semua Judul Buku</option>
+                    @foreach($uniqueBooks as $title)
+                        <option value="{{ $title }}">{{ $title }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6">
+                <label for="category_filter" class="filter-label">Kategori</label>
+                <select class="form-select filter-control" id="category_filter">
+                    <option value="">Semua Kategori</option>
+                    @foreach($uniqueCategories as $cat)
+                        <option value="{{ $cat }}">{{ $cat }}</option>
+                    @endforeach
+                </select>
+            </div>
+            <div class="col-xl-2 col-lg-4 col-md-6">
+                <label for="status_filter" class="filter-label">Status</label>
+                <select class="form-select filter-control" id="status_filter">
+                    <option value="">Semua Status</option>
+                    <option value="menunggu_acc">Menunggu</option>
+                    <option value="dipinjam">Dipinjam</option>
+                    <option value="ditolak">Ditolak</option>
+                    <option value="kembali">Kembali</option>
+                    <option value="terlambat">Terlambat</option>
+                </select>
+            </div>
         </div>
     </div>
 
@@ -276,6 +362,16 @@
 
         const modal = new bootstrap.Modal(document.getElementById('detailModal'));
         modal.show();
+    }
+
+    function resetFilters() {
+        if(periodStart) periodStart.value = '';
+        if(periodEnd) periodEnd.value = '';
+        if(nameFilter) nameFilter.value = '';
+        if(bookFilter) bookFilter.value = '';
+        if(categoryFilter) categoryFilter.value = '';
+        if(statusFilter) statusFilter.value = '';
+        filterRows();
     }
 
     document.addEventListener('DOMContentLoaded', () => {

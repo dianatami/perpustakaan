@@ -17,7 +17,7 @@ class User extends Authenticatable
     public const ROLE_ADMIN = 1;
     public const ROLE_GURU = 2;
     public const NIP_REGEX = '/^\d{18}$/';
-    public const NISN_REGEX = '/^\d{10}$/';
+    public const NISN_REGEX = '/^\d{9}$/';
 
     /**
      * The attributes that are mass assignable.

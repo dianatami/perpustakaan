@@ -169,6 +169,9 @@
                                         {{ $book->book_code }}
                                         -
                                         {{ $book->title }}
+                                        @if (!empty($book->author))
+                                            | Penulis: {{ $book->author }}
+                                        @endif
                                         (stok: {{ $book->stock }})
 
                                     </option>
@@ -358,6 +361,9 @@ $(document).ready(function(){
                                 {{ $book->book_code }}
                                 -
                                 {{ $book->title }}
+                                @if (!empty($book->author))
+                                    | Penulis: {{ $book->author }}
+                                @endif
                                 (stok: {{ $book->stock }})
 
                             </option>

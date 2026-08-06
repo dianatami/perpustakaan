@@ -134,10 +134,10 @@
                                 name="nip"
                                 id="nip"
                                 value="{{ old('nip') }}"
-                                placeholder="197104122006041001 (NIP) atau 10 digit NISN"
+                                placeholder="197104122006041001 (NIP) atau 9 digit NISN"
                                 class="mt-2 w-full rounded-2xl border border-shelf-ink/15 bg-white/86 px-4 py-3 text-sm text-shelf-ink outline-none transition placeholder:text-shelf-ink/45 focus:border-shelf-teal focus:ring-4 focus:ring-shelf-teal/15 @error('nip') border-red-500/70 focus:border-red-500 focus:ring-red-500/15 @enderror"
                             >
-                            <p class="mt-1 text-[11px] text-shelf-ink/55">NIP 18 digit (Guru) atau NISN 10 digit (Siswa). Kosongkan jika tidak ada.</p>
+                            <p class="mt-1 text-[11px] text-shelf-ink/55">NIP 18 digit (Guru) atau NISN 9 digit (Siswa). Kosongkan jika tidak ada.</p>
                             @error('nip')
                                 <p class="mt-1 text-xs font-semibold text-red-600">{{ $message }}</p>
                             @enderror

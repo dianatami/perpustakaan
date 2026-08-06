@@ -67,7 +67,7 @@ class RegisterTest extends TestCase
 
     public function test_user_can_register_with_valid_nisn_auto_assigns_anggota_role(): void
     {
-        $validNisn = '0012345678';
+        $validNisn = '001234567';
 
         $response = $this->post(route('tampilan.register.process'), [
             'nama' => 'Siswa BerNISN',
@@ -83,6 +83,29 @@ class RegisterTest extends TestCase
             'nisn' => $validNisn,
             'role' => User::ROLE_ANGGOTA,
         ]);
+    }
+
+    public function test_registration_fails_with_invalid_nisn_length(): void
+    {
+        // Test with 10 digits (too long)
+        $response1 = $this->post(route('tampilan.register.process'), [
+            'nama' => 'Siswa NISN 10 Digit',
+            'email' => 'nisn10digit@example.com',
+            'nip' => '1234567890',
+            'password' => 'password123',
+            'hp' => '081234567894',
+        ]);
+        $response1->assertSessionHasErrors('nip');
+
+        // Test with 8 digits (too short)
+        $response2 = $this->post(route('tampilan.register.process'), [
+            'nama' => 'Siswa NISN 8 Digit',
+            'email' => 'nisn8digit@example.com',
+            'nip' => '12345678',
+            'password' => 'password123',
+            'hp' => '081234567895',
+        ]);
+        $response2->assertSessionHasErrors('nip');
     }
 
     public function test_registration_fails_with_invalid_nip_format(): void

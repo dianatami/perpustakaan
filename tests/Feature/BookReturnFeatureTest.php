@@ -23,7 +23,7 @@ class BookReturnFeatureTest extends TestCase
         if ($role === User::ROLE_GURU) {
             $nip = $identifier ?? '198704122010011001';
         } elseif ($role === User::ROLE_ANGGOTA) {
-            $nisn = $identifier ?? '1234567890';
+            $nisn = $identifier ?? '123456789';
         }
 
         return User::create([
